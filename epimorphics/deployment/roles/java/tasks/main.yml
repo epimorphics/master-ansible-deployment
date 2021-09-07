@@ -1,0 +1,6 @@
+---
+- name: java
+  tags:
+    - pkg
+  package:
+    name: java-headless
