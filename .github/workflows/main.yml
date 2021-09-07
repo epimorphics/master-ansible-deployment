@@ -1,0 +1,42 @@
+name: Ansible Galaxy
+on:
+  workflow_dispatch: {}
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build:
+    name: "Build: Ansible Galaxy"
+    runs-on: ubuntu-20.04
+    steps:
+    - name: "Checkout"
+      uses: actions/checkout@v2
+    - name: "Get image tag"
+      id: gittag
+      uses: epimorphics/github-actions/generate-tag@v4
+    - name: "Create Release"
+      uses: actions/create-release@v1
+      id: release
+      with:
+        draft: false
+        prerelease: false
+        release_name: "${{ steps.gittag.outputs.tag }}"
+        tag_name: "${{ github.ref }}"
+    - name: "Install Ansible"
+      shell: "bash"
+      run: "sudo apt-get-install ansible"
+    - name: "Build Artifact"
+      env:
+        RELEASE: "${{ steps.gittag.outputs.tag }}"
+      shell: "bash"
+      run: "make"
+    - name: "Upload Artifact"
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      with:
+        upload_url: ${{ steps.release.outputs.upload_url }}
+        asset_path: ./epimorphics-deployment-${{ steps.gittag.outputs.tag }}.tar.gz
+        asset_name: epimorphics-deployment-${{ steps.gittag.outputs.tag }}.tar.gz
+        asset_content_type: application/gzip
