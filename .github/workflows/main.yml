@@ -13,7 +13,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
     - name: Create Release
-      id: create_release
+      id: release
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
@@ -39,7 +39,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ github.token }}
       with:
-        upload_uri: ${{ steps.release.outputs.upload_url }}
+        upload_url: ${{ steps.release.outputs.upload_url }}
         asset_path: ./epimorphics-deployment-${{ steps.gittag.outputs.tag }}.tar.gz
         asset_name: epimorphics-deployment-${{ github.ref }}.tar.gz
         asset_content_type: application/gzip
