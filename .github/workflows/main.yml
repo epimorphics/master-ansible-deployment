@@ -10,25 +10,28 @@ jobs:
     name: "Build: Ansible Galaxy"
     runs-on: ubuntu-20.04
     steps:
-    - name: "Checkout"
+    - name: Checkout code
       uses: actions/checkout@v2
-    - name: "Get image tag"
-      id: gittag
-      uses: epimorphics/github-actions/generate-tag@v4
-    - name: "Create Release"
+    - name: Create Release
+      id: create_release
       uses: actions/create-release@v1
-      id: release
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
       with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        body: |
+          Changes in this Release
+          - First Change
+          - Second Change
         draft: false
         prerelease: false
-        release_name: "${{ steps.gittag.outputs.tag }}"
-        tag_name: "${{ github.ref }}"
     - name: "Install Ansible"
       shell: "bash"
       run: "sudo apt-get-install ansible"
     - name: "Build Artifact"
       env:
-        RELEASE: "${{ steps.gittag.outputs.tag }}"
+        RELEASE: "${{ github.ref }}"
       shell: "bash"
       run: "make"
     - name: "Upload Artifact"
@@ -38,5 +41,5 @@ jobs:
       with:
         upload_url: ${{ steps.release.outputs.upload_url }}
         asset_path: ./epimorphics-deployment-${{ steps.gittag.outputs.tag }}.tar.gz
-        asset_name: epimorphics-deployment-${{ steps.gittag.outputs.tag }}.tar.gz
+        asset_name: epimorphics-deployment-${{ github.ref }}.tar.gz
         asset_content_type: application/gzip
