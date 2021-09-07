@@ -28,7 +28,7 @@ jobs:
         prerelease: false
     - name: "Install Ansible"
       shell: "bash"
-      run: "sudo apt-get-install ansible"
+      run: "sudo apt-get install -y ansible"
     - name: "Build Artifact"
       env:
         RELEASE: "${{ github.ref }}"
