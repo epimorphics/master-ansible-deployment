@@ -1,0 +1,12 @@
+---
+- name: "Telegraf Elasticsearch config"
+  tags:
+    - cfg
+    - telegraf
+  template:
+    dest: /etc/telegraf/telegraf.d/elasticsearch.conf
+    src: telegraf.conf.j2
+    owner: root
+    group: root
+    mode: 0644
+  notify: "Restart telegraf"

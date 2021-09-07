@@ -1,0 +1,46 @@
+---
+- name: "Publish SNS Policy ({{ sns.policy.name }})"
+  tags:
+    - iam
+    - sns
+  iam_managed_policy:
+    policy_name: "{{ sns.policy.name }}"
+    policy: "{{ lookup('template', 'iam/publish.json.j2') }}"
+    policy_description: "{{ sns.policy.description }}"
+    region: "{{ region }}"
+    state: present
+
+
+- name: IAM Role
+  tags:
+    - iam
+  vars:
+    service: "ec2.amazonaws.com"
+  iam_role:
+    name: "{{ iam_role }}"
+    state: "present"
+    assume_role_policy_document: "{{ lookup('template', 'iam/role-trust.json.j2') }}"
+    managed_policies:
+      - "arn:aws:iam::{{ aws.account }}:policy/{{ sns.policy.name }}"
+      - "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+    description: "{{ sns.policy.description }}"
+  register: role
+
+
+- name: IAM Policies
+  tags:
+    - iam
+  iam_policy:
+    iam_type: "role"
+    iam_name: "{{ item.name }}"
+    policy_name: "{{ item.policy }}"
+    policy_json: "{{ lookup('template', item.file) }}"
+    state: "present"
+  loop_control:
+    label: "{{ item.policy }}"
+  loop:
+    - { name: "{{ iam_role }}", policy: "{{ instance }}-s3-readwrite", file: "iam/s3-readwrite.json" }
+    - { name: "{{ iam_role }}", policy: "{{ instance }}-ec2-tag-access", file: "iam/ec2-tag-access.json" }
+    - { name: "{{ iam_role }}", policy: "{{ instance }}-elb-fullaccess", file: "iam/elb-fullaccess.json" }
+    - { name: "{{ iam_role }}", policy: "{{ instance }}-cloudwatch", file: "iam/cloudwatch.json" }
+  register: policy

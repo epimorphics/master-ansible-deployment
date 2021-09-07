@@ -1,0 +1,16 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "Stmt1424035509000",
+            "Effect": "Allow",
+            "Action": [
+                "s3:*"
+            ],
+            "Resource": [
+                "arn:aws:s3:::{{ instance }}-dms-deploy",
+                "arn:aws:s3:::{{ instance }}-dms-deploy/*"
+            ]
+        }
+    ]
+}

@@ -1,0 +1,26 @@
+- name: "AWS ECR credentials"
+  tags:
+    - all
+    - aws
+  delegate_to: localhost
+  command:
+    "aws ecr get-login-password --region {{ region }}"
+  register: aws_ecr
+
+
+- name: "Log into to ECR"
+  tags:
+    - aws
+    - docker
+  command:
+    "docker login -u AWS -p {{ aws_ecr.stdout }} {{ item }}"
+  loop:
+    - "{{ ecr.common }}"
+    - "{{ ecr.custom }}"
+# docker_login:
+#   registry_url: "{{ ecr.common }}"
+#   username: AWS
+#   password: "{{ aws_ecr.stdout }}"
+#
+#   FIXME This doesn't actually work as the dynamic ECR token mean you can only be logged into one Registry at a time.
+#   A docker creds helper script is required, if we can't just lift the Amazon one.

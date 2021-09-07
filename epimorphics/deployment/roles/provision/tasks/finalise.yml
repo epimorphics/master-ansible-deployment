@@ -1,0 +1,145 @@
+- include: "ec2_instances.yml"
+
+
+- name: "Elastic IP"
+  tags:
+    - dns
+  ec2_eip:
+    region: "{{ region }}"
+    device_id: "{{ iter.instance_id }}"
+    in_vpc: yes
+    reuse_existing_ip_allowed: yes
+  loop: "{{ ec2_instances.instances }}"
+  loop_control:
+    label: "{{ iter.tags.Name | default(iter.instance_id) }}: {{ iter.public_ip_address | default('No public IP') }}"
+    loop_var: iter
+  when: 
+    - iter.tags.Ansible is defined
+    - iter.tags.Name is defined
+    - iter.tags.Type is in elastic_ip_groups
+    - iter.tags.Env is defined
+    - iter.tags.Env == env
+    - iter.public_ip_address is defined
+
+
+- include: "ec2_instances.yml"
+
+
+- name: "EC2 DNS"
+  tags:
+    - dns
+  route53:
+    state: present
+    overwrite: true
+    profile: "{{ route53_profile }}"
+    zone: "{{ domain }}"
+    record: "{{ iter.tags.Name }}.{{ domain }}"
+    type: A
+    ttl: 600
+    value:
+      - "{{ iter.public_ip_address }}"
+  loop: "{{ ec2_instances.instances }}"
+  loop_control:
+    label: "{{ iter.tags.Name | default(iter.instance_id) }}: {{ iter.public_ip_address | default('No public IP') }}"
+    loop_var: iter
+  when: 
+    - iter.tags.Ansible is defined
+    - iter.tags.Env is defined
+    - iter.tags.Env == env
+    - iter.public_ip_address is defined
+
+
+- name: "Provision EC2 Load Balancer"
+  tags:
+    - asg
+    - ec2
+    - elb
+  ec2_elb_lb:
+    region: "{{ region }}"
+    name: "{{ instance }}-{{ env }}-{{ iter.type }}"
+    subnets: "{{ subnet_ids }}"
+    security_group_names:
+      - "{{ load_balancers.security_groups[iter.type] }}"
+    cross_az_load_balancing: yes
+    listeners:
+      - protocol: http
+        load_balancer_port: 80
+        instance_port: 80
+    health_check:
+        ping_protocol: http
+        ping_port: 80
+        ping_path: "/server-status" # not required for tcp or ssl
+        response_timeout: 5 # seconds
+        interval: 10 # seconds
+        unhealthy_threshold: 2
+        healthy_threshold: 5
+    tags:
+      Ansible: "True"
+      Type: "{{ iter.type }}"
+      Env: "{{ env }}"
+      Inst: "{{ instance }}"
+    connection_draining_timeout: 60 # seconds
+    state: present
+  loop: "{{ (ec2_inst_lc | default([]) ) + (ec2_inst | default([]) ) }}"
+  loop_control:
+    label: "{{ iter.type }}"
+    loop_var: iter
+  register: ec2_lb
+  when:
+    - ec2_inst_lc is defined or ec2_inst is defined
+    - load_balancers is defined
+    - subnet_ids is defined
+
+ 
+- name: "LB DNS"
+  tags:
+    - asg
+    - dns
+    - elb
+  route53:
+    state: present
+    overwrite: true
+    profile: "{{ route53_profile }}"
+    zone: "{{ domain }}"
+    record: "{{ iter.elb.name | default('NAME1') }}.{{ domain }}"
+    type: CNAME
+    ttl: 600
+    value:
+      - "{{ iter.elb.dns_name }}"
+  loop: "{{ ec2_lb.results }}"
+  loop_control:
+    label: "{{ instance }}-{{ env }}-{{ iter.iter.type }}"
+    loop_var: iter
+  when: 
+    - ec2_lb is defined
+    - ec2_lb.results is defined
+    - iter.elb is defined
+
+
+- block:
+  - name: "EC2 registed with LB"
+    tags:
+      - asg
+      - elb
+    ec2_elb:
+      region: "{{ region }}"
+      ec2_elbs: "{{ iter.0.elb.name }}"
+      instance_id: "{{ iter.1.instance_id }}"
+      state: present
+    with_nested:
+      -  "{{ ec2_lb.results }}"
+      -  "{{ ec2_instances.instances }}"
+    loop_control:
+      label: "{{ instance }}-{{ env }}-{{ iter.0.iter.type }}: {{ iter.1.tags.Name | default(iter.1.instance_id) }}"
+      loop_var: iter
+    when: 
+      - ec2_lb is defined
+      - ec2_lb.results is defined
+      - iter.0.elb is defined
+      - iter.1.tags.Ansible is defined
+      - iter.1.tags.Env is defined and iter.1.tags.Env == env
+      - iter.1.tags.Type is defined and  iter.0.elb.tags.Type == iter.1.tags.Type 
+      - iter.1.public_ip_address is defined # needed for stale terminated
+
+  when:
+    - finalise is defined

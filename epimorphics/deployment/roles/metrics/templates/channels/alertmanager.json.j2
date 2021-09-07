@@ -1,0 +1,9 @@
+{
+  "uid":"alertmanager",
+  "name":"Alertmanager",
+  "type":"prometheus-alertmanager",
+  "isDefault":true,
+  "settings": {
+    "url": "http://{{ alertmanager_container.name }}:{{ alertmanager_container.port }}"
+  }
+}

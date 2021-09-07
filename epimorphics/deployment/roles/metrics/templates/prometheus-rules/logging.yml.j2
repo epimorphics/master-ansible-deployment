@@ -1,0 +1,14 @@
+---
+groups:
+- name: logging.rules
+  rules:
+  - alert: Logging Down
+    expr: rate(elasticsearch_indices_indexing_index_total{cluster="docker-cluster"}[1m]) == 0
+    for: 10m
+    labels:
+      severity: critical
+    annotations:
+{%- raw %}
+      message: "Logging Down"
+{% endraw %}
+      runbook_url: "https://github.com/epimorphics/{{ repository }}/tree/master/ansible/roles/metrics/templates/prometheus-rules#user-content-logging-down"

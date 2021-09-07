@@ -1,0 +1,11 @@
+---
+- name: "Internal hosts file"
+  tags:
+    - cfg
+    - refresh
+  template:
+    dest: "/etc/hosts"
+    src: "hosts.j2"
+    owner: "root"
+    group: "root"
+    mode: 0644

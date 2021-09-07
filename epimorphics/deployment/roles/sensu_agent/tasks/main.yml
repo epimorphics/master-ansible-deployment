@@ -1,0 +1,7 @@
+---
+- name: "Sensu namespace"
+  delegate_to: "{{ sensu_server }}"
+  sensu.sensu_go.namespace:
+    auth: "{{ sensu.auth }}"
+    name: "{{ sensu.namespace }}"
+    state: "present"

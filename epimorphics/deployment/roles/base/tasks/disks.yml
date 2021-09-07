@@ -1,0 +1,82 @@
+---
+- block:
+  - name: "LVM installed"
+    tags:
+      - pkg
+    package:
+      name: 
+        - lvm2
+      state: latest
+
+
+  - name: Disk Partitions
+    tags:
+      - lvm
+      - parted
+      - vg
+    parted:
+      device: "{{ item.device }}"
+      number: "{{ item.partition }}"
+      state: present
+      part_start: "{{ item.start | default(omit) }}"
+      part_end: "{{ item.end | default(omit) }}"
+    loop_control:
+      label: "{{ item.device }}{{ item.partition }}:{{ item.start | default('0') }}-{{ item.end | default('100%') }}"
+    loop: "{{ partitions }}"
+  
+  - name: Volume Groups
+    tags:
+      - lvm
+      - vg
+    lvg:
+      vg: "{{ item.name }}"
+      pvs: "{{ item.device }}{{ item.prefix | default('') }}{{ item.partition }}"
+    loop_control:
+      label: "{{ item.name }} {{ item.device }}{{ item.partition }}"
+    loop: "{{ partitions }}"
+
+  - name: Logical Volumes
+    tags:
+      - lvm
+    lvol:
+      vg: "{{ item.0.name }}"
+      lv: "{{ item.1.lv }}"
+      size: "{{ item.1.size }}"
+    loop_control:
+      label: "{{ item.0.name }}/{{ item.1.lv }} {{ item.1.size }}"
+    with_subelements:
+      - "{{ partitions }}"
+      - volumes
+
+  when: partitions is defined
+  
+- block:
+  
+  - name: File Systems
+    filesystem:
+      fstype: "ext4"
+      dev: "{{ item.device }}"
+    loop_control:
+      label: "{{ item.device }}"
+    loop: "{{ filesystems }}"
+  
+  - name: Mount points
+    file:
+      path: "{{ item.path }}"
+      state: "directory"
+      mode: "{{ item.mode | default('0755') }}"
+    loop_control:
+      label: "{{ item.path }}"
+    loop: "{{ filesystems }}"
+  
+  - name: Mounts
+    mount:
+      path: "{{ item.path }}"
+      src: "{{ item.device }}"
+      fstype: "ext4"
+      state: "mounted"
+    loop_control:
+      label: "{{ item.device }} {{ item.path }}"
+    loop: "{{ filesystems }}"
+
+  when: filesystems is defined

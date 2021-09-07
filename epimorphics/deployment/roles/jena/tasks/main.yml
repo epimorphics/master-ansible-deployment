@@ -1,0 +1,23 @@
+- name: "Jena archive"
+  tags:
+    - tar
+  unarchive:
+    src: "https://downloads.apache.org/jena/binaries/apache-jena-{{ version }}.tar.gz"
+    dest: "/usr/local"
+    remote_src: yes
+    exclude:
+      - "apache-jena-{{ version }}/bat"
+      - "apache-jena-{{ version }}/src-examples"
+
+
+- name: "Jena link"
+  file:
+    state: link
+    dest: "{{ jena.directory }}"
+    src: "/usr/local/apache-jena-{{ version }}"
+
+
+- name: "Jena path"
+  copy:
+    dest: "/etc/profile.d/jena.sh"
+    content: "PATH=$PATH:{{ jena.directory }}/bin"

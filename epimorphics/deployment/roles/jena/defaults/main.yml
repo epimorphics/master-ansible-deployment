@@ -1,0 +1,5 @@
+version: "4.1.0"
+
+jena:
+  archive: "https://downloads.apache.org/jena/binaries/apache-jena-{{ version }}.tar.gz"
+  directory: "/usr/local/jena"

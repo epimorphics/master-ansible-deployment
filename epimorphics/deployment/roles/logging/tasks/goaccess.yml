@@ -1,0 +1,42 @@
+---
+- name: "Install goaccess"
+  tags:
+    - goaccess
+    - pkg
+  package:
+    name: goaccess
+    state: latest
+
+
+- name: "Apache logs processing"
+  tags:
+    - cfg
+    - goaccess
+  copy:
+    src: "{{ item }}"
+    dest: "/usr/local/bin/{{ item }}"
+    mode: 0770
+    owner: root
+    group: root
+  loop:
+    - "json2combined.py"
+    - "dailylog.sh"
+    - "processlogs.sh"
+
+
+- name: "Go Access cron"
+  tags:
+    - cron
+    - goaccess
+  cron:
+    name: "{{ item.name }}"
+    minute: "{{ item.minute }}"
+    hour: "{{ item.hour | default(omit) }}"
+    user: root
+    job: "{{ item.job }}"
+  loop:
+    - { name: "daily apache log", minute: "30", hour: "04", job: "/usr/local/bin/dailylog.sh {{ s3_logs }} && /usr/local/bin/processlogs.sh {{ s3_logs }} 14" }
+    - { name: "hourly apache log", minute: "12", job: "/usr/local/bin/dailylog.sh {{ s3_logs }} `date -Idate`" }
+    - { name: "apache log clean up", minute: "42", hour: "03", job: "find /var/lib/docker/proxy/www/logs -type f -mtime +30 -delete" }
+  loop_control:
+    label: "{{ item.name }}"

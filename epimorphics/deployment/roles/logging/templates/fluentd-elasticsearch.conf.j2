@@ -1,0 +1,411 @@
+# fluentd/conf/fluent.conf
+#
+# source 
+<source>
+  @type forward
+  bind 0.0.0.0
+  port {{ fluentd_container.port.logging }}
+</source>
+
+<source>
+  @type syslog
+  bind 0.0.0.0
+  port {{ fluentd_container.port.syslog }}
+  message_length_limit 4096
+  tag syslog
+  source_hostname_key server
+</source>
+
+# expose metrics in prometheus format
+<source>
+  @type prometheus
+  bind 0.0.0.0
+  port {{ fluentd_container.port.metrics }}
+  metrics_path /metrics
+</source>
+
+<source>
+  @type prometheus_output_monitor
+  interval 10
+  <labels>
+    hostname ${hostname}
+  </labels>
+</source>
+
+<system>
+# log_level debug
+# log_level warn
+  log_level error
+</system>
+
+# filter out blanks in docker logs
+<filter **>
+  @id blanks
+  @type grep
+  <exclude>
+    key message
+    pattern /^\s*$/
+  </exclude>
+</filter>
+
+# set s3 low by default
+<filter **>
+  @id init_s3
+  @type record_transformer
+  <record>
+    s3 'false'
+  </record>
+</filter>
+
+# Normalise fluentd 
+<filter fluent.**>
+  @id fluentd
+  @type record_transformer
+  <record>
+    host '{{ ansible_hostname }}'
+    ident 'fluentd'
+  </record>
+</filter>
+
+# Transform tag
+<match syslog.**>
+  @id rewrite_container_name
+  @type rewrite_tag_filter
+  <rule>
+    key ident
+    pattern ^(.+)$
+    tag $1.${tag}
+  </rule>
+</match>
+
+# drop influxdb
+<match influxdb.**>
+  @id drop_influxdb
+  @type null
+</match>
+
+# Archive proxy and ssh
+<filter apache.** sshd.**>
+  @id enable_s3
+  @type record_transformer
+  <record>
+    s3 'true'
+  </record>
+</filter>
+
+# Transform JSON tag
+<match elasticsearch.syslog.daemon.info grafana.syslog.daemon.* kibana.syslog.daemon.* prometheus.syslog.daemon.* sensu*.syslog.daemon.* landing.syslog.daemon.* profiles.syslog.daemon.*>
+  @id rewrite_json_tag
+  @type rewrite_tag_filter
+  @log_level warn
+  <rule>
+    key ident
+    pattern ^(.+)$
+    tag json.${tag_parts[3]}.$1
+  </rule>
+</match>
+
+# Transform JSON TS tag
+<match widgets.syslog.daemon.*>
+  @id rewrite_json_ts_tag
+  @type rewrite_tag_filter
+  @log_level warn
+  <rule>
+    key ident
+    pattern ^(.+)$
+    tag json.ts.${tag_parts[3]}.$1
+  </rule>
+</match>
+
+
+# Transform Proxy tag
+<match proxy.syslog.daemon.*>
+  @id rewrite_proxy_tag
+  @type rewrite_tag_filter
+  @log_level warn
+  <rule>
+    key ident
+    pattern ^(.+)$
+    tag apache.${tag_parts[3]}.$1
+  </rule>
+</match>
+
+# Apache info parser
+<filter apache.info.**>
+  @id parser_apache
+  @type parser
+  @log_level warn
+  key_name message
+  remove_key_name_field true
+  inject_key_prefix log_
+  reserve_data true
+  emit_invalid_record_to_error false
+  <parse>
+    @type regexp
+    expression /^(?<client>[^, ]*)(, (?<proxy>[^ ]+))? (?<host>[^ ]*) (?<user>[^ ]*) \[(?<localtime>[^\]]*)\] "(?<method>\S+)(?: +(?<path>[^ ]*) +(?<protocol>\S*))?" (?<status>[^ ]*) (?<size>[^ ]*)(?:\s+"(?<referrer>[^\"]*)" "(?<agent>[^\"]*)" (?<error_id>[^ ]+) (?<duration>[^ ]+) (?<request_id>[^ ]+))?/
+  </parse>
+</filter>
+
+# Apache error parser
+<filter apache.err.**>
+  @id parser_apache_error
+  @type parser
+  @log_level warn
+  key_name message
+  reserve_data true
+  remove_key_name_field false
+  inject_key_prefix log_
+  emit_invalid_record_to_error false
+  <parse>
+    @type apache_error
+  </parse>
+</filter>
+
+# Ignroe apache server-status
+<filter apache.info.proxy>
+  @id apache-server-status
+  @type grep
+  <exclude>
+    key log_path
+    pattern /server-status/
+  </exclude>
+</filter>
+
+
+# Elda
+<filter elda.syslog.daemon.*>
+  @id parser_elda
+  @log_level warn
+  @type parser
+  key_name message
+  remove_key_name_field true
+  inject_key_prefix log_
+  reserve_data true
+  emit_invalid_record_to_error false
+  <parse>
+    @type regexp
+    expression /^(?<time>[0-9 ,-:]*) (?<level>[^ ]*) \[(?<trace>[^ ]*)\] \((?<logger>[^ ]*)\) - (?<request>Request [^ ]*)?((?<request>Response [^ ]*) (?<status>[^ ]*) (?<duration>.*))?(?<text>.+)?/
+    time_format %Y-%m-%d %H:%M:%S,%N
+  </parse>
+</filter>
+
+
+# Fuseki
+<filter fuseki.syslog.daemon.*>
+  @id parser_fuseki
+  @log_level warn
+  @type parser
+  key_name message
+  remove_key_name_field true
+  inject_key_prefix log_
+  reserve_data true
+  emit_invalid_record_to_error false
+  <parse>
+    @type regexp
+    expression /^\[(?<time>[^\]]*)\] Fuseki\s+(?<level>[^ ]+)\s+\[[^ ]+\]\s+((?<method>(GET|POST)) (?<request>.+))?(Query = (?<query>.+))?((?<status>[^\(]*)\((?<duration>.+)\))?(?<text>.+)?/
+    time_format %Y-%m-%d %H:%M:%S
+  </parse>
+</filter>
+
+
+# Containerd Exporter Parser
+<filter es_exporter.syslog.daemon.info>
+  @id parser_containerd
+  @type parser
+  @log_level warn
+  key_name message
+  remove_key_name_field true
+  inject_key_prefix log_
+  reserve_data true
+  emit_invalid_record_to_error false
+  <parse>
+    @type regexp
+    expression /^time=(?<timespamp>[^ ]*)\s+level=(?<level>[^ ]*)\s+msg=(?<msg>[\S" ]*)\s+id=(?<containerd_id>[\S]*)/
+  </parse>
+</filter>
+
+# ES Exporter Parser
+<filter es_exporter.syslog.daemon.info>
+  @id parser_es_exporter
+  @log_level warn
+  @type parser
+  key_name message
+  remove_key_name_field true
+  inject_key_prefix log_
+  reserve_data true
+  emit_invalid_record_to_error false
+  <parse>
+    @type regexp
+    expression /^level=(?<level>[^ ]*)\s+ts=(?<timestamp>[^ ]*)\s+caller=(?<caller>[^ ]*)\s+msg=(?<msg>[\S "]*)/
+  </parse>
+</filter>
+
+## Generic Key-Value Parser
+#<match pattern>
+#  @id parser_kv
+#  @type kv_parser
+#  key message
+#  remove_key false
+#  inject_key_prefix log_
+#</match>
+
+# JSON parser
+<filter json.**>
+  @id json_level
+  @type record_transformer
+  @log_level warn
+# @log_level debug
+  <record>
+    level ${tag_parts[3]}
+  </record>
+  @type parser
+  key_name message
+  reserve_data true
+  reserve_time true
+  remove_key_name_field false
+  inject_key_prefix log_
+  emit_invalid_record_to_error false
+  <parse>
+    @type json
+  </parse>
+</filter>
+
+
+# Update timestamp
+<filter json.ts.**>
+  @id json_epoch
+  @type record_transformer
+  enable_ruby
+  <record>
+    log_epoch ${Time.parse(record['log_ts']).to_f.round(3)}
+  </record>
+  renew_time_key log_epoch
+  remove_keys log_epoch
+</filter>
+
+# Cleanup timestamp
+<match json.ts.**>
+  @id cleanup_json_ts_tag
+  @type rewrite_tag_filter
+  @log_level warn
+  <rule>
+    key ident
+    pattern ^(.+)$
+    tag json.${tag_parts[2]}.$1
+  </rule>
+</match>
+
+
+# copy to elastic search
+<match json.** **>
+  @id out_es
+  @type copy
+  @log_level warn
+  <store>
+    @type elasticsearch
+    host elasticsearch
+    port {{ elasticsearch_container.port }}
+    logstash_format true
+    logstash_prefix fluentd
+    logstash_dateformat %Y%m%d
+    reconnect_on_error true
+    reload_on_failure true
+    reload_connections false
+    include_tag_key true
+    type_name access_log
+    tag_key @log_name
+    <buffer>
+      retry_forever true
+      retry_type periodic
+      retry_wait 60
+    </buffer>
+  </store>
+  <store>
+    @type relabel
+    @label @S3
+  </store>
+  <store>
+    @type stdout
+  </store>
+</match>
+
+
+<label @S3>
+  <filter **>
+    @type grep
+    <regexp>
+      key s3
+      pattern /true/
+    </regexp>
+  </filter>
+
+  <match **>
+    @type s3
+    @id out_s3
+    @log_level info
+#   @log_level debug
+    s3_bucket "#{ENV['S3_BUCKET_NAME']}"
+    s3_region "{{ region }}"
+    index_format %06d
+    path logs/${host}
+    utc
+    format json
+    s3_object_key_format %{path}/%Y-%m-%d/${tag}-%H-%{index}.%{file_extension}
+    <inject>
+      time_key time
+      tag_key tag
+    </inject>
+    <buffer tag,time,host>
+      @type file
+      path {{ fluentd.buffer }}
+      timekey 3600
+#     timekey 300
+      timekey_wait 1m
+      timekey_use_utc true # use utc
+      chunk_limit_size 256m
+    </buffer>
+  </match>
+</label>
+
+# count number of incoming records per tag
+<filter *.**>
+  @id prometheus_in
+  @type prometheus
+  <metric>
+    name fluentd_input_status_num_records_total
+    type counter
+    desc The total number of incoming records
+    <labels>
+      tag ${tag}
+      hostname fluentd.${hostname}
+    </labels>
+  </metric>
+</filter>
+
+# count number of outgoing records per tag
+<match *.**>
+  @id prometheus_out
+  @type copy
+  <store>
+    @type forward
+    <server>
+      name {{ ansible_nodename }}
+      host localhost
+      port {{ fluentd_container.port.logging }}
+      weight 60
+    </server>
+  </store>
+  <store>
+    @type prometheus
+    <metric>
+      name fluentd_output_status_num_records_total
+      type counter
+      desc The total number of outgoing records
+      <labels>
+        tag ${tag}
+        hostname fluentd.${hostname}
+      </labels>
+    </metric>
+  </store>
+</match>
+

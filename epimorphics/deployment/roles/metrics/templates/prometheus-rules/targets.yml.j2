@@ -1,0 +1,25 @@
+---
+groups:
+- name: target.rules
+  rules:
+  - alert: Watchdog
+    annotations:
+      message: 'This is an alert meant to ensure that the entire alerting pipeline is functional.
+        This alert is always firing, therefore it should always be firing in Alertmanager
+        and always fire against a receiver. There are integrations with various notification
+        mechanisms that send a notification when this alert is not firing. For example the
+        "DeadMansSnitch" integration in PagerDuty.
+        '
+    expr: vector(1)
+    labels:
+      severity: none
+  - alert: Target Down
+    expr: up < 1
+    for: 3m
+    labels:
+      severity: critical
+    annotations:
+{%- raw %}
+      message: "Targets Down: {{ $labels.job }}"
+{% endraw %}
+      runbook_url: "https://github.com/epimorphics/{{ repository }}/tree/master/ansible/roles/metrics/templates/prometheus-rules#user-content-target-down"

@@ -1,0 +1,76 @@
+---
+groups:
+- name: disk.rules
+  rules:
+  - alert: Absolute Disk Usage Warning
+    expr: disk_used_percent > {{ prom_rules.absolute.disk.warning }} and disk_user_percent < {{ prom_rules.absolute.disk.critical }}
+    labels:
+      severity: warning
+    annotations:
+{%- raw %}
+      message: "Absolute Disk Usage Warning: {{ $labels.host }}:{{ $labels.path }} at {{ $value }}"
+{% endraw %}
+      runbook_url: "https://github.com/epimorphics/{{ repository }}/tree/master/ansible/roles/metrics/templates/prometheus-rules#user-content-absolute-disk-usage-warning"
+  - alert: Absolute Disk Usage Critical
+    expr: disk_used_percent >= {{ prom_rules.absolute.disk.critical }}
+    labels:
+      severity: critical
+    annotations:
+{%- raw %}
+      message: "Absolute Disk Usage Critical: {{ $labels.host }}:{{ $labels.path }} at {{ $value }}"
+{% endraw %}
+      runbook_url: "https://github.com/epimorphics/{{ repository }}/tree/master/ansible/roles/metrics/templates/prometheus-rules#user-content-absolute-disk-usage-critical"
+  - alert: Projected Disk Usage Warning
+    expr: disk_free+delta(disk_free[{{ prom_rules.projected.warning }}]) < 0
+    labels:
+      severity: warning
+    annotations:
+{%- raw %}
+      message: "Projected Disk Usage Warning: {{ $labels.host }}:{{ $labels.path }}"
+{% endraw %}
+      runbook_url: "https://github.com/epimorphics/{{ repository }}/tree/master/ansible/roles/metrics/templates/prometheus-rules#user-content-projected-disk-usage-warning"
+  - alert: Projected Disk Usage Critical
+    expr: disk_free+delta(disk_free[{{ prom_rules.projected.critical }}]) < 0
+    labels:
+      severity: critical
+    annotations:
+{%- raw %}
+      message: "Projected Disk Usage Critical: {{ $labels.host }}:{{ $labels.path }}"
+{% endraw %}
+      runbook_url: "https://github.com/epimorphics/{{ repository }}/tree/master/ansible/roles/metrics/templates/prometheus-rules#user-content-projected-disk-usage-critical"
+  - alert: Absolute Inode Usage Warning
+    expr: ( 100*disk_inodes_used/disk_inodes_total ) > {{ prom_rules.absolute.inode.warning }} and ( 100*disk_inodes_used/disk_inodes_total ) < {{ prom_rules.absolute.inode.critical }}
+    labels:
+      severity: warning
+    annotations:
+{%- raw %}
+      message: "Absolute Inode Usage Warning: {{ $labels.host }}:{{ $labels.path }} at {{ $value }}"
+{% endraw %}
+      runbook_url: "https://github.com/epimorphics/{{ repository }}/tree/master/ansible/roles/metrics/templates/prometheus-rules#user-content-absolute-inode-usage-warning"
+  - alert: Absolute Inode Usage Critical
+    expr: ( 100*disk_inodes_used/disk_inodes_total ) >= {{ prom_rules.absolute.inode.critical }}
+    labels:
+      severity: critical
+    annotations:
+{%- raw %}
+      message: "Absolute Inode: Usage Critical: {{ $labels.host }}:{{ $labels.path }} at {{ $value }}"
+{% endraw %}
+      runbook_url: "https://github.com/epimorphics/{{ repository }}/tree/master/ansible/roles/metrics/templates/prometheus-rules#user-content-absolute-inode-usage-critical"
+  - alert: Projected Inode Usage Warning
+    expr: disk_inodes_free+delta(disk_inodes_free[{{ prom_rules.projected.warning }}]) < 0
+    labels:
+      severity: warning
+    annotations:
+{%- raw %}
+      message: "Projected Inode Usage Warning: {{ $labels.host }}:{{ $labels.path }}"
+{% endraw %}
+      runbook_url: "https://github.com/epimorphics/{{ repository }}/tree/master/ansible/roles/metrics/templates/prometheus-rules#user-content-projected-inode-usage-warning"
+  - alert: Projected Inode Usage Critical
+    expr: disk_inodes_free+delta(disk_inodes_free[{{ prom_rules.projected.critical }}]) < 0
+    labels:
+      severity: critical
+    annotations:
+{%- raw %}
+      message: "Projected Inode: Usage Critical: {{ $labels.host }}:{{ $labels.path }}"
+{% endraw %}
+      runbook_url: "https://github.com/epimorphics/{{ repository }}/tree/master/ansible/roles/metrics/templates/prometheus-rules#user-content-projected-inode-usage-critical"

@@ -1,0 +1,26 @@
+---
+- name: "Postfix container"
+  tags:
+    - container
+    - postfix
+  docker_container:
+    name: "{{ mailrelay_container.name }}"
+    image: "{{  mailrelay.image }}:{{ mailrelay.version }}"
+    env:
+      MTP_HOST: "monitor-{{ instance }}.epimorphics.com"
+      MTP_PORT: "587"
+      MTP_RELAY: "smtp.gmail.com"
+      MTP_INTERFACES: "all"
+      MTP_RELAY_DOMAINS: "{{ domain }}"
+      MTP_PROTOCOLS: "ipv4"
+      MTP_PASS: "{{ smtp.password }}"
+      MTP_USER: "{{ smtp.username }}"
+    log_driver: "{{ docker.logging.driver }}"
+    log_options: "{{ docker.logging.options }}"
+    network_mode: "{{ docker.network.mode }}"
+    networks:
+      - name: "{{ docker.network.name }}"
+    restart_policy: "unless-stopped"
+    networks_cli_compatible: yes
+#   ports:
+#     - "{{ mailrelay.port }}:{{ mailrelay_container.port }}"

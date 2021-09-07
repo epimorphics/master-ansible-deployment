@@ -1,0 +1,42 @@
+- name: "EPEL access"
+  tags:
+    - epel
+    - pkg
+    - repo
+  amzn2extra:
+    name: epel
+    state: present
+
+
+- name: "Enable EPEL"
+  tags:
+    - epel
+    - pkg
+    - repo
+  package:
+    name: epel-release.noarch
+    state: present
+
+
+- name: "Kpatch installed"
+  tags:
+    - kpatch
+    - pkg
+  yum:
+    name: 
+      - binutils
+      - kpatch-runtime
+      - yum-plugin-kernel-livepatch
+    state: latest
+
+
+- name: "Kernel Live patch enabled"
+  tags:
+    - kpatch
+    - pkg
+  command:
+    cmd: "yum kernel-livepatch enable -y"
+    warn: false
+  register: livepatch
+  changed_when: "'Trying to run the transaction but nothing to do. Exiting.' not in livepatch.stdout"
+  failed_when: "'kernel-livepatch enable True done' not in livepatch.stdout"

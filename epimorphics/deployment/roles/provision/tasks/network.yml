@@ -1,0 +1,92 @@
+---
+- include: "vpc.yml"
+
+
+- name: "Check IP address"
+  tags:
+    - ec2
+    - net
+    - security
+  check_mode: no
+  uri:
+    url: http://checkip.amazonaws.com/
+    return_content: yes
+  register: check_ip
+
+
+- name: "Base Security Group"
+  tags:
+    - ec2
+    - net
+    - security
+  ec2_group:
+    name: "base"
+    description: "Base Security Group - managed by Ansible"
+    region: "{{ region }}"
+    vpc_id: "{{ vpc_id }}"
+    rules:
+      - proto: tcp
+        ports:
+          - 22
+        cidr_ip:  "{{ vpc.cidr }}"
+      - proto: tcp
+        ports:
+          - "{{ telegraf.port.prometheus }}"
+        cidr_ip:  "{{ vpc.cidr }}"
+      - proto: icmp
+        ports:
+          - -1
+        cidr_ip:  "{{ vpc.cidr }}"
+    tags:
+      Ansible: "true"
+      Inst: "{{ instance }}"
+      Name: "{{ instance }}-base-sg"
+  when: 
+    - check_ip.content is defined
+    - vpc_id is defined
+
+
+- name: "Staff Security Group"
+  tags:
+    - ec2
+    - net
+    - security
+  ec2_group:
+    name: "staff"
+    description: "Staff Security Group - managed by Ansible"
+    region: "{{ region }}"
+    vpc_id: "{{ vpc_id }}"
+    purge_rules: false
+    rules:
+      - proto: all
+        cidr_ip:  "{{ item.ip }}/32"
+    tags:
+      Ansible: "true"
+      Inst: "{{ instance }}"
+      Name: "{{ instance }}-staff-sg"
+  loop_control:
+    label: "{{ item.name }}"
+  loop: "{{ staff }}"
+  when: 
+    - staff is defined
+
+
+- name: "Additional Security Groups"
+  tags:
+    - ec2
+    - net
+    - security
+  ec2_group:
+    name: "{{ item.name | lower }}"
+    description: "{{ item.name }} Security Group - managed by Ansible"
+    region: "{{ region }}"
+    vpc_id: "{{ vpc_id }}"
+    rules: "{{ item.rules }}"
+    tags:
+      Ansible: "true"
+      Inst: "{{ instance }}"
+      Name: "{{ instance }}-{{ item.name }}-sg"
+  loop_control:
+    label: "{{ item.name }}"
+  loop: "{{ sec_grps }}"
+  when: sec_grps is defined

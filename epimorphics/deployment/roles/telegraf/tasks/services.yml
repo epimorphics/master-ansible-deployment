@@ -1,0 +1,10 @@
+---
+- meta: flush_handlers
+
+- name: "Telegraf service"
+  tags:
+    - services
+  systemd:
+    name:  "telegraf"
+    state: started
+    enabled: true

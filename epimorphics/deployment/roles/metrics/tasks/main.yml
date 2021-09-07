@@ -1,0 +1,12 @@
+---
+- name: "Metrics DNS"
+  tags:
+    - dns
+  include_role:
+    name: dns
+
+
+- include: "influxdb.yml"
+- include: "prometheus.yml"
+- include: "grafana.yml"
+- include: "alertmanager.yml"

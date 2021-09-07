@@ -1,0 +1,88 @@
+---
+- include: "disks.yml"
+- include: "{{ ansible_distribution }}.yml"
+
+
+- name: "Hostname"
+  tags:
+    - cfg
+    - hostname
+  hostname:
+    name: "{{ hostname }}.{{ domainname }}"
+
+
+- include: "ntp.yml"
+
+
+- name: "Secure system files"
+  tags:
+    - cfg
+  copy:
+    src: "{{ item | basename }}"
+    dest: "{{ item }}"
+    owner: root
+    group: root
+    mode: 0644
+  with_items:
+    - "/etc/at.allow"
+    - "/etc/cron.allow"
+    - "/etc/security/limits.conf"
+    - "/etc/ssh/sshd_banner"
+
+
+- name: "Sysctl config"
+  tags:
+    - cfg
+  copy:
+    src: "sysctl.conf"
+    dest: "/etc/sysctl.conf"
+    owner: root
+    group: root
+    mode: 0644
+  notify: "Sysctl reload"
+
+
+- name: "SSH daemon config"
+  tags:
+    - cfg
+  lineinfile:
+    path: "/etc/ssh/sshd_config"
+    line: "Banner /etc/ssh/sshd_banner"
+    regexp: "#?Banner\\s"
+    owner: root
+    group: root
+    mode:  0644
+  notify: "Restart sshd"
+
+
+- name: "Forward syslog"
+  tags:
+    - cfg
+    - logging
+    - syslog
+  template:
+    src: "fluentd.conf.j2"
+    dest: "/etc/rsyslog.d/99-fluentd.conf"
+    owner: root
+    group: root
+    mode: 0644
+  notify: "Restart rsyslog"
+  when:
+    -  hostvars[groups['monitor'][0]].ansible_default_ipv4 is defined
+    -  logging is defined
+
+
+- name: "Utility packages"
+  tags:
+    - pkg
+  yum:
+    name: 
+      - pv
+      - unzip
+    state: latest
+
+
+- include: "update.yml"
+
+
+- include: "services.yml"

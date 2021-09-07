@@ -1,0 +1,75 @@
+---
+- name: "Alertmanager volume"
+  tags:
+    - alertmanager
+    - cfg
+  file:
+    state: "directory"
+    path: "{{ item }}"
+    owner: "65534"
+    group: "65534"
+    mode: "0777"
+  loop_control:
+    label: "{{ item }}"
+  loop:
+    - "{{ alertmanager.directory }}"
+    - "{{ alertmanager.directory }}/data"
+
+
+- name: "Alertmanager config"
+  tags:
+    - cfg
+    - alertmanager
+  template:
+    src: "alertmanager.yml.j2"
+    dest:  "{{ alertmanager.directory }}/{{ alertmanager.config | basename }}"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  notify: "Alertmanager container restart"
+
+
+- meta: flush_handlers
+
+
+- name: "Alertmanager container"
+  tags:
+    - container
+    - alertmanager
+  docker_container:
+    name: "{{ alertmanager_container.name }}"
+    image: "{{ alertmanager.image }}:{{ alertmanager.version }}"
+    log_driver: "{{ docker.logging.driver }}"
+    log_options: "{{ docker.logging.options }}"
+    network_mode: "{{ docker.network.mode }}"
+    networks:
+      - name: "{{ docker.network.name }}"
+    restart_policy: "unless-stopped"
+    networks_cli_compatible: yes
+    ports:
+      - "{{ alertmanager_container.port }}:{{ alertmanager_container.port }}"
+    volumes:
+      - "{{ alertmanager.directory }}/alertmanager.yml:{{ alertmanager.config }}"
+      - "{{ alertmanager.directory }}/data:/alertmanager:rw"
+
+
+- name: "Alertmanager SNS forwarder container"
+  tags:
+    - container
+    - alertmanager
+  docker_container:
+    name: "{{ sns_forwarder_container.name }}"
+    image: "{{  sns_forwarder.image }}:{{ sns_forwarder.version }}"
+    env:
+      AWS_REGION: "eu-west-1"
+      AWS_DEFAULT_REGION: "eu-west-1"
+      SNS_FORWARDER_ARN_PREFIX: "arn:aws:sns:{{ region }}:{{ aws.account }}:"
+    log_driver: "{{ docker.logging.driver }}"
+    log_options: "{{ docker.logging.options }}"
+    network_mode: "{{ docker.network.mode }}"
+    networks:
+      - name: "{{ docker.network.name }}"
+    restart_policy: "unless-stopped"
+    networks_cli_compatible: yes
+    ports:
+      - "{{ sns_forwarder_container.port }}:{{ sns_forwarder_container.port }}"

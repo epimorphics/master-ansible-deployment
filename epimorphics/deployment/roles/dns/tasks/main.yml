@@ -1,0 +1,16 @@
+- name: "CName records"
+  become: no
+  delegate_to: localhost
+  tags:
+    - dns
+  route53:
+    state: present
+    zone: "{{ domain }}"
+    profile: "{{ route53_profile }}"
+    record: "{{ item.cname | default(item.name) }}-{{ instance }}.{{ domain }}"
+    type: CNAME
+    value: "{{ hostname }}.{{ domain }}"
+    overwrite: yes
+  loop_control:
+    label: "{{ item.cname | default(item.name) }}-{{ instance }}.{{ domain }} -> {{ hostname }}.{{ domain }}"
+  loop: "{{ services }}"

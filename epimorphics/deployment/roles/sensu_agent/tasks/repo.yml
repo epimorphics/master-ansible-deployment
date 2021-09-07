@@ -1,0 +1,12 @@
+---
+- name: Sensu yum repository
+  tags:
+    - pkg
+    - repo
+  yum_repository:
+    name: sensu
+    description: Sensu yum repository
+    file: sensu
+    baseurl: https://packagecloud.io/sensu/stable/el/6/$basearch
+    gpgcheck: yes
+    gpgkey: https://packagecloud.io/sensu/stable/gpgkey

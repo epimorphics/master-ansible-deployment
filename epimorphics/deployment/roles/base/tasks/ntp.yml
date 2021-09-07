@@ -1,0 +1,29 @@
+- name: "NTP package ({{ ntp.absent | default('undefined') }}) removed"
+  tags:
+    - ntp
+    - pkg
+  package:
+    name: "{{ ntp.absent }}"
+    state: absent
+  when: ntp.absent is defined
+
+- name: "NTP package ({{ ntp.pkg }})"
+  tags:
+    - ntp
+    - pkg
+  package:
+    name: "{{ ntp.pkg }}"
+    state: latest
+  notify: "Restart NTP"
+
+- name: "NTP config ({{ ntp.pkg }})"
+  tags:
+    - ntp
+    - cfg
+  template:
+    src: "{{ ntp_config.src }}"
+    dest: "{{ ntp_config.dest }}"
+    owner: root
+    group: root
+    mode: "0644"
+  notify: "Restart NTP"

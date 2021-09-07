@@ -1,0 +1,197 @@
+---
+- name: "Grafana volume"
+  tags:
+    - cfg
+    - grafana
+  file:
+    state: "directory"
+    path: "{{ grafana.directory }}/{{ item }}"
+    owner: "root"
+    group: "root"
+    mode: "0775"
+  loop_control:
+    label: "{{ grafana.directory }}/{{ item }}"
+  loop:
+    - dashboards
+    - dashboards/Application
+    - dashboards/CloudWatch
+    - dashboards/ElasticSearch
+    - dashboards/Prometheus
+    - dashboards/Telegraf
+    - plugins
+    - provisioning
+    - provisioning/dashboards
+    - provisioning/datasources
+    - provisioning/notifiers
+    - provisioning/plugins
+
+
+- name: "Panel plugins"
+  tags:
+    - cfg
+    - grafana
+  unarchive:
+    src: "{{ item.src }}"
+    dest: "{{ grafana.directory }}/plugins"
+    remote_src: yes
+  loop_control:
+    label: "{{ item.name }}"
+  loop:
+    - { name: "Discrete",  src: "https://grafana.com/api/plugins/natel-discrete-panel/versions/0.1.0/download" }
+    - { name: "Pie Chart", src: "https://grafana.com/api/plugins/grafana-piechart-panel/versions/latest/download" }
+
+
+- name: "Grafana config"
+  tags:
+    - cfg
+    - grafana
+  template:
+    src: "{{ item }}.j2"
+    dest: "{{ grafana.directory }}/{{ item }}"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  loop_control:
+    label: "{{ item }}"
+  loop:
+    - grafana.ini
+  notify: "Grafana container restart"
+
+
+# Grafana with auto-load new dashboards as defined in providers.yml
+- name: "Grafana dashboards"
+  tags:
+    - cfg
+    - grafana
+  copy:
+    src: "{{ item }}"
+    dest: "{{ grafana.directory }}/{{ item }}"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  loop: "{{ dashboards }}"
+
+
+- meta: flush_handlers
+
+
+- name: "Grafana container"
+  tags:
+    - container
+    - grafana
+  docker_container:
+    name: "{{ grafana_container.name }}"
+    image: "{{ grafana.image }}:{{ grafana.version }}"
+    env:
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_AUTO_SIGN_UP: "true"
+      GF_AUTH_OAUTH_AUTO_LOGIN: true"
+      GF_AUTH_SIGNOUT_REDIRECT_URL: "https://grafana-{{ instance }}.{{ domain }}/oauth2/sign_out"
+      GF_LOG_CONSOLE_FORMAT: "json"
+      GF_PATHS_PLUGINS: "/etc/grafana/plugins"
+      GF_PATHS_PROVISIONING: "/etc/grafana/provisioning"
+      GF_SECURITY_ADMIN_PASSWORD: "{{ password.grafana.admin }}"
+      GF_SERVER_DOMAIN: "grafana-{{ instance }}.{{ domain }}"
+      GF_SERVER_ROOT_URL: "https://grafana-{{ instance }}.{{ domain }}"
+      GF_SMTP_ENABLED: "true"
+      GF_SMTP_FROM_ADDRESS: "noreply@{{ domain }}"
+      GF_SMTP_HOST: "{{ mailrelay_container.name }}:25"
+      GF_SMTP_STARTTLS_POLICY: "NoStartTLS"
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_USERS_AUTO_ASSIGN_ORG: true""
+      GF_USERS_AUTO_ASSIGN_ORG_ROLE: "Viewer"
+    log_driver: "{{ docker.logging.driver }}"
+    log_options: "{{ docker.logging.options }}"
+    network_mode: "{{ docker.network.mode }}"
+    networks:
+      - name: "{{ docker.network.name }}"
+    restart_policy: "unless-stopped"
+    networks_cli_compatible: yes
+    ports:
+      - "{{ grafana_container.port }}:{{ grafana_container.port }}"
+    volumes:
+      - "{{ grafana.directory }}:/etc/grafana"
+  register: grafana_docker
+
+
+# Datasource provisioning is flaky, api calls work but the api needs to be up
+- name: "Grafana api operational"
+  tags:
+    - cfg
+    - grafana
+  uri:
+    url: "http://localhost:{{ grafana_container.port }}/api/health"
+  register: health
+  retries: 5
+  delay: 5
+  until: health.status == 200
+  failed_when:
+    - health.json is undefined or health.json.database != "ok"
+  when: not ansible_check_mode
+
+
+- name: "Grafana datasources"
+  tags:
+    - cfg
+    - grafana
+  uri:
+    url: "http://localhost:{{ grafana_container.port }}/api/datasources"
+    user: "admin"
+    password: "{{ password.grafana.admin }}"
+    method: POST
+    body: "{{ lookup('template', item) }}"
+    force_basic_auth: yes
+    status_code: [ 200, 409 ]
+    body_format: json
+  loop_control: 
+    label: "{{ item | basename }}"
+  loop:
+    - datasources/prometheus.json.j2
+    - datasources/cloudwatch.json.j2
+    - datasources/elasticsearch.json.j2
+    - datasources/influxdb.json.j2
+  register: uri
+  changed_when: uri.status == 200
+
+
+- name: "Read Grafana notification channel"
+  tags:
+    - cfg
+    - grafana
+  uri:
+    url: "http://localhost:{{ grafana_container.port }}/api/alert-notifications/lookup"
+    user: "admin"
+    password: "{{ password.grafana.admin }}"
+    method: GET
+    force_basic_auth: yes
+  check_mode: no
+  register: channels
+
+
+- name: "Grafana notification channel"
+  tags:
+    - cfg
+    - grafana
+  vars:
+    uid: "{{ channels.json | selectattr('uid', 'equalto', item) | map(attribute='uid') | join(',') }}"
+    method: "{{ uid | ternary('PUT', 'POST') }}"
+    path: "api/alert-notifications{{ uid | ternary('/uid/'+ uid, '') }}"
+    file: "channels/{{ item }}.json.j2"
+  uri:
+    url: "http://localhost:{{ grafana_container.port }}/{{ path }}"
+    user: "admin"
+    password: "{{ password.grafana.admin }}"
+    method: "{{ method }}"
+    body: "{{ lookup('template', file) }}"
+    force_basic_auth: yes
+    status_code: [ 200, 409 ]
+    body_format: json
+  loop_control: 
+    label: "{{ item | basename }}"
+  loop:
+    - alertmanager
+    - email
+    - slack
+  register: uri
+  changed_when: uri.status == 200
+  when: channels is defined

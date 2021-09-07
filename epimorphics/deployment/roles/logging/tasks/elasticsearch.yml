@@ -1,0 +1,100 @@
+---
+- name: "Elasticsearch volume"
+  tags:
+    - cfg
+    - elasticsearch
+  file:
+    state: "directory"
+    path: "{{ elasticsearch.directory }}/nodes"
+    owner: "root"
+    group: "root"
+    mode: "0775"
+
+
+- name: "Elasticsearch container"
+  tags:
+    - container
+    - elasticsearch
+  docker_container:
+    name: "{{ elasticsearch_container.name }}"
+    image: "{{ elasticsearch.image }}:{{ elasticsearch.version }}"
+    log_driver: "{{ docker.logging.driver }}"
+    log_options: "{{ docker.logging.options }}"
+    network_mode: "{{ docker.network.mode }}"
+    networks:
+      - name: "{{ docker.network.name }}"
+    restart_policy: "unless-stopped"
+    env:
+      discovery.type: single-node
+      ES_JAVA_OPTS: -Xms512m -Xmx512m
+#     logger.level: DEBUG
+      logger.level: ERROR
+    networks_cli_compatible: yes
+    ports:
+      - "{{ elasticsearch_container.port }}:{{ elasticsearch_container.port }}"
+      - "9300:9300"
+    ulimits:
+      - 'nofile:65536:65536'
+    volumes:
+      - "{{ elasticsearch.directory }}:/usr/share/elasticsearch/data"
+
+
+- name: "Elasticsearch metrics exporter container"
+  tags:
+    - container
+    - elasticsearch
+  docker_container:
+    name: "{{ es_exporter_container.name }}"
+    image: "{{ es_exporter.image }}:{{ es_exporter.version }}"
+    purge_networks: yes
+    command:
+      - "--es.uri=http://{{ elasticsearch_container.name }}:{{ elasticsearch_container.port }}"
+    env:
+      logger.level: "WARN"
+    log_driver: "{{ docker.logging.driver }}"
+    log_options: "{{ docker.logging.options }}"
+    network_mode: "{{ docker.network.mode }}"
+    networks:
+      - name: "{{ docker.network.name }}"
+    restart_policy: "unless-stopped"
+    networks_cli_compatible: yes
+    ports:
+      - "{{ es_exporter_container.port }}:{{ es_exporter_container.port }}"
+
+
+- include: "telegraf.yml"
+
+
+# Datasource provisioning is flaky, api calls work but the api needs to be up
+- name: "Elasticsearch api operational"
+  tags:
+    - cfg
+    - elasticsearch
+  uri:
+    url: "http://localhost:{{ elasticsearch_container.port }}/"
+  register: health
+  retries: 10
+  delay: 5
+  until: health.status == 200
+  failed_when:
+    - health.json is undefined or health.json.cluster_name is undefined
+  when: not ansible_check_mode
+
+
+- name: "Index Template"
+  tags:
+    - cfg
+    - elasticsearch
+  uri:
+    url: "http://localhost:{{ elasticsearch_container.port }}/_template/fluentd"
+    method: PUT
+    body: "{{ lookup('template', item) }}"
+    status_code: [ 200 ]
+    body_format: json
+  loop_control: 
+    label: "{{ item | basename }}"
+  loop:
+    - fluentd-template.json.j2
+  register: uri
+
+

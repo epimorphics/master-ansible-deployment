@@ -1,0 +1,22 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "Stmt1599820462441",
+            "Action": [
+              "ec2:DescribeInstances"
+            ],
+            "Effect": "Allow",
+            "Resource": "*"
+          },
+          {
+            "Sid": "Stmt1599820611625",
+            "Action": [
+              "elasticloadbalancing:DescribeLoadBalancers",
+              "elasticloadbalancing:DescribeTags"
+            ],
+            "Effect": "Allow",
+            "Resource": "*"
+          }
+    ]
+}

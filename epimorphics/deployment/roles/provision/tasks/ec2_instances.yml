@@ -1,0 +1,14 @@
+---
+- name: EC2 Info
+  check_mode: no
+  tags:
+    - asg
+    - ec2
+    - debug
+    - dns
+    - tags
+    - volume
+    - state
+  ec2_instance_info:
+    region: "{{ region }}"
+  register: ec2_instances

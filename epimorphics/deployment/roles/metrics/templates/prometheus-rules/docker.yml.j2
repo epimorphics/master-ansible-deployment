@@ -1,0 +1,13 @@
+---
+groups:
+- name: docker.rules
+  rules:
+  - alert: Container Stopped
+    expr: docker_n_containers_stopped > 1
+    labels:
+      severity: critical
+    annotations:
+{%- raw %}
+      message: "Docker Container Stopped on host {{ $labels.host }}"
+{% endraw %}
+      runbook_url: "https://github.com/epimorphics/{{ repository }}/tree/master/ansible/roles/metrics/templates/prometheus-rules#user-content-container-stopped"

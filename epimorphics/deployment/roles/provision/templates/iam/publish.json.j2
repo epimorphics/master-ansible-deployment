@@ -1,0 +1,15 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": "sns:Publish",
+      "Effect": "Allow",
+      "Resource": "arn:aws:sns:{{ region }}:{{ aws.account }}:{{ sns_email }}"
+    },
+    {
+      "Action": "sns:Publish",
+      "Effect": "Allow",
+      "Resource": "arn:aws:sns:{{ region }}:{{ aws.account }}:{{ sns_slack }}"
+    }
+  ]
+}

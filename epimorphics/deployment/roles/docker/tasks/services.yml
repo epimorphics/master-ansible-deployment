@@ -1,0 +1,18 @@
+---
+- meta: flush_handlers
+
+- name: "Docker service"
+  tags:
+    - services
+  service:
+    name:  "{{ docker.service.name | default('docker') }}"
+    state: started
+    enabled: yes
+
+- name: "Telegraf service"
+  tags:
+    - services
+  service:
+    name:  "telegraf"
+    state: started
+    enabled: yes

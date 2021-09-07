@@ -1,0 +1,15 @@
+[meta]
+dir = "{{ influxdb.store }}/meta"
+
+[data]
+dir = "{{ influxdb.store }}/data"
+wal-dir = "{{ influxdb.store }}/wal"
+
+[http]
+enabled = true
+bind-address = ":{{ influxdb_container.port.http }}"
+auth-enabled = true
+log-enabled = false
+
+[logging]
+level = "warn"

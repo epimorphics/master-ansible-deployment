@@ -1,0 +1,16 @@
+---
+- name: "Fluentd container restart"
+  tags:
+    - container
+    - fluentd
+  docker_container:
+    name: fluentd
+    state: absent
+
+
+- name: "Restart telegraf"
+  tags:
+    - telegraf
+  service:
+    name:  "telegraf"
+    state: restarted

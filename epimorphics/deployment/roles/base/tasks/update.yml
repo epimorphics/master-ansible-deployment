@@ -1,0 +1,7 @@
+---
+- name: "Update packages"
+  tags:
+    - pkg
+  package:
+    name: '*'
+    state: latest

@@ -1,0 +1,62 @@
+---
+- name: "Sensu DNS"
+  tags:
+    - dns
+  include_role:
+    name: dns
+
+
+- name: "Sensu volume"
+  tags:
+    - cfg
+  file:
+    state: "directory"
+    path: "{{ item.path }}"
+    owner: "{{ item.owner | default('root') }}"
+    group: "{{ item.group | default('root') }}"
+    mode:  "{{ item.mode  | default('0755') }}"
+  with_items:
+    - { path: "{{ sensu_backend.directory }}" }
+
+
+- name: "Sensu container"
+  tags:
+    - container
+  docker_container:
+    command: "sensu-backend start"
+    image: "{{ sensu_backend.image }}"
+    name: "{{ sensu_container.name }}"
+    env:
+      SENSU_BACKEND_AGENT_PORT: "{{ sensu_container.port.agent }}"
+      SENSU_BACKEND_CLUSTER_ADMIN_USERNAME: "{{ sensu.auth.user }}"
+      SENSU_BACKEND_CLUSTER_ADMIN_PASSWORD: "{{ sensu.auth.password }}"
+      SENSU_BACKEND_DASHBOARD_PORT: "{{ sensu_container.port.gui }}"
+      SENSU_BACKEND_DEBUG: "true"
+      SENSU_BACKEND_LOG_LEVEL: "error"
+      SENSU_BACKEND_STATE_DIR: "{{ sensu_backend.state }}/sensu-backend"
+      SENSU_BACKEND_ETCD_HEARTBEAT_INTERVAL: "1000"
+      SENSU_BACKEND_ETCD_ELECTION_TIMEOUT: "5000"
+    log_driver: "{{ docker.logging.driver }}"
+    log_options: "{{ docker.logging.options }}"
+    network_mode: "{{ docker.network.mode }}"
+    networks:
+      - name: "{{ docker.network.name }}"
+    networks_cli_compatible: yes
+    ports: "{{ sensu_backend.ports }}"
+    restart_policy: "unless-stopped"
+    volumes:
+      - "{{ sensu_backend.directory }}:{{ sensu_backend.state }}:rw"
+
+
+- name: "Sensu api operational"
+  tags:
+    - container
+  uri:
+    url: "http://localhost:{{ sensu_container.port.api }}/health"
+  register: health
+  retries: 10
+  delay: 5
+  until: health.status == 200
+  failed_when:
+    - health.json is undefined
+  when: not ansible_check_mode

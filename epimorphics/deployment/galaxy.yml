@@ -1,0 +1,34 @@
+namespace: epimorphics
+
+name: deployment
+
+version: 1.0.0
+
+readme: README.md
+
+authors:
+- Andy
+- Dave
+- Mihajlo
+
+description: Epimorphics Ansible Deployment collection
+
+license:
+- GPL-2.0-or-later
+
+tags: []
+
+dependencies: {}
+
+# The URL of the originating SCM repository
+repository: http://github.com/epimorphics/master-ansible-deployment
+
+# The URL to any online docs
+documentation: http://github.com/epimorphics/master-ansible-deployment
+
+# The URL to the homepage of the collection/project
+homepage: http://github.com/epimorphics/master-ansible-deployment
+
+# The URL to the collection issue tracker
+issues: http://github.com/epimorphics/master-ansible-deployment
+

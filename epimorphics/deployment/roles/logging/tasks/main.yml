@@ -1,0 +1,14 @@
+---
+- name: "Logging DNS"
+  tags:
+    - dns
+  include_role:
+    name: dns
+
+
+- include: "goaccess.yml"
+- include: "elasticsearch.yml"
+- include: "fluentd.yml"
+- include: "kibana.yml"
+
+- include: "services.yml"

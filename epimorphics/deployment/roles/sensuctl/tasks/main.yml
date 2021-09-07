@@ -1,0 +1,25 @@
+---
+- name: "sensuctl"
+  become: yes
+  tags:
+    - pkg
+    - sensuctl
+  yum:
+    name: "sensu-go-cli"
+    state: "latest"
+
+
+- name: "initialise sensuctl ({{ (sensuctl.user == 'root') | ternary('/', '/home') }}/{{ sensuctl.user }})"
+  tags:
+    - init
+  command:
+    cmd: "sensuctl configure -n --url http://localhost:{{ sensu_container.port.api }} --username {{ sensu.auth.user }} --password {{ sensu.auth.password }}"
+  args:
+    creates: "{{ (sensuctl.user == 'root') | ternary('/', '/home') }}/{{ sensuctl.user }}/.config/sensu/sensuctl/cluster"
+  register: result
+
+
+- name: "sensuctl auto-completion"
+  lineinfile:
+    path: ~/.bashrc
+    line: ". <(sensuctl completion bash)"

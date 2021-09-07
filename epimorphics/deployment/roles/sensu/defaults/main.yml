@@ -1,0 +1,17 @@
+---
+tag: "6.4.0"
+
+sensu_backend:
+  config: "/etc/sensu/backend.yml"
+  directory: "{{ docker.directory }}/{{ sensu_container.name }}"
+  image: "{{ registry.common }}/sensu:{{ tag }}"
+  ports:
+    - "{{ sensu_container.port.agent }}:{{ sensu_container.port.agent }}"
+    - "{{ sensu_container.port.api }}:{{ sensu_container.port.api }}"
+    - "{{ sensu_container.port.gui }}:{{ sensu_container.port.gui }}"
+  repository: "https://epi-repository.s3-eu-west-1.amazonaws.com/release/monitoring-plugins"
+  state: "/var/log/sensu"
+
+services:
+  - "{{ sensu_gui }}"
+

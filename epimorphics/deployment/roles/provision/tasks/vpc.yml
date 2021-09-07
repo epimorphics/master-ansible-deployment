@@ -1,0 +1,118 @@
+---
+- block:
+  - name: "VPC: {{ vpc.name }} ({{ vpc.cidr }})"
+    tags:
+      - asg
+      - dns
+      - ec2
+      - elb
+      - net
+      - security
+    ec2_vpc_net:
+      region: "{{ region }}"
+      name: "{{ vpc.name }}"
+      cidr_block: "{{ vpc.cidr }}"
+      tags:
+        Ansible: "true"
+        Inst: "{{ instance }}"
+    register: vpc_net
+
+  - name: "VPC ID ({{ vpc_net.vpc.id }})"
+    check_mode: no
+    tags:
+      - asg
+      - dns
+      - ec2
+      - elb
+      - net
+      - security
+    set_fact:
+      vpc_id: "{{ vpc_net.vpc.id }}"
+    when:
+      - vpc_net is defined
+      - vpc_net.vpc is defined
+      - vpc_net.vpc.id is defined
+  when: vpc_id is not defined
+
+- block:
+  # Internet Gateway
+  - name: Internet Gateway
+    tags:
+      - ec2
+      - net
+    ec2_vpc_igw:
+      vpc_id: "{{ vpc_id }}"
+      region: "{{ region }}"
+      tags:
+        Ansible: "True"
+        Inst: "{{ instance }}"
+        Name: "{{ instance }}-gw"
+    register: igw
+
+  # Each Stage/Env get its own "network_segment" of 3 AZs.
+  # So there are 3 * /28 sunbuets per segment.
+  - name: "VPC Subnets"
+    tags:
+      - dns
+      - ec2
+      - elb
+      - net
+    ec2_vpc_subnet:
+      vpc_id: "{{ vpc_id }}"
+      region: "{{ region }}"
+      cidr: "{{ vpc.cidr | ipsubnet(28, (network_segment * (az | length) + index)) }}"
+      az: "{{ iter }}"
+      resource_tags:
+        Ansible: "True"
+        Env: "{{ env }}"
+        Inst: "{{ instance }}"
+        Name: "{{ instance }}-{{ env }}-{{ iter }}"
+    loop: "{{ az }}" 
+    loop_control:
+      loop_var: iter
+      label: "{{ instance }}-{{ env }}-{{ iter }} {{ vpc.cidr | ipsubnet(28, (network_segment * (az | length) + index)) }}"
+      index_var: index
+  when: vpc_id is defined
+
+- name: "VPC Subnet Info"
+  tags:
+    - asg
+    - dns
+    - ec2
+    - elb
+    - net
+  ec2_vpc_subnet_info:
+    filters:
+      vpc-id: "{{ vpc_id }}"
+      "tag:Env": "{{ env }}"
+  register: subnet_info
+  check_mode: no
+
+- name:  "Record subnet ids"
+  tags:
+    - asg
+    - dns
+    - ec2
+    - elb
+    - net
+  set_fact:
+    subnet_ids: "{{ subnet_info.subnets | map(attribute='id') | list }}"
+
+
+- name: "Routing Table"
+  tags:
+    - ec2
+    - net
+  ec2_vpc_route_table:
+    vpc_id: "{{ vpc_id }}"
+    region: "{{ region }}"
+    tags:
+      Name: "{{ instance }}-{{ env }}"
+      Ansible: "true"
+      Env: "{{ env }}"
+      Inst: "{{ instance }}"
+    subnets: "{{ subnet_ids }}"
+    routes:
+      - dest: 0.0.0.0/0
+        gateway_id: "{{ igw.gateway_id }}"
+  when: subnet_ids is defined

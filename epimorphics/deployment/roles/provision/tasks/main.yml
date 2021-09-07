@@ -1,0 +1,37 @@
+---
+# Use -e env=real to enable different environments
+#
+- name: "Environment specific definitions ({{ env }})"
+  tags:
+    - asg
+    - debug
+    - dns
+    - ec2
+    - elb
+    - net
+    - security
+    - vpc
+  include_vars: "{{ env }}.yml"
+
+
+# Key File
+- name: "Key File ({{ key.name }})"
+  tags:
+    - ec2
+    - key
+  ec2_key:
+    region: "{{ region }}"
+    name: "{{ key.name }}"
+    key_material: "{{ key.material }}"
+
+
+- include: "iam.yml"
+- include: "network.yml"
+- include: "ec2.yml"
+
+
+- block:
+  - include: "sns.yml" 
+  when: env == "infra"
+
+- include: "finalise.yml"

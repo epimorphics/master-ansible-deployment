@@ -1,0 +1,187 @@
+---
+- include: "asg.yml"
+
+- name: "Provision EC2 Instance Groups"
+  tags:
+    - dns
+    - ec2
+  vars:
+    elb: "{{ instance }}-{{ env }}-{{ item.type }}"
+  ec2:
+    region: "{{ region }}"
+    key_name: "{{ key.name }}"
+    group: "[ 'base' ] + {{ item.security_group | default([]) }}"
+    instance_type: "{{ item.instance }}"
+    image: "{{ item.image | default(ec2_default_image) }}"
+    termination_protection: "{{ item.termination_protection | default('no') }}"
+    vpc_subnet_id:  "{{ subnet_ids[index % (subnet_ids | length)] }}"
+    exact_count: "{{ item.count | default(1) }}"
+    assign_public_ip: "yes"
+    monitoring: "yes"
+    count_tag:
+      Type: "{{ item.type }}"
+    instance_profile_name: "{{ iam_role }}"
+    instance_tags:
+      Ansible: "True"
+      Type: "{{ item.type }}"
+      Env: "{{ env }}"
+      Inst: "{{ instance }}"
+    wait: true
+  loop: "{{ ec2_inst }}"
+  loop_control:
+    label: "{{ item.type }}"
+    index_var: index
+  register: ec2
+  when:
+    - subnet_ids is defined
+    - ec2_inst is defined
+
+
+# Tagging EC2 instance
+- name: "EC2 Instance Tags"
+  tags:
+    - ec2
+  vars: 
+    indx: "{{ ( item.0.item.count | default(1) ) - item.1.ami_launch_index|int }}"
+    fcnt: "{{ '-%02d' | format(indx|int) }}"
+  ec2_tag:
+    region: "{{ region }}"
+    resource: "{{ item.1.id }}"
+    tags:
+      Name: "{{ hostname_root }}-{{ item.0.item.type }}{{ (((item.0.item.count|default('1')|int) != 1 ) or hostname_index ) | ternary(fcnt, '') }}"
+      Server: "{{ item.0.item.type }}{{ fcnt }}"
+      Index: "{{ indx }}"
+  loop_control:
+    label: "{{ item.0.item.type }} {{ indx }} - {{ item.1.id }}"
+  with_subelements:
+    - "{{ ec2.results }}"
+    - tagged_instances
+  when: 
+    - ec2.results is defined
+    - item.1.tags.Ansible is defined
+    - item.1.tags.Env is defined
+    - item.1.tags.Env == env
+    - item.1.tags.Index is not defined
+
+
+# Pause to allow tags to register
+- name: "Waiting for new hosts to start..."
+  pause:
+    seconds: 30
+  when:
+    - ec2 is defined
+    - ec2.changed
+
+
+- include: "ec2_instances.yml"
+
+
+- name: "ASG EC2 Names"
+  tags:
+    - asg
+    - dns
+  vars:
+    indx: "{{ item.private_ip_address.split('.')[-1] | default('') }}"
+    fcnt: "{{ '-%03d' | format(indx|int) }}"
+  ec2_tag:
+    region: "{{ region }}"
+    resource: "{{ item.instance_id }}"
+    tags: 
+      Name: "{{ hostname_root }}-{{ item.tags.Type | default('') }}{{ fcnt }}"
+      Server: "{{ item.tags.Type | default('') }}{{ fcnt }}"
+      Index: "{{ indx }}"
+  loop_control:
+    label: "{{ item.instance_id }}"
+  loop: "{{ ec2_instances.instances }}"
+  register: asg
+  when: 
+    - ec2_inst_lc is defined
+    - item.tags.Ansible is defined
+    - item.tags['aws:autoscaling:groupName'] is defined
+    - item.tags.Env is defined
+    - item.tags.Type is defined
+    - item.tags.Env == env
+    - item.tags.Index is not defined
+    - item.state.name == "running"
+
+
+- include: "ec2_instances.yml"
+
+
+- name: EC2 State
+  tags:
+    - debug
+    - dns
+    - state
+  ec2:
+    region: "{{ region }}"
+    instance_id: "{{ item.instance_id }}"
+    state: "running"
+  loop_control:
+    label: "{{ item.instance_id }}"
+  loop: "{{ ec2_instances.instances }}"
+  when: 
+    - item.tags.Ansible is defined
+    - item.tags.Env is defined
+    - item.tags.Env == env
+    - item.state.name == "stopped"
+
+
+- name: "EC2 EBS Volume" # Use and old disk if around
+  tags:
+    - ec2
+    - dns
+  ec2_vol:
+    region: "{{ region }}"
+    instance: "{{ item[0].instance_id }}"
+    name: "{{ item.0.tags.Name | default('') }}:{{ item.1.ebs.device_name }}"
+    device_name: "{{ item[1].ebs.device_name }}"
+    delete_on_termination: "{{ item[1].ebs.delete_on_termination }}"
+    volume_size: "{{ item[1].ebs.volume_size }}"
+    volume_type: "{{ item[1].ebs.volume_type }}"
+    tags:
+      Ansible: "True"
+      Host: "{{ item.0.tags.Name | default('') }}"
+      Path: "{{ item.1.ebs.device_name }}"
+      Env: "{{ env }}"
+      Inst: "{{ instance }}"
+  with_nested:
+    - "{{ ec2_instances.instances }}"
+    - "{{ ec2_inst }}"
+  loop_control:
+    label: "{{ item.0.tags.Name | default('untagged') }}:{{ item.1.ebs.device_name | default('') }}"
+  when: 
+    - ec2_inst is defined
+    - item[0].tags.Ansible is defined
+    - item[0].tags.Env is defined
+    - item[0].tags.Env == env
+    - item[0].public_ip_address is defined # needed for stale terminated
+    - item[0].tags.Type == item[1].type
+    - item[1].ebs is defined
+
+
+# Volume Tagging
+- name: "Volume Tags"
+  tags:
+    - tags
+    - volume
+  ec2_tag:
+    region: "{{ region }}"
+    resource: "{{ item.1.ebs.volume_id }}"
+    tags:
+      Ansible: "True"
+      Name: "{{ item.0.tags.Name | default('') }}:{{ item.1.device_name }}"
+      Host: "{{ item.0.tags.Name | default('') }}"
+      Path: "{{ item.1.device_name }}"
+      Env: "{{ env }}"
+      Inst: "{{ instance }}"
+  loop_control:
+    label: "{{ item.1.ebs.volume_id }} - {{ item.0.tags.Name | default('') }}:{{ item.1.device_name }}"
+  with_subelements:
+    - "{{ ec2_instances.instances }}"
+    - block_device_mappings
+  when: 
+    - item.0.tags.Ansible is defined
+    - item.0.tags.Env is defined
+    - item.0.tags.Env == env
+

@@ -1,0 +1,30 @@
+---
+- meta: flush_handlers
+
+
+- name: "kpatch service"
+  tags:
+    - kpatch
+    - services
+  service:
+    name:  "kpatch"
+    state: started
+    enabled: yes
+
+
+- name: "NTP service ({{ ntp.service }})"
+  tags:
+    - services
+  service:
+    name:  "{{ ntp.service }}"
+    state: started
+    enabled: yes
+
+
+- name: "SSH service"
+  tags:
+    - services
+  service:
+    name:  "sshd"
+    state: started
+    enabled: yes

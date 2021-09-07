@@ -1,0 +1,33 @@
+{
+  "index_patterns": [ "fluentd-*" ],
+  "settings": {},
+  "mappings": {
+    "_source": {
+      "enabled": true
+    },
+    "properties": {
+      "log_pid": {
+        "coerce": true,
+        "index": true,
+        "ignore_malformed": false,
+        "store": false,
+        "type": "long",
+        "doc_values": true
+      },
+      "log_size": {
+        "type": "text"
+      },
+      "log_status": {
+        "type": "text"
+      },
+      "pid": {
+        "coerce": true,
+        "index": true,
+        "ignore_malformed": false,
+        "store": false,
+        "type": "long",
+        "doc_values": true
+      }
+    }
+  }
+}

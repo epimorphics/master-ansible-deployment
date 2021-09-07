@@ -1,0 +1,23 @@
+{
+  "id": 2,
+  "orgId": 1,
+  "name": "Elasticsearch",
+  "type": "elasticsearch",
+  "typeLogoUrl": "public/app/plugins/datasource/elasticsearch/img/elasticsearch.svg",
+  "access": "proxy",
+  "url": "http://{{ elasticsearch_container.name }}:{{ elasticsearch_container.port }}",
+  "password": "",
+  "user": "",
+  "database": "[fluentd-]YYYYMMDD",
+  "basicAuth": false,
+  "isDefault": false,
+  "jsonData": {
+    "esVersion": 70,
+    "interval": "Daily",
+    "logLevelField": "",
+    "logMessageField": "",
+    "maxConcurrentShardRequests": 5,
+    "timeField": "@timestamp"
+  },
+  "readOnly": false
+}

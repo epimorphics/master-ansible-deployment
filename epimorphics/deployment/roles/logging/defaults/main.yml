@@ -1,0 +1,36 @@
+---
+services:
+  - "{{ access_container }}"
+  - "{{ elasticsearch_container }}"
+  - "{{ kibana_container }}"
+
+fluentd:
+  image: "{{ registry.common }}/fluentd"
+  version: "v1.13.0-1.0"
+  directory: "{{ docker.directory }}/{{ fluentd_container.name }}"
+  ports:
+    - "{{ fluentd_container.port.metrics }}:{{ fluentd_container.port.metrics }}"
+    - "{{ fluentd_container.port.logging }}:{{ fluentd_container.port.logging }}"
+    - "{{ fluentd_container.port.logging }}:{{ fluentd_container.port.logging }}/udp"
+    - "{{ fluentd_container.port.syslog }}:{{ fluentd_container.port.syslog }}"
+    - "{{ fluentd_container.port.syslog }}:{{ fluentd_container.port.syslog }}/udp"
+  buffer: "/var/log/fluentd-buffers"
+  logging:
+    driver: "json-file"
+    options: 
+      max-size: "10m"
+      max-file: "3"
+
+elasticsearch:
+  image: "docker.elastic.co/elasticsearch/elasticsearch"
+  version: "7.6.1"
+  directory: "{{ docker.directory }}/{{ elasticsearch_container.name }}"
+
+es_exporter:
+  image: "justwatch/elasticsearch_exporter"
+  version: "1.1.0"
+
+kibana:
+  image: "docker.elastic.co/kibana/kibana"
+  version: "7.6.1"
+  xpack_reporting_encryptionKey: "{{ vault_kibana.xpack_reporting_encryptionKey }}"

@@ -1,0 +1,16 @@
+---
+- name: "Read locale"
+  tags:
+    - locale
+  shell: "locale -a | grep -q '^{{ system_locale }}$'"
+  register: current_locale
+  changed_when: no
+  failed_when: false
+
+- name: "Set locale"
+  tags:
+    - locale
+  command: "locale-gen {{ system_locale }}"
+  when: 
+   - current_locale.rc is defined
+   - current_locale.rc != 0

@@ -1,0 +1,56 @@
+---
+- name: "EC2 Launch Configuration"
+  tags:
+    - asg
+    - ec2
+  ec2_lc:
+    region: "{{ region }}"
+    name: "{{ instance }}-{{ env-}}-{{ item.type }}"
+    key_name: "{{ key.name }}"
+    assign_public_ip: "yes"
+    ebs_optimized: "{{ item.ebs_optimized | default('no') }}"
+    image_id: "{{ item.image_id | default(ec2_default_image) }}"
+    instance_profile_name: "{{ iam_role }}"
+    instance_type: "{{ item.instance_type }}"
+    security_groups: "[ 'base' ] + {{ item.security_groups | default([]) }}" 
+    volumes: "{{ item.volumes | default(omit) }}"
+    vpc_id: "{{ vpc_id }}"
+  loop: "{{ ec2_inst_lc }}"
+  loop_control:
+    label: "{{ instance }}-{{ env-}}-{{ item.type }}"
+  register: launch_configurations
+  when: ec2_inst_lc is defined
+
+
+# It would be prefereable to loop on launch_configurations here
+# but the user data is not accessible.
+- name: "EC2 Auto Scaling Groups"
+  tags:
+    - asg
+  ec2_asg:
+    name: "{{ instance }}-{{ env-}}-{{ item.type }}"
+    launch_config_name: "{{ instance }}-{{ env-}}-{{ item.type }}"
+    min_size: 1
+    desired_capacity: "{{ item.count }}"
+    max_size: "{{ item.count }}"
+    tags:
+      - Ansible: "True"
+      - Env: "{{ env }}"
+      - Inst: "{{ instance }}"
+      - Type: "{{ item.type }}"
+    vpc_zone_identifier: "{{ subnet_ids }}"
+  loop: "{{ ec2_inst_lc }}"
+  loop_control:
+    label: "{{ instance }}-{{ env-}}-{{ item.type }}"
+  register: asg
+  when: ec2_inst_lc is defined
+
+
+- name: "Waiting for new hosts to start..."
+  pause:
+    seconds: 60
+  when:
+    - asg is defined
+    - asg.changed
+
+

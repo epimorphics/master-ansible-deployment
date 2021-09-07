@@ -1,0 +1,10 @@
+---
+- name: "Restart docker"
+  service:
+    name:  "{{ docker.service.name | default('docker') }}"
+    state: restarted
+
+- name: "Restart telegraf"
+  service:
+    name:  "telegraf"
+    state: restarted

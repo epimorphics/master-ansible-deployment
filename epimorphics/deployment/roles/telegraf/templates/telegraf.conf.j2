@@ -1,0 +1,68 @@
+[global_tags]
+  # no configuration
+
+[agent]
+  interval = "10s"
+  round_interval = true
+  metric_batch_size = 1000
+  metric_buffer_limit = 10000
+  collection_jitter = "0s"
+  flush_interval = "10s"
+  flush_jitter = "0s"
+  precision = ""
+  debug = false
+  quiet = false
+  logfile = ""
+  hostname = ""
+  omit_hostname = false
+
+[[outputs.influxdb]]
+  urls = ["http://{{ influxdb_server }}:{{ influxdb_container.port.http }}"] # required
+  database = "{{ influxdb.database.telegraf  }}" # required
+  username = "{{ influxdb.user.admin }}"
+  password = "{{ password.influxdb.admin }}"
+  retention_policy = ""
+  write_consistency = "any"
+  timeout = "5s"
+
+[[outputs.prometheus_client]]
+  listen = "0.0.0.0:{{ telegraf.port.prometheus }}"
+
+[[inputs.cpu]]
+  percpu = true
+  totalcpu = true
+  collect_cpu_time = false
+
+[[inputs.disk]]
+  # mount_points = ["/"]
+  ignore_fs = ["tmpfs", "devtmpfs", "devfs", "squashfs" ]
+
+[[inputs.diskio]]
+  # devices = ["sda", "sdb"]
+  # skip_serial_number = false
+  #
+  # device_tags = ["ID_FS_TYPE", "ID_FS_USAGE"]
+  #
+  # name_templates = ["$ID_FS_LABEL","$DM_VG_NAME/$DM_LV_NAME"]
+
+[[inputs.kernel]]
+  # no configuration
+
+[[inputs.mem]]
+  # no configuration
+
+[[inputs.net]]
+  # no configuration
+
+[[inputs.netstat]]
+  # no configuration
+
+[[inputs.processes]]
+  # no configuration
+
+[[inputs.swap]]
+  # no configuration
+
+[[inputs.system]]
+  # no configuration
+

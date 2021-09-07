@@ -1,0 +1,20 @@
+---
+# Use -e env=real to enable different environments
+#
+- name: "Environment specific definitions ({{ env }})"
+  tags:
+    - debug
+    - dns
+    - elb
+    - vpc
+  include_vars: "roles/provision/vars/{{ env }}.yml"
+
+- name: "Provision - finalise"
+  vars:
+    finalise: true
+  include_role:
+    name: epimorphics.deployment.provision
+    tasks_from: "{{ item }}"
+  loop:
+    - vpc
+    - finalise

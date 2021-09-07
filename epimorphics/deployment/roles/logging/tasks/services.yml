@@ -1,0 +1,10 @@
+---
+- meta: flush_handlers
+
+- name: "Telegraf service"
+  tags:
+    - services
+  service:
+    name:  "telegraf"
+    state: started
+    enabled: yes

@@ -1,0 +1,20 @@
+---
+- name: "Alertmanager container restart"
+  docker_container:
+    name: "{{ alertmanager_container.name }}"
+    state: absent
+
+- name: "Grafana container restart"
+  docker_container:
+    name: "{{ grafana_container.name }}"
+    state: absent
+
+- name: "Influxdb container restart"
+  docker_container:
+    name: "{{ influxdb_container.name }}"
+    state: absent
+
+- name: "Prometheus container restart"
+  docker_container:
+    name: "{{ prometheus_container.name }}"
+    state: absent

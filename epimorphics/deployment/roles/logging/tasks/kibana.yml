@@ -1,0 +1,43 @@
+---
+- name: "Kibana container"
+  tags:
+    - container
+    - kibana
+  docker_container:
+    name: "{{ kibana_container.name }}"
+    image: "{{ kibana.image }}:{{ kibana.version }}"
+    env:
+      SERVER_NAME: "{{ hostname }}.{{ domain }}"
+      SERVER_HOST: "0.0.0.0"
+      ELASTICSEARCH_HOSTS: "http://{{ elasticsearch_container.name }}:{{ elasticsearch_container.port }}"
+      XPACK_SECURITY_ENCRYPTIONKEY: "{{ kibana.xpack_reporting_encryptionKey }}"
+      XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY: "{{ kibana.xpack_reporting_encryptionKey }}"
+    log_driver: "{{ docker.logging.driver }}"
+    log_options: "{{ docker.logging.options }}"
+    network_mode: "{{ docker.network.mode }}"
+    networks:
+      - name: "{{ docker.network.name }}"
+    restart_policy: "unless-stopped"
+    networks_cli_compatible: yes
+    ports:
+      - "{{ kibana_container.port }}:{{ kibana_container.port }}"
+
+
+- name: "Saved Searches"
+  tags:
+    - kibana
+    - searches
+  copy:
+    dest: searches.ndjson
+    src: searches.ndjson
+  register: searches
+
+
+- name: "Load Saved Searches"
+  tags:
+    - kibana
+    - searches
+  command: 
+    cmd: "curl http://localhost:{{ kibana_container.port }}/api/saved_objects/_import?overwrite=true -H 'kbn-xsrf:true' -sF file=@searches.ndjson"
+    warn: false
+  when: searches.changed 

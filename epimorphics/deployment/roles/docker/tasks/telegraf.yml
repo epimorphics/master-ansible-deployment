@@ -1,0 +1,21 @@
+---
+- name: "telegraf user in group docker"
+  tags:
+    - telegraf
+    - users
+  user:
+    name: telegraf
+    groups: docker
+    append: yes
+
+- name: "Telegraf Docker config"
+  tags:
+    - cfg
+    - telegraf
+  template:
+    dest: /etc/telegraf/telegraf.d/docker.conf
+    src: telegraf.conf.j2
+    owner: root
+    group: root
+    mode: 0644
+  notify: "Restart telegraf"

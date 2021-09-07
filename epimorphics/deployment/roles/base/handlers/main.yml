@@ -1,0 +1,29 @@
+---
+- name: "Restart kpatch"
+  tags:
+    - kpatch
+  service:
+    name:  "kpatch"
+    state: restarted
+
+
+- name: "Restart NTP"
+  service:
+    name:  "{{ ntp.service }}"
+    state: restarted
+
+
+- name: "Restart rsyslog"
+  service:
+    name:  "sshd"
+    state: restarted
+
+
+- name: "Restart sshd"
+  service:
+    name:  "sshd"
+    state: restarted
+
+
+- name: "Sysctl reload"
+  command: "sysctl -p"

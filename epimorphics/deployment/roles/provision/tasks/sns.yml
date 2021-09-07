@@ -1,0 +1,89 @@
+---
+- name: "Lamba IAM Role"
+  tags:
+    - iam
+    - lambda
+    - sns
+  vars:
+    service: "lambda.amazonaws.com"
+  iam_role:
+    name: "lambda-execution"
+    assume_role_policy_document: "{{ lookup('template', 'iam/role-trust.json.j2') }}"
+    managed_policies:
+      - "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+    description: "Lamba Execution"
+  register: lambda_execution
+
+
+- name: "Lambda (release/lambda/{{ lambda.name }}/{{ lambda.runtime }}/{{ lambda.name }}-{{ lambda.version }}.zip)"
+  tags:
+    - lambda
+    - sns
+  lambda:
+    name: "{{ lambda.name }}"
+    region: "{{ region }}"
+    description: "{{ lambda.description }}"
+    state: present
+    s3_bucket: "{{ lambda.s3_bucket }}"
+    s3_key: "release/lambda/{{ lambda.name }}/{{ lambda.runtime }}/{{ lambda.name }}-{{ lambda.version }}.zip"
+    runtime: "python3.8"
+    role: "{{ lambda_execution.arn }}"
+    handler: "{{ lambda.name }}.handler"
+    tags:
+      Ansible: "True"
+    environment_variables:
+      USERNAME: "{{ slack.username }}"
+      CHANNEL: "{{ slack.channel }}"
+      PYTHONPATH: "./libs"
+      WEBHOOK: "{{ slack.webhook }}"
+      EXTERNAL_URL: "https://{{ alertmanager_container.cname }}-{{ instance }}.{{ domain }}"
+  register: lambda_status
+  when: lambda_execution.arn is defined
+
+
+- name: "SNS topic ({{ sns.topic.name.slack }})"
+  tags:
+    - sns
+    - topic
+  sns_topic:
+    name: "{{ sns.topic.name.slack }}"
+    region: "{{ region }}"
+    state: present
+    display_name: "{{ sns.topic.display_name.slack }}"
+    delivery_policy: "{{ sns.topic.delivery_policy }}"
+    subscriptions:
+      - endpoint: "{{ lambda_status.configuration.function_arn | regex_replace(':' + lambda_status.configuration.version + '$') }}"
+        protocol: "lambda"
+  register: slack_topic
+  when: lambda_status.configuration is defined
+
+
+- name: "SNS Trigger"
+  tags:
+    - sns
+    - topic
+  lambda_policy:
+    function_name: "{{ lambda.name }}"
+    region: "{{ region }}"
+    statement_id: "{{ sns.topic.name.slack }}"
+    action: "lambda:InvokeFunction"
+    principal: "sns.amazonaws.com"
+    source_arn: "{{ slack_topic.sns_arn }}"
+  register: lambda_policy_action
+  when: slack_topic.sns_arn is defined
+  
+
+- name: "SNS topic ({{ sns.topic.name.email }})"
+  tags:
+    - sns
+    - topic
+  sns_topic:
+    name: "{{ sns.topic.name.email }}"
+    region: "{{ region }}"
+    state: present
+    display_name: "{{ sns.topic.display_name.email }}"
+    delivery_policy: "{{ sns.topic.delivery_policy }}"
+    subscriptions:
+      - endpoint: "{{ email }}"
+        protocol: "email"
+  register: email_topic

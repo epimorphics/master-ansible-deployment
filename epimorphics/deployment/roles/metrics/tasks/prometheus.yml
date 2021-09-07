@@ -1,0 +1,80 @@
+---
+- name: "Prometheus volume"
+  tags:
+    - cfg
+    - prometheus
+  file:
+    state: "directory"
+    path: "{{ prometheus.directory }}{{ item }}"
+    owner: "root"
+    group: "root"
+    mode: "0775"
+  loop_control:
+    label: "{{ item }}"
+  loop:
+    - "/"
+    - "/rules"
+
+
+- name: "Prometheus config"
+  tags:
+    - cfg
+    - prometheus
+    - refresh
+  template:
+    src: "{{ item.src }}"
+    dest:  "{{ prometheus.directory }}/{{ item.dest }}"
+    owner: "root"
+    group: "root"
+    mode: "0775"
+  loop_control:
+    label: "{{ item }}"
+  loop:
+    - { src: "prometheus.yml.j2", dest: "prometheus.yml" }
+  notify: "Prometheus container restart"
+
+
+- name: "Prometheus rules"
+  tags:
+    - cfg
+    - prometheus
+  template:
+    src: "prometheus-rules/{{ item }}.yml.j2"
+    dest:  "{{ prometheus.directory }}/rules/{{ item }}.yml"
+    owner: "root"
+    group: "root"
+    mode: "0775"
+  loop_control:
+    label: "{{ item }}"
+  loop:
+    - "disk"
+    - "logging"
+    - "targets"
+  notify: "Prometheus container restart"
+
+
+- meta: flush_handlers
+
+
+- name: "Prometheus container"
+  tags:
+    - container
+    - prometheus
+  docker_container:
+    name: "{{ prometheus_container.name }}"
+    image: "{{ prometheus.image }}:{{ prometheus.version }}"
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml --log.format=json --web.external-url https://{{ prometheus_container.name }}-{{ instance }}.{{ domain }}"
+    log_driver: "{{ docker.logging.driver }}"
+    log_options: "{{ docker.logging.options }}"
+    network_mode: "{{ docker.network.mode }}"
+    networks:
+      - name: "{{ docker.network.name }}"
+    restart_policy: "unless-stopped"
+    networks_cli_compatible: yes
+    ports:
+      - "{{ prometheus_container.port }}:{{ prometheus_container.port }}"
+    volumes:
+      - "{{ prometheus.directory }}/prometheus.yml:/etc/prometheus/prometheus.yml"
+      - "{{ prometheus.directory }}/rules:/etc/prometheus/rules"
+

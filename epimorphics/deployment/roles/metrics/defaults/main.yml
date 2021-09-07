@@ -1,0 +1,39 @@
+---
+services:
+  - "{{ alertmanager_container }}"
+  - "{{ grafana_container }}"
+  - "{{ prometheus_container }}"
+
+alertmanager:
+  image: "prom/alertmanager"
+  version: "v0.21.0"
+  directory: "{{ docker.directory }}/{{ alertmanager_container.name }}"
+  config: /etc/alertmanager/alertmanager.yml
+
+grafana:
+  image: "grafana/grafana-enterprise"
+  version: "7.1.5"
+  directory: "{{ docker.directory }}/{{ grafana_container.name }}"
+
+prometheus:
+  image: "docker.io/prom/prometheus"
+  version: "v2.25.0"
+  directory: "{{ docker.directory }}/{{ prometheus_container.name }}"
+
+prom_rules:
+  absolute:
+    disk:
+      warning:  90
+      critical: 95
+    inode:
+      warning:  90
+      critical: 95
+  projected:
+    warning: 14d
+    critical: 24h
+
+sns_forwarder:
+  image: "datareply/alertmanager-sns-forwarder"
+  version: "0.2"
+
+repository: "{{ instance }}-ansible-deployment"

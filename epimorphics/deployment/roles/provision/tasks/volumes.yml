@@ -1,0 +1,8 @@
+- name: debug
+  tags:
+    - dns
+    - ec2
+  debug:
+    msg: "vol {{ volumes }}"
+
+

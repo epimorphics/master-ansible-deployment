@@ -1,0 +1,81 @@
+---
+- name: "Docker CE repository"
+  yum_repository:
+    name: docker
+    description: Docker CE
+    file: docker
+    baseurl: https://download.docker.com/linux/$contentdir/$releasever/$basearch/stable
+    gpgkey: https://download.docker.com/linux/$contentdir/gpg
+    gpgcheck: yes
+  when: docker.package.name == "docker-ce"
+
+- name: "Install {{ docker.package.name }}"
+  tags:
+    - pkg
+  package:
+    name: "{{ docker.package.name }}"
+    state: latest
+  notify: "Restart docker"
+
+
+- name: "Pip requests 2.6 installed"
+  tags:
+    - pkg
+    - pip
+  stat:
+    path: /usr/lib/python2.7/site-packages/requests-2.6.0-py2.7.egg-info
+  register: st
+
+
+- name: "Pip request hack"
+  tags:
+    - pkg
+    - pip
+  command:
+    cmd: "mv /usr/lib/python2.7/site-packages/{{ item }} /usr/lib/python2.7/site-packages/{{ item }}.os"
+  loop:
+    - "requests"
+    - "requests-2.6.0-py2.7.egg-info"
+  when:
+    st.stat.exists
+
+
+
+- name: "Install python-docker"
+  tags:
+    - pkg
+    - pip
+  pip:
+    name: docker
+    state: latest
+
+
+- name: "Add users to group docker"
+  tags:
+    - users
+  user:
+    name: "{{ item }}"
+    groups: docker
+    append: yes
+  loop:
+    - "{{ default_user }}"
+    - sensu
+
+
+- include: "{{ ansible_distribution }}.yml"
+
+
+- include: "telegraf.yml"
+- include: "services.yml"
+
+
+- name: "Docker network ( {{ docker.network.name }} )"
+  docker_network:
+    network_name: "{{ docker.network.name }}"
+    tls_hostname: localhost
+  tags:
+    - container
+  when:
+    - docker is defined
+    - docker.network is defined
+    - docker.network.name is defined

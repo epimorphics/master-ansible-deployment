@@ -1,0 +1,20 @@
+---
+- name: "AWS CLI archive"
+  tags:
+    - pkg
+  unarchive:
+    src: "{{ item.src }}"
+    dest: /root
+    remote_src: yes 
+  loop_control: 
+    label: "{{ item.label }}"
+  loop:
+    - { src: "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip", label: "awscli" }
+  register: awscli
+
+
+- name: "Install awscli"
+  tags:
+    - pkg
+  command: "/root/aws/install --update"
+  when: awscli is defined and awscli.changed

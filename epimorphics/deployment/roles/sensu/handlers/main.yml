@@ -1,0 +1,8 @@
+---
+- name: "Sensu container restart"
+  tags:
+    - container
+    - sensu
+  docker_container:
+    name: sensu
+    state: absent
