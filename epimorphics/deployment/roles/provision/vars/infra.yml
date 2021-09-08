@@ -26,7 +26,7 @@ ec2_inst:
       volume_size: 50
   - type:     monitor
     count:    1
-    instance: t3a.medium
+    instance: "{{ monitor_instance | default('t3a.medium') }}"
     lb: false
     security_group:
       - "logging"
@@ -80,9 +80,7 @@ sec_grps:
   - name: "prom"
     rules:
       - proto: tcp
-        ports:
-          - "{{ fuseki_container.port }}"
-          - "{{ widgets_container.port }}"
+        ports: "{{ metrics_ports }}"
         cidr_ip:  "{{ vpc.cidr }}"
   - name: "web"
     rules:
