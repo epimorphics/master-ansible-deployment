@@ -136,7 +136,7 @@ Projected Inode usage over previous {{ prom_rules.projected.critical }} is unsus
         message: "Projected Inode: Usage Critical: {{ $labels.host }}:{{ $labels.path }}"
 
 
-### Docker
+### Container Stopped
 
 #### Details
 
