@@ -28,8 +28,8 @@
     - kibana
     - searches
   copy:
-    dest: searches.ndjson
-    src: searches.ndjson
+    src: "searches.ndjson"
+    dest: "/home/ec2-user/searches.ndjson"
   register: searches
 
 
@@ -38,6 +38,6 @@
     - kibana
     - searches
   command: 
-    cmd: "curl http://localhost:{{ kibana_container.port }}/api/saved_objects/_import?overwrite=true -H 'kbn-xsrf:true' -sF file=@searches.ndjson"
+    cmd: "curl http://localhost:{{ kibana_container.port }}/api/saved_objects/_import?overwrite=true -H 'kbn-xsrf:true' -sF file=@/home/ec2-user/searches.ndjson"
     warn: false
   when: searches.changed 
