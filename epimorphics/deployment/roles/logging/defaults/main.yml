@@ -6,7 +6,7 @@ services:
 
 fluentd:
   image: "{{ registry.common }}/fluentd"
-  version: "v1.13.0-1.0"
+  version: "v1.14.0-1.1"
   directory: "{{ docker.directory }}/{{ fluentd_container.name }}"
   ports:
     - "{{ fluentd_container.port.metrics }}:{{ fluentd_container.port.metrics }}"
