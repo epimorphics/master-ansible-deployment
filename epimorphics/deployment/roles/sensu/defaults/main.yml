@@ -12,6 +12,10 @@ sensu_backend:
   repository: "https://epi-repository.s3-eu-west-1.amazonaws.com/release/monitoring-plugins"
   state: "/var/log/sensu"
 
+
+sensu_am:
+  image: "{{ registry.common }}/sensu-alertmanager:v0.0.8"
+
 services:
   - "{{ sensu_gui }}"
 

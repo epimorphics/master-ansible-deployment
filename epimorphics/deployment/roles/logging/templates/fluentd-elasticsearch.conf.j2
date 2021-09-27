@@ -93,20 +93,8 @@
   </record>
 </filter>
 
-# Transform JSON tag
-<match elasticsearch.syslog.daemon.info grafana.syslog.daemon.* kibana.syslog.daemon.* prometheus.syslog.daemon.* sensu*.syslog.daemon.* landing.syslog.daemon.* profiles.syslog.daemon.*>
-  @id rewrite_json_tag
-  @type rewrite_tag_filter
-  @log_level warn
-  <rule>
-    key ident
-    pattern ^(.+)$
-    tag json.${tag_parts[3]}.$1
-  </rule>
-</match>
-
 # Transform JSON TS tag
-<match widgets.syslog.daemon.*>
+<match sensu-am.syslog.daemon.* widgets.syslog.daemon.*>
   @id rewrite_json_ts_tag
   @type rewrite_tag_filter
   @log_level warn
@@ -117,6 +105,18 @@
   </rule>
 </match>
 
+
+# Transform JSON tag
+<match elasticsearch.syslog.daemon.info grafana.syslog.daemon.* kibana.syslog.daemon.* prometheus.syslog.daemon.* sensu.syslog.daemon.* landing.syslog.daemon.* profiles.syslog.daemon.*>
+  @id rewrite_json_tag
+  @type rewrite_tag_filter
+  @log_level warn
+  <rule>
+    key ident
+    pattern ^(.+)$
+    tag json.${tag_parts[3]}.$1
+  </rule>
+</match>
 
 # Transform Proxy tag
 <match proxy.syslog.daemon.*>

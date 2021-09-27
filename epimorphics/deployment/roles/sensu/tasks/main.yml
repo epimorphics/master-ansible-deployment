@@ -48,6 +48,22 @@
       - "{{ sensu_backend.directory }}:{{ sensu_backend.state }}:rw"
 
 
+- name: "Sensu-Alertmanager container"
+  tags:
+    - container
+    - sensu_am
+  docker_container:
+    image: "{{ sensu_am.image }}"
+    name: "{{ sensu_am_container.name }}"
+    log_driver: "{{ docker.logging.driver }}"
+    log_options: "{{ docker.logging.options }}"
+    network_mode: "{{ docker.network.mode }}"
+    networks:
+      - name: "{{ docker.network.name }}"
+    networks_cli_compatible: yes
+    restart_policy: "unless-stopped"
+
+
 - name: "Sensu api operational"
   tags:
     - container
