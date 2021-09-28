@@ -11,7 +11,7 @@ for line in fileinput.input():
     print('{}:{} {} {} [{}] "{} {} {}" {} {} "{}" "{}"'.format(
         l.get('host', '-'),
         l.get('post', '-'),
-        l.get('log_host', '-'),
+        l.get('log_client', l.get('log_host', '-')),
         l.get('log_user', '-'),
         l.get('log_localtime', '-'),
         l.get('log_method', '-'),
