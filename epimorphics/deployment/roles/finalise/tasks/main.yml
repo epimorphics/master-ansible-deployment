@@ -7,13 +7,13 @@
     - dns
     - elb
     - vpc
-  include_vars: "roles/provision/vars/{{ env }}.yml"
+  include_vars: "vars/{{ env }}.yml"
 
 - name: "Provision - finalise"
   vars:
     finalise: true
   include_role:
-    name: epimorphics.deployment.provision
+    name: provision
     tasks_from: "{{ item }}"
   loop:
     - vpc
