@@ -9,12 +9,30 @@
     gpgcheck: yes
   when: docker.package.name == "docker-ce"
 
+
 - name: "Install {{ docker.package.name }}"
   tags:
     - pkg
   package:
     name: "{{ docker.package.name }}"
     state: latest
+  notify: "Restart docker"
+
+
+- name: "Docker systemd override directory"
+  file:
+    dest: /etc/systemd/system/docker.service.d
+    state: directory
+    owner: root
+    group: root
+
+
+- name: "Docker systemd override file"
+  copy:
+    src: override.conf
+    dest: /etc/systemd/system/docker.service.d/override.conf
+    owner: root
+    group: root
   notify: "Restart docker"
 
 
@@ -38,7 +56,6 @@
     - "requests-2.6.0-py2.7.egg-info"
   when:
     st.stat.exists
-
 
 
 - name: "Install python-docker"
