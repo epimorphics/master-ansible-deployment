@@ -24,16 +24,16 @@ lstdir () {
 }
 
 stream () {
-        for host in $(lstdir ${S3}/logs/)
-        do
-          for log in $(lstdir ${S3}/logs/$host$DAY/)
-          do
-            [[ $log =~ apache.info.proxy-[0-9]{2}-[0-9]{6}.gz ]] && aws s3 cp ${S3}/logs/$host$DAY/$log - | gzip -dc | grep -v '/server-status' | /usr/local/bin/json2combined.py
-          done
-        done
+  for host in $(lstdir ${S3}/logs/)
+  do
+    for log in $(lstdir ${S3}/logs/$host$DAY/)
+    do
+      [[ $log =~ apache.info.proxy-[0-9]{2}-[0-9]{6}.gz ]] && aws s3 cp ${S3}/logs/$host$DAY/$log - | gzip -dc | grep -v '/server-status' | /usr/local/bin/json2combined.py
+    done
+  done
 }
 
 mkdir -p ${DIR}
-stream | goaccess --no-progress --log-format=VCOMBINED - > ${DIR}/${DAY}.html
+stream | goaccess -e 10.0.0.0-10.255.255.255 --no-progress --log-format=VCOMBINED - > ${DIR}/${DAY}.html
 [ "$DAY" == "$TODAY" ] && cp ${DIR}/${DAY}.html ${DIR}/today.html
 exit 0

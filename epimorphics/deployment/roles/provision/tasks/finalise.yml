@@ -57,6 +57,7 @@
   ec2_elb_lb:
     region: "{{ region }}"
     name: "{{ instance }}-{{ env }}-{{ iter.type }}"
+    scheme: "{{ (iter.type == 'data') | ternary('internal', 'internet-facing', omit) }}"
     subnets: "{{ subnet_ids }}"
     security_group_names:
       - "{{ load_balancers.security_groups[iter.type] }}"
@@ -78,8 +79,9 @@
       Type: "{{ iter.type }}"
       Env: "{{ env }}"
       Inst: "{{ instance }}"
-    connection_draining_timeout: 60 # seconds
+    connection_draining_timeout: 120 # seconds
     state: present
+    wait: True
   loop: "{{ (ec2_inst_lc | default([]) ) + (ec2_inst | default([]) ) }}"
   loop_control:
     label: "{{ iter.type }}"
