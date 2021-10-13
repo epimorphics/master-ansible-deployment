@@ -15,6 +15,7 @@ fluentd:
     - "{{ fluentd_container.port.syslog }}:{{ fluentd_container.port.syslog }}"
     - "{{ fluentd_container.port.syslog }}:{{ fluentd_container.port.syslog }}/udp"
   buffer: "/var/log/fluentd-buffers"
+  custom: "{{ lookup('template', 'fluentd-custom.yml.j2' }}"
   logging:
     driver: "json-file"
     options: 
