@@ -9,3 +9,4 @@
   systemd:
     name:  "telegraf"
     state: restarted
+  when: telegraf is defined

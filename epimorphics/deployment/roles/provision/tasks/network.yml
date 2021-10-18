@@ -29,10 +29,6 @@
         ports:
           - 22
         cidr_ip:  "{{ vpc.cidr }}"
-      - proto: tcp
-        ports:
-          - "{{ telegraf.port.prometheus }}"
-        cidr_ip:  "{{ vpc.cidr }}"
       - proto: icmp
         ports:
           - -1

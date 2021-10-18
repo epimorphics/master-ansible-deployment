@@ -33,7 +33,7 @@
     dest: /etc/systemd/system/docker.service.d/override.conf
     owner: root
     group: root
-  notify: "Restart docker"
+# notify: "Restart docker"
 
 
 - name: "Pip requests 2.6 installed"
@@ -83,6 +83,8 @@
 
 
 - include: "telegraf.yml"
+  when: telegraf is defined
+
 - include: "services.yml"
 
 
