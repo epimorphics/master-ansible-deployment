@@ -47,7 +47,7 @@ lambda:
   description: "SNS to Slack Webhook"
   s3_bucket: "epi-repository"
   runtime: "python3.8"
-  version: "v2.01"
+  version: "v2.06"
 
 
 sns:
