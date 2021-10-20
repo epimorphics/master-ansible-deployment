@@ -77,7 +77,9 @@
     - pkg
   yum:
     name: 
+      - jq
       - pv
+      - rsync
       - unzip
     state: latest
 
