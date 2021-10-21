@@ -1,0 +1,38 @@
+---
+- name: "Remove goaccess (if present)"
+  tags:
+    - goaccess
+    - pkg
+  package:
+    name: goaccess
+    state: absent
+
+
+- name: "Goaccess requirements"
+  tags:
+    - goaccess
+    - pkg
+  package:
+    name: libmaxminddb
+    state: latest
+
+
+- name: "Goaccess archive"
+  unarchive:
+    src: https://epi-repository.s3.eu-west-1.amazonaws.com/release/goaccess/goaccess-1.5.2.tgz
+    dest: /usr/local
+    remote_src: yes
+
+
+- name: "Apache logs processing"
+  tags:
+    - cfg
+    - goaccess
+  copy:
+    src: "{{ item }}"
+    dest: "/usr/local/bin/{{ item }}"
+    mode: 0770
+    owner: root
+    group: root
+  loop:
+    - "json2combined.py"

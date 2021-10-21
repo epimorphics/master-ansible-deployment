@@ -1,14 +1,5 @@
 ---
-- name: "Install goaccess"
-  tags:
-    - goaccess
-    - pkg
-  package:
-    name: goaccess
-    state: latest
-
-
-- name: "Apache logs processing"
+- name: "Scheduled log processing"
   tags:
     - cfg
     - goaccess
@@ -19,7 +10,6 @@
     owner: root
     group: root
   loop:
-    - "json2combined.py"
     - "dailylog.sh"
     - "processlogs.sh"
 
