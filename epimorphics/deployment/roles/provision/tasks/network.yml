@@ -21,18 +21,18 @@
     - security
   ec2_group:
     name: "base"
-    description: "Base Security Group - managed by Ansible"
+    description: "{{ base.description | default('Base Security Group - managed by Ansible') }}"
     region: "{{ region }}"
     vpc_id: "{{ vpc_id }}"
     rules:
       - proto: tcp
         ports:
           - 22
-        cidr_ip:  "{{ vpc.cidr }}"
+        cidr_ip:  "{{ base.incoming.ssh | default(vpc.cidr) }}"
       - proto: icmp
         ports:
           - -1
-        cidr_ip:  "{{ vpc.cidr }}"
+        cidr_ip:  "{{ base.incoming.icmp | default(vpc.cidr) }}"
     tags:
       Ansible: "true"
       Inst: "{{ instance }}"
