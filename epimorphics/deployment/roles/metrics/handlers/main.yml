@@ -1,9 +1,4 @@
 ---
-- name: "Alertmanager container restart"
-  docker_container:
-    name: "{{ alertmanager_container.name }}"
-    state: absent
-
 - name: "Grafana container restart"
   docker_container:
     name: "{{ grafana_container.name }}"

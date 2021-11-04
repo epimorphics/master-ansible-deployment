@@ -1,0 +1,5 @@
+---
+- name: "Alertmanager container restart"
+  docker_container:
+    name: "{{ alertmanager_container.name }}"
+    state: absent

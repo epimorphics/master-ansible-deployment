@@ -9,4 +9,3 @@
 - include: "influxdb.yml"
 - include: "prometheus.yml"
 - include: "grafana.yml"
-- include: "alertmanager.yml"

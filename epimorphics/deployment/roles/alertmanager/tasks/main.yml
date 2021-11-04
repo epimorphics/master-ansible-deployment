@@ -1,0 +1,9 @@
+---
+- name: "Alertmanager DNS"
+  tags:
+    - dns
+  include_role:
+    name: dns
+
+
+- include: "alertmanager.yml"
