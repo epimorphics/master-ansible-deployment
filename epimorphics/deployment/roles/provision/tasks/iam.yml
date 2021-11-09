@@ -39,7 +39,7 @@
   loop_control:
     label: "{{ item.policy }}"
   loop:
-    - { name: "{{ iam_role }}", policy: "{{ instance }}-s3-readwrite", file: "iam/s3-readwrite.json" }
+    - { name: "{{ iam_role }}", policy: "{{ instance }}-s3-readwrite", file: "iam/s3-readwrite.json.j2" }
     - { name: "{{ iam_role }}", policy: "{{ instance }}-ec2-tag-access", file: "iam/ec2-tag-access.json" }
     - { name: "{{ iam_role }}", policy: "{{ instance }}-elb-fullaccess", file: "iam/elb-fullaccess.json" }
     - { name: "{{ iam_role }}", policy: "{{ instance }}-cloudwatch", file: "iam/cloudwatch.json" }
