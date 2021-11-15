@@ -79,6 +79,7 @@
       Type: "{{ iter.type }}"
       Env: "{{ env }}"
       Inst: "{{ instance }}"
+    idle_timeout: 120 # seconds
     connection_draining_timeout: 120 # seconds
     state: present
     wait: True
