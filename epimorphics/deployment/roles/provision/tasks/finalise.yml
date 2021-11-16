@@ -79,8 +79,8 @@
       Type: "{{ iter.type }}"
       Env: "{{ env }}"
       Inst: "{{ instance }}"
-    idle_timeout: 120 # seconds
-    connection_draining_timeout: 120 # seconds
+    idle_timeout: "{{ elb.timeout }}"
+    connection_draining_timeout: "{{ elb.timeout }}"
     state: present
     wait: True
   loop: "{{ (ec2_inst_lc | default([]) ) + (ec2_inst | default([]) ) }}"
