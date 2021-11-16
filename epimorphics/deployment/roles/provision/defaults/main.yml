@@ -58,6 +58,8 @@ lambda:
   runtime: "python3.8"
   version: "v2.06"
 
+elb:
+  timeout:  120 # seconds
 
 sns:
   policy:
