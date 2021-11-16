@@ -20,9 +20,7 @@
     name: "{{ iam_role }}"
     state: "present"
     assume_role_policy_document: "{{ lookup('template', 'iam/role-trust.json.j2') }}"
-    managed_policies:
-      - "arn:aws:iam::{{ aws.account }}:policy/{{ sns.policy.name }}"
-      - "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+    managed_policies: "{{ iam_policies }}"
     description: "{{ sns.policy.description }}"
   register: role
 

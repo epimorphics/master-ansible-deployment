@@ -28,6 +28,10 @@ hostname_index: true                      # are hosts numbered (even if there is
 
 iam_role: "{{ instance }}-ec2"
 
+iam_policies:
+ - "arn:aws:iam::{{ aws.account }}:policy/{{ sns.policy.name }}"
+ - "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+
 key:
   name: "{{ instance }}"
   material: "{{ lookup('file', 'id_rsa.pub') }}"
