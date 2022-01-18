@@ -39,6 +39,10 @@
   docker_container:
     name: "{{ alertmanager_container.name }}"
     image: "{{ alertmanager.image }}:{{ alertmanager.version }}"
+    command:
+      - "--config.file=/etc/alertmanager/alertmanager.yml"
+      - "--log.format=json"
+      - "--storage.path=/alertmanager"
     log_driver: "{{ docker.logging.driver }}"
     log_options: "{{ docker.logging.options }}"
     network_mode: "{{ docker.network.mode }}"
