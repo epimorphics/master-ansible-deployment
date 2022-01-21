@@ -13,6 +13,11 @@ prometheus:
   version: "v2.25.0"
   directory: "{{ docker.directory }}/{{ prometheus_container.name }}"
 
+prometheus_rules:
+  - "disk"
+  - "logging"
+  - "targets"
+
 prom_rules:
   absolute:
     disk:

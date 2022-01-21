@@ -46,10 +46,7 @@
     mode: "0775"
   loop_control:
     label: "{{ item }}"
-  loop:
-    - "disk"
-    - "logging"
-    - "targets"
+  loop: "{{ prometheus_rules }}"
   notify: "Prometheus container restart"
 
 
