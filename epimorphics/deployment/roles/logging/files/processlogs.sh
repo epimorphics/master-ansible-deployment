@@ -42,6 +42,6 @@ for i in `seq 1 $DAYS`
 do
   DAY=$(date -d "-$i day" '+%F')
   stream $DAY
-done | goaccess -e 10.0.0.0-10.255.255.255 --no-progress --log-format=VCOMBINED - > /var/lib/docker/proxy/www/logs/index.html
+done | /usr/local/bin/goaccess -e 10.0.0.0-10.255.255.255 --no-progress --log-format=VCOMBINED - > /var/lib/docker/proxy/www/logs/index.html
 
 exit 0
