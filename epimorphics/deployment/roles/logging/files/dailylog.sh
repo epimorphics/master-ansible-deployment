@@ -6,6 +6,8 @@ YESTERDAY=$(date -d yesterday '+%F')
 DAY=${2:-$YESTERDAY}
 BUCKET=${1}
 DIR=/var/lib/docker/proxy/www/logs
+GEODATA=/usr/local/share/GeoLite2/GeoLite2-City.mmdb
+OPTS="-e 10.0.0.0-10.255.255.255 --no-progress --log-format=VCOMBINED --geoip-database=$GEODATA"
 
 if [ -z "$BUCKET" ]
 then
@@ -34,6 +36,6 @@ stream () {
 }
 
 mkdir -p ${DIR}
-stream | /usr/local/bin/goaccess -e 10.0.0.0-10.255.255.255 --no-progress --log-format=VCOMBINED - > ${DIR}/${DAY}.html
+stream | /usr/local/bin/goaccess $OPTS - > ${DIR}/${DAY}.html
 [ "$DAY" == "$TODAY" ] && cp ${DIR}/${DAY}.html ${DIR}/today.html
 exit 0
