@@ -4,6 +4,8 @@ set -e
 
 BUCKET=${1}
 DAYS=${2:-7}
+GEODATA=/usr/local/share/GeoLite2/GeoLite2-City.mmdb
+OPTS="-e 10.0.0.0-10.255.255.255 --no-progress --log-format=VCOMBINED --geoip-database=$GEODATA"
 
 if [ -z "$BUCKET" ]
 then
@@ -42,6 +44,6 @@ for i in `seq 1 $DAYS`
 do
   DAY=$(date -d "-$i day" '+%F')
   stream $DAY
-done | /usr/local/bin/goaccess -e 10.0.0.0-10.255.255.255 --no-progress --log-format=VCOMBINED - > /var/lib/docker/proxy/www/logs/index.html
+done | /usr/local/bin/goaccess $OPTS - > /var/lib/docker/proxy/www/logs/index.html
 
 exit 0
