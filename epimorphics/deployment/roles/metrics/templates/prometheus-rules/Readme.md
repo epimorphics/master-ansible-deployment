@@ -146,3 +146,64 @@ Projected Inode usage over previous {{ prom_rules.projected.critical }} is unsus
         severity: critical
       annotations:
         message: "Docker Container Stopped on host {{ $labels.host }}"
+
+## Ruby Applicaiton Errors
+
+### APIConnectionError
+
+#### Details
+
+    - alert: APIConnectionError
+      expr: rate(api_connection_failures[10m]) > 0
+      labels:
+        severity: critical
+      annotations:
+        message: "API Connection Error: {{ $labels.job }} - {{ $labels.instance }}"
+
+
+### APIServiceException
+
+#### Details
+
+    - alert: APIServiceException
+      expr: rate(api_service_exception[10m]) > 0
+      labels:
+        severity: critical
+      annotations:
+        message: "API Service Exception: {{ $labels.job }} - {{ $labels.instance }}"
+
+
+### APIStatus
+
+#### Details
+
+    - alert: APIStatus
+      expr: rate(api_status{status=~"[45].."}[10m]) > 0
+      labels:
+        severity: warning
+      annotations:
+        message: "Unexpected API status return {{ $labels.status }}: {{ $labels.job }} - {{ $labels.instance }}"
+
+
+### APIRequestFailures
+
+#### Details
+
+    - alert: APIRequestFailures
+      expr: rate(api_request_failures{result!="success"}[10m]) > 0
+      labels:
+        severity: critical
+      annotations:
+        message: "API Request Failure: {{ $labels.result }}: {{ $labels.job }} - {{ $labels.instance }}"
+
+
+### ApplicationInternalError
+
+#### Details
+
+    - alert: ApplicationInternalError
+      expr: rate(internal_application_error[10m]) > 0
+      labels:
+        severity: critical
+      annotations:
+        message: "Internal Application Error: {{ $labels.job }} - {{ $labels.instance }}"
