@@ -1,0 +1,7 @@
+parse:
+  cache: "/home/ec2-user/scratch/.cache"
+  dest: "/var/lib/docker/proxy/www/logs"
+  file: "/usr/local/bin/proxy-parse.sh"
+  type: "{{ external_proxy_host_type | default('pres') }}"
+  wrapper: "/home/ec2-user/month-log"
+

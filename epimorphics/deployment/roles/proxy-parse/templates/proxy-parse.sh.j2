@@ -1,0 +1,146 @@
+#! /bin/bash
+
+
+TODAY=$(date +%Y-%m-%d)
+DEFAULT_GEODATA=/usr/local/share/GeoLite2/GeoLite2-City.mmdb
+
+Usage() {
+  echo "Usage:"
+  echo "  `basename $0` [-m <month>|-d <day>] -o <file> -s <s3 location>"
+  echo "  `basename $0` -h"
+  echo
+  echo "  -c <directory>   Data cache directory."
+  echo "                   Default: <working directory>/<year-month>."
+  echo "  -d <year-month-day> Year, month, date to parse. Default today."
+  echo "  -g <GeoIP data>  Path to GeoIP datafile. Default: $DEFAULT_GEODATA."
+  echo "  -h               Display Help message."
+  echo "  -o <file>        Resultant HTML file. Mandatory." 
+  echo "  -p <profile>     AWS Profile."
+  echo "  -s <s3 location> S3 Log location, this should contain a folder for each day."
+  echo "                   Mandatory."
+  echo "  -w <directory>   Working directory. Default: ."
+  echo 
+}
+
+Validate() {
+  if [ -n "$DAY" ]
+  then
+    if [ "$DAY" != $(date -d $DAY +%Y-%m-%d) ]
+    then
+      echo "Invalid DAY: $DAY" >&2
+      exit 1
+    fi
+  else
+    DAY="${DAY:-$TODAY}"
+  fi
+
+  if [ -z "$OUTPUT" ]
+  then
+    Usage
+    echo "No destination file" >&2
+    exit 1
+  fi
+
+  if [ -z "$S3" ]
+  then
+    Usage
+    echo "No S3 log location" >&2
+    exit 1
+  fi
+
+  if [ -d "$OUTPUT" ]
+  then
+    echo "Destination $OUTPUT: is a directory" >&2
+    exit 1
+  fi
+
+  DIR=$(dirname $OUTPUT)
+  if [ ! -w "$DIR" ]
+  then
+    echo "Destination $DIR: not a writable directory" >&2
+    exit 1
+  fi
+
+  if [ ! -w "$DIRECTORY" ] || [ ! -d "$DIRECTORY" ]
+  then
+    echo "Working directory $DIRECTORY: not a writable directory" >&2
+    exit 1
+  fi
+}
+
+
+Options() {
+  while getopts c:d:g:ho:p:s:w: opt
+  do
+    case $opt in
+      c)  DBPATH=$OPTARG;;
+      d)  DAY=$OPTARG;;
+      g)  GEODATA=$OPTARG;;
+      h)  Usage
+          exit 0;;
+      o)  OUTPUT=$OPTARG;;
+      p)  PROOUTPUT=$OPTARG;;
+      s)  S3=$OPTARG;;  # s3://hmlr-logs/logs/
+      w)  DIRECTORY=$OPTARG;;
+      *)  Usage
+          exit 1;;
+    esac
+  done
+  shift $(($OPTIND -1))
+}
+
+
+ConsolidateLogs() {
+  rc=1
+  HOST_LIST=$($AWS s3 ls $S3/ | awk '$1=="PRE" && $2~/{{ proxy.type }}/ {print $2}' | tr -d /)
+  for HOST in $HOST_LIST
+  do
+    [ -d ${DIRECTORY}/${DAY}/${HOST} ] && rm -rf ${DIRECTORY}/${DAY}/${HOST}
+    D=$S3/${HOST}/${DAY}/
+    for LOG in $($AWS s3 ls $D | awk -v D=$D '$4~/apache.info.proxy-/ {printf "%s%s\n",D,$4}')
+    do
+      mkdir -p ${DIRECTORY}/${DAY}/${HOST}
+      echo "Retrieving $LOG ..."
+      $AWS s3 cp $LOG - | gzip -dc | grep -wv "408" | /usr/local/bin/json2combined.py >> ${DIRECTORY}/${DAY}/${HOST}/apache.info.proxy
+      rc=0
+    done 
+  done
+  return $rc
+}
+
+Options $*
+
+DIRECTORY="${DIRECTORY:-.}"
+MONTH=$(date -d $DAY +%Y-%m)
+DBPATH="${DBPATH:-$DIRECTORY/$MONTH}"
+GEODATA="${GEODATA:-$DEFAULT_GEODATA}"
+
+CACHE_OPT="--persist --restore --db-path=$DBPATH"
+DATE_OPT="--time-format=%T --date-format=%d/%b/%Y"
+EXCLUDE_OPT="-e 10.0.0.0-10.255.255.255"
+FORMAT_OPT="--log-format=VCOMBINED"
+[ -n "$GEODATA" ] && GRO_OPT="--geoip-database=$GEODATA"
+[ -z "`tty`" ] && PROGRESS_OPT="--no-progress"
+GOACCESS="/usr/local/bin/goaccess $CACHE_OPT $DATE_OPT $EXCLUDE_OPT $FORMAT_OPT $GEO_OPT $PROGRESS_OPT"
+
+# echo DAY:$DAY
+# echo PROOUTPUT:$PROOUTPUT
+# echo DIRECTORY:$DIRECTORY
+# echo DBPATH:$DBPATH
+# echo GEODATA:${GEODATA}
+# echo OUTPUT:${OUTPUT}
+# echo S3:${S3}
+
+Validate
+[ -n "$PROOUTPUT" ] && PROOUTPUT_OPT="--profile $PROOUTPUT"
+AWS="aws $PROOUTPUT_OPT"
+
+if ConsolidateLogs
+then
+  mkdir -p $DBPATH
+  echo "Merging apache.info.proxy logs for $DAY ..."
+  /usr/local/bin/mergelog ${DIRECTORY}/${DAY}/*/apache.info.proxy | $GOACCESS - -o $OUTPUT
+  rm -rf ${DIRECTORY}/${DAY}
+fi
+
+exit 0

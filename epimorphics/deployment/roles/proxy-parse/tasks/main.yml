@@ -1,0 +1,92 @@
+- name: "Apache JSON logs processing"
+  tags:
+    - cfg
+  copy:
+    src: "{{ item }}"
+    dest: "/usr/local/bin/{{ item }}"
+    mode: 0770
+    owner: root
+    group: root
+  loop:
+    - "json2combined.py"
+
+
+- name: "Mergelog"
+  tags:
+    - cfg
+  unarchive:
+    src: https://epi-repository.s3.eu-west-1.amazonaws.com/release/mergelog/mergelog-4.5.tar.gz
+    dest: /usr/local
+    remote_src: yes
+
+
+- name: "Scratch/cache directories"
+  tags:
+    - cfg
+    - cron
+  file:
+    path: "{{ parse.cache }}"
+    owner: "ec2-user"
+    group: "ec2-user"
+    state: directory
+
+
+- name: "Log result directories"
+  tags:
+    - cfg
+    - cron
+  file:
+    path: "{{ parse.dest }}"
+    owner: "ec2-user"
+    group: "ec2-user"
+    state: directory
+
+
+- name: "Parse script"
+  tags:
+    - cfg
+    - cron
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: 0755
+    owner: root
+    group: root
+  loop_control:
+    label: "{{ item.dest | basename }}"
+  loop:
+    { src: "proxy-parse.sh.j2", dest: "{{ parse.file }}" }
+
+
+- name: "Cron wrapper"
+  tags:
+    - cfg
+    - cron
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: "ec2-user"
+    group: "ec2-user"
+    mode: 0755
+  loop_control:
+    label: "{{ item.dest | basename }}"
+  loop:
+    - { src: "cluster-month-log.j2", dest: "{{ parse.wrapper }}" }
+
+
+- name: "Cron tasks"
+  tags:
+    - cfg
+    - cron
+  cron:
+    user: "ec2-user"
+    name:   "{{ item.name }}"
+    minute: "{{ item.minute }}"
+    day:    "{{ item.day }}"
+    hour:   "{{ item.hour }}"
+    job:    "{{ item.job }}"
+  loop_control:
+    label: "{{ item.name }}"
+  loop:
+    - { name: "Monthly Cache cleanup", day: "2", minute: "1", hour: "0", job: "rm -r {{ parse.cache }}" }
+    - { name: "Daily Proxy Parse",  day: "*", minute: "30", hour: "3", job: "{{ parse.wrapper }}" }

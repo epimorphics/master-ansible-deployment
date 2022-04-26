@@ -6,7 +6,6 @@
     name: dns
 
 
-- include: "goaccess.yml"
 - include: "elasticsearch.yml"
 - include: "fluentd.yml"
 - include: "kibana.yml"

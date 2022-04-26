@@ -38,24 +38,11 @@
 - name: "GeoLite2 DB"
   tags:
     - geoip
+    - goaccess
   file:
     src:  ./GeoLite2-City_20211019
     path: /usr/local/share/GeoLite2
     state: link
-
-
-- name: "Apache logs processing"
-  tags:
-    - cfg
-    - goaccess
-  copy:
-    src: "{{ item }}"
-    dest: "/usr/local/bin/{{ item }}"
-    mode: 0770
-    owner: root
-    group: root
-  loop:
-    - "json2combined.py"
 
 
 - name: "Access DNS"
