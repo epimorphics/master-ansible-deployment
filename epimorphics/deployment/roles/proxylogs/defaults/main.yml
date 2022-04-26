@@ -1,7 +1,8 @@
 parse:
-  cache: "/home/ec2-user/scratch/.cache"
+  cache: "/var/log/docker/proxy/cache/goaccess"
   dest: "/var/lib/docker/proxy/www/logs"
   file: "/usr/local/bin/proxy-parse.sh"
+  src: "s3://{{ s3_logs }}/logs"
   type: "{{ external_proxy_host_type | default('pres') }}"
-  wrapper: "/home/ec2-user/month-log"
+  wrapper: "/root/yesterday-proxy-log.sh"
 

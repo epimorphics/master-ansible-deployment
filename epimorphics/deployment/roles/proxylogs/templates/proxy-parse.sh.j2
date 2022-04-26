@@ -92,7 +92,7 @@ Options() {
 
 ConsolidateLogs() {
   rc=1
-  HOST_LIST=$($AWS s3 ls $S3/ | awk '$1=="PRE" && $2~/{{ proxy.type }}/ {print $2}' | tr -d /)
+  HOST_LIST=$($AWS s3 ls $S3/ | awk '$1=="PRE" && $2~/{{ parse.type }}/ {print $2}' | tr -d /)
   for HOST in $HOST_LIST
   do
     [ -d ${DIRECTORY}/${DAY}/${HOST} ] && rm -rf ${DIRECTORY}/${DAY}/${HOST}
@@ -119,7 +119,7 @@ CACHE_OPT="--persist --restore --db-path=$DBPATH"
 DATE_OPT="--time-format=%T --date-format=%d/%b/%Y"
 EXCLUDE_OPT="-e 10.0.0.0-10.255.255.255"
 FORMAT_OPT="--log-format=VCOMBINED"
-[ -n "$GEODATA" ] && GRO_OPT="--geoip-database=$GEODATA"
+[ -n "$GEODATA" ] && GEO_OPT="--geoip-database=$GEODATA"
 [ -z "`tty`" ] && PROGRESS_OPT="--no-progress"
 GOACCESS="/usr/local/bin/goaccess $CACHE_OPT $DATE_OPT $EXCLUDE_OPT $FORMAT_OPT $GEO_OPT $PROGRESS_OPT"
 

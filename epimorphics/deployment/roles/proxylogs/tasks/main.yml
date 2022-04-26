@@ -26,8 +26,8 @@
     - cron
   file:
     path: "{{ parse.cache }}"
-    owner: "ec2-user"
-    group: "ec2-user"
+    owner: root
+    group: root
     state: directory
 
 
@@ -37,8 +37,8 @@
     - cron
   file:
     path: "{{ parse.dest }}"
-    owner: "ec2-user"
-    group: "ec2-user"
+    owner: root
+    group: root
     state: directory
 
 
@@ -55,7 +55,7 @@
   loop_control:
     label: "{{ item.dest | basename }}"
   loop:
-    { src: "proxy-parse.sh.j2", dest: "{{ parse.file }}" }
+    - { src: "proxy-parse.sh.j2", dest: "{{ parse.file }}" }
 
 
 - name: "Cron wrapper"
@@ -63,15 +63,15 @@
     - cfg
     - cron
   template:
-    src: "{{ item.src }}"
-    dest: "{{ item.dest }}"
-    owner: "ec2-user"
-    group: "ec2-user"
+    src: "{{ item | basename }}.j2"
+    dest: "{{ item }}"
+    owner: root
+    group: root
     mode: 0755
   loop_control:
-    label: "{{ item.dest | basename }}"
+    label: "{{ item | basename }}"
   loop:
-    - { src: "cluster-month-log.j2", dest: "{{ parse.wrapper }}" }
+    - "{{ parse.wrapper }}"
 
 
 - name: "Cron tasks"
@@ -79,7 +79,7 @@
     - cfg
     - cron
   cron:
-    user: "ec2-user"
+    user: root
     name:   "{{ item.name }}"
     minute: "{{ item.minute }}"
     day:    "{{ item.day }}"

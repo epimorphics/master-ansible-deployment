@@ -1,0 +1,6 @@
+#! /bin/bash
+
+YESTERDAY=$(date -d '-1 day' +%F)
+MONTH=$(date -d '-1 day' +%Y-%m)
+
+{{ parse.file }} -d $YESTERDAY -o {{ parse.dest }}/$MONTH.html -s {{ parse.src }} -w {{ parse.cache | dirname }} -c {{ parse.cache }} 2>&1 | logger -t cron && ln -fs $MONTH.html {{ parse.dest }}/index.html
