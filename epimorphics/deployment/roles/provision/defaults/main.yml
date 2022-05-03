@@ -40,7 +40,6 @@ security_group: "default"
 
 s3_readwrite:
   - "{{ s3_bucket }}"
-  - "{{ s3_backup_bucket }}"
   - "{{ s3_logs }}"
 
 # staff: "{{ vault_staff }}"
