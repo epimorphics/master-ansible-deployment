@@ -2,7 +2,7 @@
   tags:
     - tar
   unarchive:
-    src: "https://downloads.apache.org/jena/binaries/apache-jena-{{ version }}.tar.gz"
+    src: "https://archive.apache.org/dist/jena/binaries/apache-jena-{{ version }}.tar.gz"
     dest: "/usr/local"
     remote_src: yes
     exclude:
