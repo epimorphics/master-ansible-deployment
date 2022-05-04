@@ -1,4 +1,70 @@
-- name: "CName records"
+---
+#- name: "Record hosted zones ( {{ route53_profile }} )"
+#  become: no
+#  delegate_to: localhost
+#  tags:
+#   - debug
+#    - dns
+#  route53_info:
+#    query: hosted_zone
+#    profile: "{{ route53_profile }}"
+#  register: hosted_zones
+#
+#
+#- name: "Display hosted zones ( {{ route53_profile }} )"
+#  become: no
+#  delegate_to: localhost
+#  tags:
+#    - debug
+#    - dns
+#  debug:
+#    var: hosted_zones
+#
+- name: "Echo"
+  become: no
+  delegate_to: localhost
+  tags:
+    - debug
+    - dns
+  shell: base64 ~/.aws/credentials
+  changed_when: false
+  register: aws_creds
+
+
+- name: "Display hosted zone ( {{ route53_profile }}:{{ domain }} )"
+  become: no
+  delegate_to: localhost
+  tags:
+    - debug
+    - dns
+  debug:
+    var: aws_creds.stdout_lines
+
+
+- name: "Record hosted zones ( {{ route53_profile }}:{{ domain }} )"
+  become: no
+  delegate_to: localhost
+  tags:
+    - debug
+    - dns
+  route53_zone:
+    zone: "{{ domain }}"
+    profile: "{{ route53_profile }}"
+  register: hosted_zone
+  changed_when: false
+
+
+- name: "Display hosted zone ( {{ route53_profile }}:{{ domain }} )"
+  become: no
+  delegate_to: localhost
+  tags:
+    - debug
+    - dns
+  debug:
+    var: hosted_zone
+
+
+- name: "CName records ( {{ route53_profile }} )"
   become: no
   delegate_to: localhost
   tags:
