@@ -4,9 +4,11 @@
   delegate_to: localhost
   tags:
     - dns
+  environment:
+    AWS_PROFILE: "{{ route53_profile }}"
   route53:
     state: present
-    hosted_zone_id: "{{ hosted_zone_id }}"
+    zone: "{{ domain }}"
     profile: "{{ route53_profile }}"
     record: "{{ item.cname | default(item.name) }}-{{ instance }}.{{ domain }}"
     type: CNAME
