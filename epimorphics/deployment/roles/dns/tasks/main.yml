@@ -4,8 +4,6 @@
   delegate_to: localhost
   tags:
     - dns
-  environment:
-    AWS_PROFILE: "{{ route53_profile }}"
   route53:
     state: present
     zone: "{{ domain }}"
