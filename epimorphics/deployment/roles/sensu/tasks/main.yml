@@ -64,14 +64,13 @@
     restart_policy: "unless-stopped"
 
 
-- name: "Sensu Backens stats log rotation"
+- name: "Sensu stats log rotation"
   tags:
     - cfg 
     - logrotate
   template:
     src: "logrotate.j2"
     dest: "/etc/logrotate.d/sensu-backend"
-  notify: "Restart logrotate"
 
 
 - name: "Sensu api operational"

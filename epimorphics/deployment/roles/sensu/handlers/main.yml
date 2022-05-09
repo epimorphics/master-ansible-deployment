@@ -6,12 +6,3 @@
   docker_container:
     name: sensu
     state: absent
-
-
-- name: "Restart logrotate"
-  tags:
-    - logrotate
-    - sensu
-  service:
-    name:  "logrotate"
-    state: restarted
