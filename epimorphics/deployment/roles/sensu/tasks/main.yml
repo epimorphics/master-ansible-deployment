@@ -70,7 +70,7 @@
     - logrotate
   template:
     src: "logrotate.j2"
-    dest: "/etc/logrotate.d/sensu-backend"
+    dest: "/etc/logrotate.d/sensu"
 
 
 - name: "Sensu api operational"
