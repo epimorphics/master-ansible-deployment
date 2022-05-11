@@ -98,3 +98,20 @@
     - docker is defined
     - docker.network is defined
     - docker.network.name is defined
+
+
+- name: "Cron tasks"
+  tags:
+    - cfg
+    - cron
+  cron:
+    user: root
+    name:   "{{ item.name }}"
+    minute: "{{ item.minute }}"
+    day:    "{{ item.day }}"
+    hour:   "{{ item.hour }}"
+    job:    "{{ item.job }}"
+  loop_control:
+    label: "{{ item.name }}"
+  loop:
+    - { name: "Docker prune",  day: "*", minute: "30", hour: "22", job: "docker image prune -f; docker volume prune -f" }
