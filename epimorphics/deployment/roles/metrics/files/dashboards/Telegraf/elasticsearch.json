@@ -36,7 +36,7 @@
         "rgba(237, 129, 40, 0.89)",
         "#d44a3a"
       ],
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -186,7 +186,7 @@
         "rgba(237, 129, 40, 0.89)",
         "#d44a3a"
       ],
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -335,7 +335,7 @@
         "rgba(237, 129, 40, 0.89)",
         "#299c46"
       ],
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -469,7 +469,7 @@
         "rgba(237, 129, 40, 0.89)",
         "#d44a3a"
       ],
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -592,7 +592,7 @@
         "rgba(237, 129, 40, 0.89)",
         "#d44a3a"
       ],
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -715,7 +715,7 @@
         "rgba(237, 129, 40, 0.89)",
         "#d44a3a"
       ],
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "decimals": null,
       "fieldConfig": {
         "defaults": {
@@ -839,7 +839,7 @@
         "rgba(237, 129, 40, 0.89)",
         "#d44a3a"
       ],
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -962,7 +962,7 @@
         "rgba(237, 129, 40, 0.89)",
         "rgba(50, 172, 45, 0.97)"
       ],
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -1088,7 +1088,7 @@
         }
       ],
       "crosshairColor": "#8F070C",
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "display": "timeline",
       "expandFromQueryS": 0,
       "extendLastValue": true,
@@ -1246,7 +1246,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -1494,7 +1494,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -1634,7 +1634,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -1890,7 +1890,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -2029,7 +2029,7 @@
       "bars": true,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -2196,7 +2196,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -2343,7 +2343,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -2481,7 +2481,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -2619,7 +2619,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -2759,7 +2759,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -2952,7 +2952,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -3137,7 +3137,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -3282,7 +3282,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -3422,7 +3422,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -3560,7 +3560,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -3807,7 +3807,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -3947,7 +3947,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -4135,7 +4135,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -4275,7 +4275,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -4419,7 +4419,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -4559,7 +4559,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -4693,7 +4693,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -4837,7 +4837,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -4981,7 +4981,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -5125,7 +5125,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -5497,7 +5497,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -5966,7 +5966,7 @@
   "style": "dark",
   "tags": [
     "Elasticsearch",
-    "InfluxDB",
+    "Telegraf",
     "Telegraf"
   ],
   "templating": {
@@ -5978,7 +5978,7 @@
           "text": "docker-cluster",
           "value": "docker-cluster"
         },
-        "datasource": "InfluxDB",
+        "datasource": "Telegraf",
         "definition": "show tag values from elasticsearch_cluster_health with key = \"name\"",
         "hide": 0,
         "includeAll": false,
@@ -6004,7 +6004,7 @@
           "text": "autogen",
           "value": "autogen"
         },
-        "datasource": "InfluxDB",
+        "datasource": "Telegraf",
         "definition": "show retention policies",
         "hide": 0,
         "includeAll": false,

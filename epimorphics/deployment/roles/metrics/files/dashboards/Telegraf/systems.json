@@ -12,7 +12,7 @@
       }
     ]
   },
-  "description": "InfluxDB dashboards for telegraf metrics",
+  "description": "Telegraf dashboards for telegraf metrics",
   "editable": true,
   "gnetId": 928,
   "graphTooltip": 1,
@@ -44,7 +44,7 @@
         "rgba(237, 129, 40, 0.89)",
         "rgba(50, 172, 45, 0.97)"
       ],
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "decimals": 1,
       "editable": true,
       "error": false,
@@ -170,7 +170,7 @@
         "rgba(237, 129, 40, 0.89)",
         "rgba(245, 54, 54, 0.9)"
       ],
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "decimals": 1,
       "editable": true,
       "error": false,
@@ -296,7 +296,7 @@
         "rgba(237, 129, 40, 0.89)",
         "rgba(245, 54, 54, 0.9)"
       ],
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "decimals": 0,
       "editable": true,
       "error": false,
@@ -422,7 +422,7 @@
         "rgba(237, 129, 40, 0.89)",
         "rgba(245, 54, 54, 0.9)"
       ],
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "decimals": 0,
       "editable": true,
       "error": false,
@@ -548,7 +548,7 @@
         "rgba(237, 129, 40, 0.89)",
         "rgba(245, 54, 54, 0.9)"
       ],
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "decimals": 0,
       "editable": true,
       "error": false,
@@ -674,7 +674,7 @@
         "rgba(237, 129, 40, 0.89)",
         "rgba(245, 54, 54, 0.9)"
       ],
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "editable": true,
       "error": false,
       "fieldConfig": {
@@ -811,7 +811,7 @@
         "rgba(237, 129, 40, 0.89)",
         "rgba(245, 54, 54, 0.9)"
       ],
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "editable": true,
       "error": false,
       "fieldConfig": {
@@ -936,7 +936,7 @@
         "rgba(237, 129, 40, 0.89)",
         "rgba(245, 54, 54, 0.9)"
       ],
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "decimals": 0,
       "editable": true,
       "error": false,
@@ -1062,7 +1062,7 @@
         "rgba(237, 129, 40, 0.89)",
         "rgba(245, 54, 54, 0.9)"
       ],
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "decimals": 0,
       "editable": true,
       "error": false,
@@ -1194,7 +1194,7 @@
         "rgba(237, 129, 40, 0.89)",
         "rgba(50, 172, 45, 0.97)"
       ],
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "decimals": 2,
       "editable": true,
       "error": false,
@@ -1339,7 +1339,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "editable": true,
       "error": false,
       "fieldConfig": {
@@ -1480,7 +1480,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "editable": true,
       "error": false,
       "fieldConfig": {
@@ -1615,7 +1615,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "editable": true,
       "error": false,
       "fieldConfig": {
@@ -1771,7 +1771,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "editable": true,
       "error": false,
       "fieldConfig": {
@@ -1930,7 +1930,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "editable": true,
       "error": false,
       "fieldConfig": {
@@ -2069,7 +2069,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "editable": true,
       "error": false,
       "fieldConfig": {
@@ -2208,7 +2208,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "editable": true,
       "error": false,
       "fieldConfig": {
@@ -2419,7 +2419,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -2590,7 +2590,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "editable": true,
       "error": false,
       "fieldConfig": {
@@ -2755,7 +2755,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "editable": true,
       "error": false,
       "fieldConfig": {
@@ -2901,7 +2901,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "editable": true,
       "error": false,
       "fieldConfig": {
@@ -3309,7 +3309,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "decimals": 0,
       "editable": true,
       "error": false,
@@ -3592,7 +3592,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "editable": true,
       "error": false,
       "fieldConfig": {
@@ -3841,7 +3841,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "editable": true,
       "error": false,
       "fieldConfig": {
@@ -4139,7 +4139,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "decimals": 1,
       "editable": true,
       "error": false,
@@ -4389,7 +4389,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "editable": true,
       "error": false,
       "fieldConfig": {
@@ -4785,7 +4785,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "editable": true,
       "error": false,
       "fieldConfig": {
@@ -5196,7 +5196,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "editable": true,
       "error": false,
       "fieldConfig": {
@@ -5392,7 +5392,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "decimals": 2,
       "editable": true,
       "error": false,
@@ -5591,7 +5591,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "decimals": 2,
       "editable": true,
       "error": false,
@@ -5863,7 +5863,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "editable": true,
       "error": false,
       "fieldConfig": {
@@ -6066,7 +6066,7 @@
       "bars": true,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "editable": true,
       "error": false,
       "fieldConfig": {
@@ -6270,7 +6270,7 @@
       "bars": true,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "decimals": 1,
       "editable": true,
       "error": false,
@@ -6470,7 +6470,7 @@
       "bars": true,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "editable": true,
       "error": false,
       "fieldConfig": {
@@ -6684,7 +6684,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "editable": true,
       "error": false,
       "fieldConfig": {
@@ -6825,7 +6825,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "editable": true,
       "error": false,
       "fieldConfig": {
@@ -6982,7 +6982,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "editable": true,
       "error": false,
       "fieldConfig": {
@@ -7183,7 +7183,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "editable": true,
       "error": false,
       "fieldConfig": {
@@ -7384,7 +7384,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "editable": true,
       "error": false,
       "fieldConfig": {
@@ -7607,7 +7607,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "editable": true,
       "error": false,
       "fieldConfig": {
@@ -7767,7 +7767,7 @@
       "bars": true,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "editable": true,
       "error": false,
       "fieldConfig": {
@@ -7997,7 +7997,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -8135,7 +8135,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -8273,7 +8273,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -8411,7 +8411,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "InfluxDB",
+      "datasource": "Telegraf",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -8599,7 +8599,7 @@
   "style": "dark",
   "tags": [
     "Telegraf",
-    "InfluxDB"
+    "Telegraf"
   ],
   "templating": {
     "list": [
@@ -8607,10 +8607,10 @@
         "allFormat": "glob",
         "current": {
           "selected": false,
-          "text": "InfluxDB",
-          "value": "InfluxDB"
+          "text": "Telegraf",
+          "value": "Telegraf"
         },
-        "datasource": "InfluxDB telegraf",
+        "datasource": "Telegraf telegraf",
         "hide": 2,
         "includeAll": false,
         "label": "",
@@ -8697,7 +8697,7 @@
           "text": "hmlr-bastion.epimorphics.net",
           "value": "hmlr-bastion.epimorphics.net"
         },
-        "datasource": "InfluxDB",
+        "datasource": "Telegraf",
         "definition": "",
         "hide": 0,
         "includeAll": false,
