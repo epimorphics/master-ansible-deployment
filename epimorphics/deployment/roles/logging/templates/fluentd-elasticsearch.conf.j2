@@ -96,7 +96,7 @@
 {{ fluentd.custom }}
 
 # Transform JSON TS tag
-<match alertmanager.syslog.daemon.* dms.syslog.daemon.* prometheus.syslog.daemon.* sensu-am.syslog.daemon.*>
+<match alertmanager.syslog.daemon.* dms.syslog.daemon.* fuseki.syslog.daemon.* prometheus.syslog.daemon.* sensu-am.syslog.daemon.*>
   @id rewrite_json_ts_tag
   @type rewrite_tag_filter
   @log_level warn
