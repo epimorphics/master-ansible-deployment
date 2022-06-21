@@ -1,6 +1,9 @@
 ---
-- include: "disks.yml"
-- include: "{{ ansible_distribution }}.yml"
+- name: "Disks"
+  include_tasks: "disks.yml"
+
+- name: "{{ ansible_distribution }}"
+  include_tasks: "{{ ansible_distribution }}.yml"
 
 
 - name: "Hostname"
@@ -11,7 +14,8 @@
     name: "{{ hostname }}.{{ domainname }}"
 
 
-- include: "ntp.yml"
+- name: "NTP"
+  include_tasks: "ntp.yml"
 
 
 - name: "Secure system files"
@@ -84,7 +88,9 @@
     state: latest
 
 
-- include: "update.yml"
+- name: "Package update"
+  include_tasks: "update.yml"
 
 
-- include: "services.yml"
+- name: "Services"
+  include_tasks: "services.yml"

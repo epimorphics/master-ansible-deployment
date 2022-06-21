@@ -150,6 +150,7 @@
     - datasources/cloudwatch.json.j2
     - datasources/elasticsearch.json.j2
     - datasources/influxdb.json.j2
+    - datasources/telegraf.json.j2
   register: uri
   changed_when: uri.status == 200
 

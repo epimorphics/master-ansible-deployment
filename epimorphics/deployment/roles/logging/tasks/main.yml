@@ -6,8 +6,15 @@
     name: dns
 
 
-- include: "elasticsearch.yml"
-- include: "fluentd.yml"
-- include: "kibana.yml"
+- name: "Elasticserach"
+  include_tasks: "elasticsearch.yml"
 
-- include: "services.yml"
+- name: "Fluentd"
+  include_tasks: "fluentd.yml"
+
+- name: "Kibana"
+  include_tasks: "kibana.yml"
+
+
+- name: "Services"
+  include_tasks: "services.yml"

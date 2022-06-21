@@ -79,13 +79,16 @@
     - sensu
 
 
-- include: "{{ ansible_distribution }}.yml"
+- name: "{{ ansible_distribution }}"
+  include_tasks: "{{ ansible_distribution }}.yml"
 
 
-- include: "telegraf.yml"
+- name: "Telegraf"
+  include_tasks: "telegraf.yml"
   when: telegraf is defined
 
-- include: "services.yml"
+- name: "Services"
+  include_tasks: "services.yml"
 
 
 - name: "Docker network ( {{ docker.network.name }} )"

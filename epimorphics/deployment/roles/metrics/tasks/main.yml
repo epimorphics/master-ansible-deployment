@@ -6,6 +6,11 @@
     name: dns
 
 
-- include: "influxdb.yml"
-- include: "prometheus.yml"
-- include: "grafana.yml"
+- name: "InfluxDB"
+  include_tasks: "influxdb.yml"
+
+- name: "Prometheus"
+  include_tasks: "prometheus.yml"
+
+- name: "Grafana"
+  include_tasks: "grafana.yml"

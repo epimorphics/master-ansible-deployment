@@ -52,5 +52,3 @@
   when:
     - asg is defined
     - asg.changed
-
-

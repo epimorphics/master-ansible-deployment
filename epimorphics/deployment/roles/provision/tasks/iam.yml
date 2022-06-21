@@ -11,7 +11,7 @@
     state: present
 
 
-- name: IAM Role
+- name: "IAM Role"
   tags:
     - iam
   vars:
@@ -21,11 +21,12 @@
     state: "present"
     assume_role_policy_document: "{{ lookup('template', 'iam/role-trust.json.j2') }}"
     managed_policies: "{{ iam_policies }}"
+    purge_policies: true
     description: "{{ sns.policy.description }}"
   register: role
 
 
-- name: IAM Policies
+- name: "IAM Policies"
   tags:
     - iam
   iam_policy:
@@ -34,6 +35,7 @@
     policy_name: "{{ item.policy }}"
     policy_json: "{{ lookup('template', item.file) }}"
     state: "present"
+    skip_duplicates: true
   loop_control:
     label: "{{ item.policy }}"
   loop:

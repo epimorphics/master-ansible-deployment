@@ -6,4 +6,5 @@
     name: dns
 
 
-- include: "alertmanager.yml"
+- name: "Alertmanager"
+  include_tasks: "alertmanager.yml"

@@ -36,7 +36,7 @@
 
 - block:
   # Internet Gateway
-  - name: Internet Gateway
+  - name: "Internet Gateway"
     tags:
       - ec2
       - net
@@ -60,7 +60,7 @@
     ec2_vpc_subnet:
       vpc_id: "{{ vpc_id }}"
       region: "{{ region }}"
-      cidr: "{{ vpc.cidr | ipsubnet(28, (network_segment * (az | length) + index)) }}"
+      cidr: "{{ vpc.cidr | ansible.utils.ipsubnet(28, (network_segment * (az | length) + index)) }}"
       az: "{{ iter }}"
       resource_tags:
         Ansible: "True"
@@ -70,9 +70,10 @@
     loop: "{{ az }}" 
     loop_control:
       loop_var: iter
-      label: "{{ instance }}-{{ env }}-{{ iter }} {{ vpc.cidr | ipsubnet(28, (network_segment * (az | length) + index)) }}"
+      label: "{{ instance }}-{{ env }}-{{ iter }} {{ vpc.cidr | ansible.utils.ipsubnet(28, (network_segment * (az | length) + index)) }}"
       index_var: index
   when: vpc_id is defined
+
 
 - name: "VPC Subnet Info"
   tags:
@@ -87,6 +88,7 @@
       "tag:Env": "{{ env }}"
   register: subnet_info
   check_mode: no
+
 
 - name:  "Record subnet ids"
   tags:

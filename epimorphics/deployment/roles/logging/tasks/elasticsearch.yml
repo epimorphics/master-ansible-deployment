@@ -62,7 +62,8 @@
       - "{{ es_exporter_container.port }}:{{ es_exporter_container.port }}"
 
 
-- include: "telegraf.yml"
+- name: "Telegraf"
+  include_tasks: "telegraf.yml"
 
 
 # Datasource provisioning is flaky, api calls work but the api needs to be up

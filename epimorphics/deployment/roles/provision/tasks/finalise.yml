@@ -1,4 +1,5 @@
-- include: "ec2_instances.yml"
+- name: "EC2 info"
+  include_tasks: "ec2_info.yml"
 
 
 - name: "Elastic IP"
@@ -22,7 +23,8 @@
     - iter.public_ip_address is defined
 
 
-- include: "ec2_instances.yml"
+- name: "EC2 info"
+  include_tasks: "ec2_info.yml"
 
 
 - name: "EC2 DNS"
@@ -59,8 +61,7 @@
     name: "{{ instance }}-{{ env }}-{{ iter.type }}"
     scheme: "{{ (iter.type == 'data') | ternary('internal', 'internet-facing', omit) }}"
     subnets: "{{ subnet_ids }}"
-    security_group_names:
-      - "{{ load_balancers.security_groups[iter.type] }}"
+    security_group_names: "{{ load_balancers.security_groups[iter.type] }}"
     cross_az_load_balancing: yes
     listeners:
       - protocol: http
@@ -124,7 +125,7 @@
     tags:
       - asg
       - elb
-    ec2_elb:
+    elb_instance:
       region: "{{ region }}"
       ec2_elbs: "{{ iter.0.elb.name }}"
       instance_id: "{{ iter.1.instance_id }}"

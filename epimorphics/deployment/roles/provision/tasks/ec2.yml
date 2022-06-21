@@ -1,5 +1,7 @@
 ---
-- include: "asg.yml"
+- name: "ASG"
+  include_tasks: "asg.yml"
+
 
 - name: "Provision EC2 Instance Groups"
   tags:
@@ -7,21 +9,22 @@
     - ec2
   vars:
     elb: "{{ instance }}-{{ env }}-{{ item.type }}"
-  ec2:
+  ec2_instance:
     region: "{{ region }}"
     key_name: "{{ key.name }}"
-    group: "[ 'base' ] + {{ item.security_group | default([]) }}"
     instance_type: "{{ item.instance }}"
-    image: "{{ item.image | default(ec2_default_image) }}"
+    image_id: "{{ item.image | default(ec2_default_image) }}"
     termination_protection: "{{ item.termination_protection | default('no') }}"
     vpc_subnet_id:  "{{ subnet_ids[index % (subnet_ids | length)] }}"
     exact_count: "{{ item.count | default(1) }}"
-    assign_public_ip: "yes"
-    monitoring: "yes"
-    count_tag:
-      Type: "{{ item.type }}"
-    instance_profile_name: "{{ iam_role }}"
-    instance_tags:
+    network:
+      assign_public_ip: "yes"
+      monitoring: "yes"
+      groups: "[ 'base' ] + {{ item.security_group | default([]) }}"
+#   count_tag:
+#     Type: "{{ item.type }}"
+    instance_role: "{{ iam_role }}"
+    tags:
       Ansible: "True"
       Type: "{{ item.type }}"
       Env: "{{ env }}"
@@ -73,7 +76,8 @@
     - ec2.changed
 
 
-- include: "ec2_instances.yml"
+- name: "EC2 info"
+  include_tasks: "ec2_info.yml"
 
 
 - name: "ASG EC2 Names"
@@ -105,15 +109,16 @@
     - item.state.name == "running"
 
 
-- include: "ec2_instances.yml"
+- name: "EC2 info"
+  include_tasks: "ec2_info.yml"
 
 
-- name: EC2 State
+- name: "EC2 State"
   tags:
     - debug
     - dns
     - state
-  ec2:
+  ec2_instance:
     region: "{{ region }}"
     instance_id: "{{ item.instance_id }}"
     state: "running"

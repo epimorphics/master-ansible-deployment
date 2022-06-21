@@ -77,7 +77,9 @@ sns:
           minDelayTarget: 2
           maxDelayTarget: 4
           numRetries: 3
+          numMinDelayRetries: 0
           numMaxDelayRetries: 3
+          numNoDelayRetries: 0
           backoffFunction: "linear"
         disableSubscriptionOverrides: True
         defaultThrottlePolicy:

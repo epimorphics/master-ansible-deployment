@@ -62,6 +62,7 @@
     image: "{{ prometheus.image }}:{{ prometheus.version }}"
     command:
       - "--config.file=/etc/prometheus/prometheus.yml --log.format=json --web.external-url https://{{ prometheus_container.name }}-{{ instance }}.{{ domain }}"
+    command_handling: "compatibility"
     log_driver: "{{ docker.logging.driver }}"
     log_options: "{{ docker.logging.options }}"
     network_mode: "{{ docker.network.mode }}"

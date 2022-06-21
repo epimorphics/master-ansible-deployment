@@ -12,6 +12,7 @@
     managed_policies:
       - "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
     description: "Lamba Execution"
+    purge_policies: true
   register: lambda_execution
 
 

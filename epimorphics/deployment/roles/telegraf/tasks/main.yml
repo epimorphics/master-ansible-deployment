@@ -40,4 +40,5 @@
   notify: "Telegraf service restart"
   
 
-- include: "services.yml"
+- name: "Services"
+  include_tasks: "services.yml"

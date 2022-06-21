@@ -1,5 +1,5 @@
 ---
-- name: EC2 Info
+- name: "EC2 Info"
   check_mode: no
   tags:
     - asg
