@@ -34,6 +34,7 @@
         ports:
           - -1
         cidr_ip:  "{{ base.incoming.icmp | default(vpc.cidr) }}"
+    purge_tags: false
     tags:
       Ansible: "true"
       Inst: "{{ instance }}"
@@ -57,6 +58,7 @@
     rules:
       - proto: all
         cidr_ip:  "{{ item.ip }}/32"
+    purge_tags: false
     tags:
       Ansible: "true"
       Inst: "{{ instance }}"
@@ -79,6 +81,7 @@
     region: "{{ region }}"
     vpc_id: "{{ vpc_id }}"
     rules: "{{ item.rules }}"
+    purge_tags: false
     tags:
       Ansible: "true"
       Inst: "{{ instance }}"

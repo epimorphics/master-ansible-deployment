@@ -12,6 +12,7 @@
       region: "{{ region }}"
       name: "{{ vpc.name }}"
       cidr_block: "{{ vpc.cidr }}"
+      purge_tags: false
       tags:
         Ansible: "true"
         Inst: "{{ instance }}"
@@ -62,6 +63,7 @@
       region: "{{ region }}"
       cidr: "{{ vpc.cidr | ansible.utils.ipsubnet(28, (network_segment * (az | length) + index)) }}"
       az: "{{ iter }}"
+      purge_tags: false
       resource_tags:
         Ansible: "True"
         Env: "{{ env }}"

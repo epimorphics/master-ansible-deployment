@@ -44,19 +44,68 @@
   loop_control:
     label: "{{ iter.tags.Name | default(iter.instance_id) }}: {{ iter.public_ip_address | default('No public IP') }}"
     loop_var: iter
-  when: 
+  when:
     - iter.tags.Ansible is defined
     - iter.tags.Env is defined
     - iter.tags.Env == env
     - iter.public_ip_address is defined
 
 
+## There is a bug that means ELB cannot be created while specifying SG by name.
+## https://github.com/ansible-collections/amazon.aws/issues/589
+## https://github.com/ansible-collections/amazon.aws/issues/914
+## There is a workround that creates the ELB then adds the SG.
 - name: "Provision EC2 Load Balancer"
   tags:
     - asg
     - ec2
     - elb
-  ec2_elb_lb:
+  elb_classic_lb:
+    region: "{{ region }}"
+    name: "{{ instance }}-{{ env }}-{{ iter.type }}"
+    scheme: "{{ (iter.type == 'data') | ternary('internal', 'internet-facing', omit) }}"
+    subnets: "{{ subnet_ids }}"
+#   security_group_names: "{{ load_balancers.security_groups[iter.type] }}"
+    cross_az_load_balancing: yes
+    listeners:
+      - protocol: http
+        load_balancer_port: 80
+        instance_port: 80
+    health_check:
+        ping_protocol: http
+        ping_port: 80
+        ping_path: "/server-status" # not required for tcp or ssl
+        response_timeout: 5 # seconds
+        interval: 10 # seconds
+        unhealthy_threshold: 2
+        healthy_threshold: 5
+    tags:
+      Ansible: "True"
+      Type: "{{ iter.type }}"
+      Env: "{{ env }}"
+      Inst: "{{ instance }}"
+    idle_timeout: "{{ elb.timeout }}"
+    connection_draining_timeout: "{{ elb.timeout }}"
+    state: present
+    wait: True
+  loop: "{{ (ec2_inst_lc | default([]) ) + (ec2_inst | default([]) ) }}"
+  loop_control:
+    label: "{{ instance }}-{{ env }}-{{ iter.type }}"
+    loop_var: iter
+  register: ec2_lb
+  when:
+    - ec2_inst_lc is defined or ec2_inst is defined
+    - load_balancers is defined
+    - subnet_ids is defined
+    - iter.type
+
+
+- name: "Provision EC2 Load Balancer (SG)"
+  tags:
+    - asg
+    - ec2
+    - elb
+  elb_classic_lb:
     region: "{{ region }}"
     name: "{{ instance }}-{{ env }}-{{ iter.type }}"
     scheme: "{{ (iter.type == 'data') | ternary('internal', 'internet-facing', omit) }}"
@@ -86,13 +135,14 @@
     wait: True
   loop: "{{ (ec2_inst_lc | default([]) ) + (ec2_inst | default([]) ) }}"
   loop_control:
-    label: "{{ iter.type }}"
+    label: "{{ instance }}-{{ env }}-{{ iter.type }}"
     loop_var: iter
   register: ec2_lb
   when:
     - ec2_inst_lc is defined or ec2_inst is defined
     - load_balancers is defined
     - subnet_ids is defined
+    - iter.type
 
  
 - name: "LB DNS"

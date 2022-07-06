@@ -24,6 +24,7 @@
 #   count_tag:
 #     Type: "{{ item.type }}"
     instance_role: "{{ iam_role }}"
+    purge_tags: false
     tags:
       Ansible: "True"
       Type: "{{ item.type }}"
@@ -50,6 +51,7 @@
   ec2_tag:
     region: "{{ region }}"
     resource: "{{ item.1.id }}"
+    purge_tags: false
     tags:
       Name: "{{ hostname_root }}-{{ item.0.item.type }}{{ (((item.0.item.count|default('1')|int) != 1 ) or hostname_index ) | ternary(fcnt, '') }}"
       Server: "{{ item.0.item.type }}{{ fcnt }}"
@@ -90,6 +92,7 @@
   ec2_tag:
     region: "{{ region }}"
     resource: "{{ item.instance_id }}"
+    purge_tags: false
     tags: 
       Name: "{{ hostname_root }}-{{ item.tags.Type | default('') }}{{ fcnt }}"
       Server: "{{ item.tags.Type | default('') }}{{ fcnt }}"
@@ -172,6 +175,7 @@
     - volume
   ec2_tag:
     region: "{{ region }}"
+    purge_tags: false
     resource: "{{ item.1.ebs.volume_id }}"
     tags:
       Ansible: "True"

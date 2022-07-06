@@ -23,6 +23,7 @@
     region: "{{ region }}"
     name: "{{ key.name }}"
     key_material: "{{ key.material }}"
+    purge_tags: false
 
 
 - name: "IAM"
