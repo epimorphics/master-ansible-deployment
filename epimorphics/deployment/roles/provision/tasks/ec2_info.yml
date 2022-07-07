@@ -11,4 +11,7 @@
     - state
   ec2_instance_info:
     region: "{{ region }}"
+    filters:
+      "tag:Ansible": "True"
+      "tag:Env": "{{ env }}"
   register: ec2_instances

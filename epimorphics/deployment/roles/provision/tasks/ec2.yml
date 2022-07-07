@@ -21,8 +21,6 @@
       assign_public_ip: "yes"
       monitoring: "yes"
       groups: "[ 'base' ] + {{ item.security_group | default([]) }}"
-#   count_tag:
-#     Type: "{{ item.type }}"
     instance_role: "{{ iam_role }}"
     purge_tags: false
     tags:
@@ -41,34 +39,6 @@
     - ec2_inst is defined
 
 
-# Tagging EC2 instance
-- name: "EC2 Instance Tags"
-  tags:
-    - ec2
-  vars: 
-    indx: "{{ ( item.0.item.count | default(1) ) - item.1.ami_launch_index|int }}"
-    fcnt: "{{ '-%02d' | format(indx|int) }}"
-  ec2_tag:
-    region: "{{ region }}"
-    resource: "{{ item.1.id }}"
-    purge_tags: false
-    tags:
-      Name: "{{ hostname_root }}-{{ item.0.item.type }}{{ (((item.0.item.count|default('1')|int) != 1 ) or hostname_index ) | ternary(fcnt, '') }}"
-      Server: "{{ item.0.item.type }}{{ fcnt }}"
-      Index: "{{ indx }}"
-  loop_control:
-    label: "{{ item.0.item.type }} {{ indx }} - {{ item.1.id }}"
-  with_subelements:
-    - "{{ ec2.results }}"
-    - tagged_instances
-  when: 
-    - ec2.results is defined
-    - item.1.tags.Ansible is defined
-    - item.1.tags.Env is defined
-    - item.1.tags.Env == env
-    - item.1.tags.Index is not defined
-
-
 # Pause to allow tags to register
 - name: "Waiting for new hosts to start..."
   pause:
@@ -82,6 +52,34 @@
   include_tasks: "ec2_info.yml"
 
 
+# Tagging EC2 instance
+- name: "EC2 Instance Tags"
+  tags:
+    - ec2
+  vars: 
+    indx: "{{  item.count | default(1) }}"
+    fcnt: "{{ '-%02d' | format(indx|int) }}"
+    name: "{{ hostname_root }}-{{ item.tags.Type }}{{ (((item.count|default(1)|int) != 1 ) or hostname_index ) | ternary(fcnt, '') }}"
+  ec2_tag:
+    region: "{{ region }}"
+    resource: "{{ item.instance_id }}"
+    purge_tags: false
+    tags:
+      Name: "{{ name }}"
+      Server: "{{ item.tags.Type }}{{ fcnt }}"
+      Index: "{{ indx }}"
+  loop_control:
+    label: "{{ item.instance_id }}: {{ name }}"
+  loop: "{{ ec2_instances.instances }}"
+  when: 
+    - ec2_inst is defined
+    - item.tags['aws:autoscaling:groupName'] is not defined
+    - item.tags.Ansible is defined
+    - item.tags.Env is defined
+    - item.tags.Env == env
+    - item.tags.Index is not defined
+
+
 - name: "ASG EC2 Names"
   tags:
     - asg
@@ -89,16 +87,17 @@
   vars:
     indx: "{{ item.private_ip_address.split('.')[-1] | default('') }}"
     fcnt: "{{ '-%03d' | format(indx|int) }}"
+    name: "{{ hostname_root }}-{{ item.tags.Type }}{{ fcnt }}"
   ec2_tag:
     region: "{{ region }}"
     resource: "{{ item.instance_id }}"
     purge_tags: false
     tags: 
-      Name: "{{ hostname_root }}-{{ item.tags.Type | default('') }}{{ fcnt }}"
+      Name: "{{ name }}"
       Server: "{{ item.tags.Type | default('') }}{{ fcnt }}"
       Index: "{{ indx }}"
   loop_control:
-    label: "{{ item.instance_id }}"
+    label: "{{ item.instance_id }}: {{ name }}"
   loop: "{{ ec2_instances.instances }}"
   register: asg
   when: 
@@ -147,6 +146,7 @@
     delete_on_termination: "{{ item[1].ebs.delete_on_termination }}"
     volume_size: "{{ item[1].ebs.volume_size }}"
     volume_type: "{{ item[1].ebs.volume_type }}"
+    purge_tags: false
     tags:
       Ansible: "True"
       Host: "{{ item.0.tags.Name | default('') }}"

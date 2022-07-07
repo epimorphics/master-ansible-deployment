@@ -144,7 +144,7 @@
     - subnet_ids is defined
     - iter.type
 
- 
+
 - name: "LB DNS"
   tags:
     - asg
@@ -168,6 +168,7 @@
     - ec2_lb is defined
     - ec2_lb.results is defined
     - iter.elb is defined
+    - iter.elb.dns_name is defined
 
 
 - block:
