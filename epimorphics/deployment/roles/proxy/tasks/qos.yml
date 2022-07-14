@@ -1,0 +1,15 @@
+- name: "QoS config"
+  tags:
+    - cfg
+  template:
+    dest: "{{ proxy.directory }}/vhosts/{{ item.dest }}"
+    src: "{{ item.src }}"
+    owner: root
+    group: root
+    mode: "0644"
+  loop:
+    - { src: "qos.conf.j2",      dest: "extra/qos.conf" }
+  loop_control:
+    label: '{{ item.dest }}'
+  notify: "Reload proxy container"
+

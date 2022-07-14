@@ -4,7 +4,7 @@ RewriteCond %{QUERY_STRING} "SERVICE(%20|\+)*%3C"
 RewriteRule .* - [F,L]
 
 {% for agent in blocked.agents | sort %}
-RewriteCond %{HTTP_USER_AGENT} {{ agent }}
+RewriteCond %{HTTP_USER_AGENT} "{{ agent }}"
 RewriteRule .* - [F,L]
 
 {% endfor %}
