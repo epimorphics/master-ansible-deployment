@@ -1,0 +1,7 @@
+RequestHeader set "x-request-id" "%{UNIQUE_ID}e" 
+
+SetEnvIf X-Forwarded-For "^." is-forwarder
+LogFormat "%h %l %u %t \"%r\" %>s %b  \"%{Referer}i\" \"%{User-Agent}i\" %L %D %{UNIQUE_ID}e" combined-duration
+LogFormat "%{X-Forwarded-For}i %l %u %t \"%r\" %>s %b  \"%{Referer}i\" \"%{User-Agent}i\" %L %D %{UNIQUE_ID}e" combined-duration-fwd
+CustomLog   /opt/bitnami/apache2/logs/access_log combined-duration-fwd  env=is-forwarder
+CustomLog   /opt/bitnami/apache2/logs/access_log combined-duration      env=!is-forwarder

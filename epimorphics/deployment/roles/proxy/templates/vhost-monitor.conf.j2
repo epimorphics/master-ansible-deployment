@@ -1,0 +1,91 @@
+LoadModule status_module modules/mod_status.so
+
+
+OIDCProviderMetadataURL "https://accounts.google.com/.well-known/openid-configuration"
+OIDCClientID {{ oauth.client_id }}
+OIDCClientSecret {{ oauth.client_secret }}
+OIDCCryptoPassphrase {{ oauth.passphrase }}
+OIDCRedirectURI "/redirect_uri"
+OIDCResponseType "code"
+OIDCStateMaxNumberOfCookies 48
+OIDCScope "openid profile email"
+OIDCAuthRequestParams "prompt=select_account&access_type=offline"
+
+OIDCSessionInactivityTimeout 86400
+OIDCSessionMaxDuration 31536000
+OIDCRefreshAccessTokenBeforeExpiry 60
+OIDCUserInfoRefreshInterval 3600
+
+# -----------------------------------------------------------------------------
+<VirtualHost *:{{ proxy.port.http }}>
+    ServerName localhost
+    <Location /server-status>
+        SetHandler server-status
+        Order allow,deny
+        Allow from all
+    </Location>
+</VirtualHost>
+# -----------------------------------------------------------------------------
+
+{% for item in vhosts %}
+<VirtualHost *:{{ proxy.port.http }}>
+    ServerName {{ item.cname | default(item.name) }}-{{ instance }}.{{ domain }}
+
+    RedirectMatch ^(/?)$ https://{{ item.cname | default(item.name) }}-{{ instance }}.{{ domain }}{{ item.entrypoint | default('/') }}
+</VirtualHost>
+# -----------------------------------------------------------------------------
+
+{% endfor %}
+
+{% for item in vhosts %}
+<VirtualHost *:{{ proxy.port.https }}>
+
+    ServerName {{ item.cname | default(item.name) }}-{{ instance }}.{{ domain }}
+{% if item.root is defined %}
+    DocumentRoot {{ item.root }}
+{% endif %}
+
+    Include conf/vhosts/extra/log-format.conf
+
+    ProxyRequests On 
+    ProxyPreserveHost On
+    ProxyVia On
+
+    RequestHeader set X-Forwarded-Port "443" early
+    RequestHeader set X-Forwarded-Proto "https" early
+
+    SSLEngine on
+
+    SSLCertificateFile    /opt/bitnami/apache2/conf/bitnami/certs/server.crt
+    SSLCertificateKeyFile /opt/bitnami/apache2/conf/bitnami/certs/server.key
+    SSLCACertificateFile  /opt/bitnami/apache2/conf/bitnami/certs/server-ca.crt
+
+{% if item.port is defined %}
+    <Proxy *>
+        Order deny,allow
+        Allow from all
+    </Proxy>
+
+{% if item.entrypoint is defined %}
+    RedirectMatch ^/?$ {{ item.entrypoint }}
+{% endif %}
+
+    <location />
+        proxypass http://{{ item.name }}:{{ item.port }}/ connectiontimeout=3 timeout=60
+        proxypassreverse http://{{ item.name }}:{{ item.port }}/
+        setenv proxy-nokeepalive 1
+        setenv proxy-initial-not-pooled 1
+
+        authtype openid-connect
+        require valid-user
+    </location>
+{% else %}
+    <location />
+        authtype openid-connect
+        require valid-user
+    </location>
+{% endif %}
+</VirtualHost>
+# -----------------------------------------------------------------------------
+
+{% endfor %}

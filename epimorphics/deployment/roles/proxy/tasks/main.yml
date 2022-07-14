@@ -1,0 +1,83 @@
+---
+- name: "Proxy config directory"
+  tags:
+    - cfg
+  file:
+    state: "directory"
+    path : "{{ item }}"
+    owner: root
+    group: root
+    mode: "0755"
+  loop: 
+    - "{{ proxy.directory }}"
+    - "{{ proxy.directory }}/cache"
+    - "{{ proxy.directory }}/ssl"
+    - "{{ proxy.directory }}/vhosts"
+    - "{{ proxy.directory }}/vhosts/extra"
+    - "{{ proxy.directory }}/{{ vhosts_cfg_dir }}"
+
+
+- name: "Proxy config"
+  tags:
+    - cfg
+  template:
+    dest: "{{ proxy.directory }}/vhosts/{{ item.dest }}"
+    src: "{{ item.src }}"
+    owner: root
+    group: root
+    mode: "0644"
+  loop:
+    - { src: "block.conf.j2",      dest: "extra/block.conf" }
+    - { src: "log-format.conf.j2", dest: "extra/log-format.conf" }
+    - { src: "{{ proxy.config }}", dest: "vhost.conf" }
+  loop_control:
+    label: '{{ item.dest }}'
+  notify: "Reload proxy container"
+
+
+- name: "{{ domain }} ssl"
+  tags:
+    - cfg
+    - ssl
+  copy:
+    dest: '{{ item.path }}'
+    content: '{{ item.content }}'
+    owner: root
+    group: root
+    mode: "0644"
+  loop:
+    - { path: "{{ proxy.directory }}/ssl/server.crt", content: '{{ ssl.cert }}' }
+    - { path: "{{ proxy.directory }}/ssl/server.key", content: '{{ ssl.key }}' }
+    - { path: "{{ proxy.directory }}/ssl/server-ca.crt", content: '{{ ssl.ca }}' }
+  loop_control:
+    label: '{{ item.path }}'
+  notify: "Reload proxy container"
+
+
+- name: "Proxy container"
+  tags:
+    - container
+  docker_container:
+    name: "{{ proxy_container.name }}"
+    image: "{{ proxy.image }}"
+    restart_policy: unless-stopped
+    log_driver: "{{ docker.logging.driver }}"
+    log_options: "{{ docker.logging.options }}"
+    network_mode: "{{ docker.network.mode }}"
+    networks:
+      - name: "{{ docker.network.name }}"
+    networks_cli_compatible: yes
+    ports:
+      - "{{ proxy_container.port.http }}:{{ proxy.port.http }}"
+      - "{{ proxy_container.port.https }}:{{ proxy.port.https }}"
+    volumes:
+      - "{{ proxy.directory }}/vhosts:/vhosts:rw"
+      - "{{ proxy.directory }}/ssl:/certs:rw"
+      - "{{ proxy.directory }}/www:/app:rw"
+      - "{{ proxy.directory }}/cache:/var/cache/apache2/mod_cache_disk:rw"
+  
+- name: "Telegraf"
+  include_tasks: "telegraf.yml"
+
+- name: "Services"
+  include_tasks: "services.yml"

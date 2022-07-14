@@ -1,0 +1,11 @@
+tag: "1.4"
+
+proxy:
+  directory: "/var/lib/docker/proxy"
+  config: "{{ proxy_template }}"
+  image:   "{{ registry.common }}/httpd-proxy-oauth:{{ tag }}"
+  port:
+    http: 8080
+    https: 8443
+
+vhosts_cfg_dir: vhosts/conf.d

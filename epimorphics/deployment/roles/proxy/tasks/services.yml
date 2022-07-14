@@ -1,0 +1,17 @@
+- meta: flush_handlers
+
+- name: "Proxy container running"
+  tags:
+    - container
+  docker_container:
+    name: "{{ proxy_container.name }}"
+    state: started
+
+- name: "Telegraf service"
+  tags:
+    - services
+  service:
+    name:  "telegraf"
+    state: started
+    enabled: yes
+  
