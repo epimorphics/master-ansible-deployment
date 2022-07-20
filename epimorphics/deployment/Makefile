@@ -1,4 +1,4 @@
-.PHONY: release version
+.PHONY: install release version
 
 all: release
 
@@ -14,10 +14,10 @@ version:
 ${GALAXY}: version galaxy.tmpl
 	@sed -e 's/__VERSION__/${VERSION}/' galaxy.tmpl > galaxy.yml
 
+install: ${ARCHIVE}
+	@ansible-galaxy collection install --force ${ARCHIVE}
+
 release: ${ARCHIVE}
 
 clean:
 	@rm -f *.tar.gz galaxy.yml
-
-install: version ${ARCHIVE}
-	@ansible-galaxy collection install epimorphics-deployment-${VERSION}.tar.gz
