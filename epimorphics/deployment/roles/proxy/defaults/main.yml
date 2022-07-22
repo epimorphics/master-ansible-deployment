@@ -7,5 +7,6 @@ proxy:
   port:
     http: 8080
     https: 8443
+  secure: "{{ vault_proxy_secure | default(omit) }}"
 
 vhosts_cfg_dir: vhosts/conf.d

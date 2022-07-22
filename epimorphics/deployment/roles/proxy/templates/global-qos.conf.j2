@@ -1,0 +1,43 @@
+# QoS
+{% if qos is defined %}
+# Use the X-Fordarder-For to identify the originating IP.
+# This also enables consolidation of networks to single IP.
+# Unlike the original implmentation, the intermediate steps are already 
+# dropped. 
+
+QS_ClientIpFromHeader    X-Forwarded-For
+
+# We serialise mod_qos managed requests, i.e. data requests.  This means
+# mod_qos will process requests from the same source IP one at a time,
+# queueing others for up to 5 minutes.  After 5 minutes queued requests
+# are released for processing.
+
+QS_ClientSerialize       On
+
+# limit the total number of concurrent mod_qos managed requests from
+# a single IP address.  The limit is pretty low because we can have
+# single request taking 2 minutes to execute and using up a full CPU
+# on the triple store while it does that.  We have 8 CPUs available.
+# Limiting the current requests to 6, given that serialisation is also
+# on means that we can get at most 5 queries  executing at the same time
+# from a single IP address.  That could be 60% of the available computer
+# power.  About half the time it is a lot less than that.  Note that
+# there are at least 2 servers and this limit applies
+# to each server independently, so there can be up to 10 requests from
+# from a single source IP executing at the same time and a further 2
+# waiting in the queue
+
+# With this configuration if a single rogue source dumps a high rate
+# of expensive queries at the service it should not get swamped.
+# The load will go up but there should be sufficient capacity
+
+QS_ClientEventRequestLimit  {{ qos.ClientEventRequestLimit | default(10) }}
+
+# used to limit rate of access to UI interfaces
+QS_ClientEventLimitCount {{ qos.ClientEventLimitCount.number | default(10) }} {{ qos.ClientEventLimitCount.seconds | default(600) }}
+
+QS_ErrorResponseCode {{ qos.ErrorResponseCode | default(429) }}
+{% if qos.ErrorPage is defined %}
+QS_ErrorPage {{ qos.ErrorPage }}
+{% endif %}
+{% endif %}

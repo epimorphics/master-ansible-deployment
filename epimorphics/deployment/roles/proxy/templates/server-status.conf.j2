@@ -1,0 +1,14 @@
+LoadModule status_module modules/mod_status.so
+# Apache stats for monitoring
+<VirtualHost *:{{ proxy.port.http }}>
+    ServerName localhost
+    LogFormat "%h %l %u %t \"%r\" %>s %b  \"%{Referer}i\" \"%{User-Agent}i\" %L %D" server-status
+    CustomLog   /opt/bitnami/apache2/logs/access_log server-status
+    # QoS quiet
+    RequestHeader   set  X-Forwarded-For  "127.0.0.1"   early
+    <Location /server-status>
+        SetHandler server-status
+        Order allow,deny
+        Allow from all
+    </Location>
+</VirtualHost>

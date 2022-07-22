@@ -17,14 +17,7 @@ OIDCRefreshAccessTokenBeforeExpiry 60
 OIDCUserInfoRefreshInterval 3600
 
 # -----------------------------------------------------------------------------
-<VirtualHost *:{{ proxy.port.http }}>
-    ServerName localhost
-    <Location /server-status>
-        SetHandler server-status
-        Order allow,deny
-        Allow from all
-    </Location>
-</VirtualHost>
+    Include conf/vhosts/extra/server-status.conf
 # -----------------------------------------------------------------------------
 
 {% for item in vhosts %}

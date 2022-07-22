@@ -14,7 +14,17 @@
     - "{{ proxy.directory }}/ssl"
     - "{{ proxy.directory }}/vhosts"
     - "{{ proxy.directory }}/vhosts/extra"
+    - "{{ proxy.directory }}/vhosts/secure"
     - "{{ proxy.directory }}/{{ vhosts_cfg_dir }}"
+
+
+- name: "Install python-passlib"
+  tags:
+    - pkg
+    - pip
+  pip:
+    name: passlib
+    state: latest
 
 
 - name: "Proxy config"
@@ -27,12 +37,28 @@
     group: root
     mode: "0644"
   loop:
-    - { src: "block.conf.j2",      dest: "extra/block.conf" }
-    - { src: "log-format.conf.j2", dest: "extra/log-format.conf" }
-    - { src: "{{ proxy.config }}", dest: "vhost.conf" }
+    - { src: "block.conf.j2",         dest: "extra/block.conf" }
+    - { src: "log-format.conf.j2",    dest: "extra/log-format.conf" }
+    - { src: "server-status.conf.j2", dest: "server-status.conf" }
+    - { src: "{{ proxy.config }}",    dest: "vhost.conf" }
   loop_control:
     label: '{{ item.dest }}'
   notify: "Reload proxy container"
+
+
+- name: "Secure access"
+  htpasswd:
+    path: "{{ proxy.directory }}/vhosts/secure/htpasswd"
+    name: "{{ proxy.secure.username }}"
+    password: "{{ proxy.secure.password }}"
+    owner: root
+    group: root
+    mode: 0640
+  when:
+  - proxy.secure is defined
+  - secure_proxy is defined
+  - secure_proxy[type] is defined
+  - secure_proxy[type]
 
 
 - name: "QoS"
@@ -81,8 +107,10 @@
       - "{{ proxy.directory }}/www:/app:rw"
       - "{{ proxy.directory }}/cache:/var/cache/apache2/mod_cache_disk:rw"
   
+
 - name: "Telegraf"
   include_tasks: "telegraf.yml"
+
 
 - name: "Services"
   include_tasks: "services.yml"

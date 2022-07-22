@@ -8,7 +8,8 @@
     group: root
     mode: "0644"
   loop:
-    - { src: "qos.conf.j2",      dest: "extra/qos.conf" }
+    - { src: "global-qos.conf.j2", dest: "global-qos.conf" }
+    - { src: "qos.conf.j2",        dest: "extra/qos.conf" }
   loop_control:
     label: '{{ item.dest }}'
   notify: "Reload proxy container"
