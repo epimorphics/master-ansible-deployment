@@ -17,7 +17,10 @@ OIDCRefreshAccessTokenBeforeExpiry 60
 OIDCUserInfoRefreshInterval 3600
 
 # -----------------------------------------------------------------------------
-    Include conf/vhosts/extra/server-status.conf
+LoadModule status_module modules/mod_status.so
+<VirtualHost *:{{ proxy.port.http }}>
+    Include conf/vhosts/extra/localhost.conf
+</VirtualHost>
 # -----------------------------------------------------------------------------
 
 {% for item in vhosts %}

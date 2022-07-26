@@ -4,6 +4,7 @@ proxy:
   directory: "/var/lib/docker/proxy"
   config: "{{ proxy_template }}"
   image:   "{{ registry.common }}/httpd-proxy-oauth/stable:{{ tag }}"
+  internal: " /opt/bitnami/apache2/conf"
   port:
     http: 8080
     https: 8443

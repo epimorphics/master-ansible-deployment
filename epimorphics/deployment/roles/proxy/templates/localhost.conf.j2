@@ -1,0 +1,17 @@
+# Apache stats for monitoring and healthchecks. 
+# Logging is completed disabled for this section
+# but can be turned on for debugging. 
+    ServerName localhost
+# ELB-408 quiet
+    ErrorLog /dev/null
+# QoS quiet
+    RequestHeader   set  X-Forwarded-For  "127.0.0.1"   early
+# Internal Logging quiet
+    LogFormat "%h %l %u %t \"%r\" %>s %b  \"%{Referer}i\" \"%{User-Agent}i\" %L %D" server-status
+#   CustomLog /opt/bitnami/apache2/logs/access_log server-status
+    CustomLog /dev/null server-status
+    <Location /server-status>
+        SetHandler server-status
+        Order allow,deny
+        Allow from all
+    </Location>

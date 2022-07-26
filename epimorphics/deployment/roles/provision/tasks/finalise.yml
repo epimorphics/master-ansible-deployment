@@ -74,7 +74,7 @@
     health_check:
         ping_protocol: http
         ping_port: 80
-        ping_path: "/server-status" # not required for tcp or ssl
+        ping_path: "{{ load_balancers.health_check[iter.type] | default('/server-status') }}"
         response_timeout: 5 # seconds
         interval: 10 # seconds
         unhealthy_threshold: 2
@@ -119,7 +119,7 @@
     health_check:
         ping_protocol: http
         ping_port: 80
-        ping_path: "/server-status" # not required for tcp or ssl
+        ping_path: "{{ load_balancers.health_check[iter.type] | default('/server-status') }}"
         response_timeout: 5 # seconds
         interval: 10 # seconds
         unhealthy_threshold: 2

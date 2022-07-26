@@ -37,10 +37,10 @@
     group: root
     mode: "0644"
   loop:
-    - { src: "block.conf.j2",         dest: "extra/block.conf" }
-    - { src: "log-format.conf.j2",    dest: "extra/log-format.conf" }
-    - { src: "server-status.conf.j2", dest: "server-status.conf" }
-    - { src: "{{ proxy.config }}",    dest: "vhost.conf" }
+    - { src: "block.conf.j2",      dest: "extra/block.conf" }
+    - { src: "localhost.conf.j2",  dest: "extra/localhost.conf" }
+    - { src: "log-format.conf.j2", dest: "extra/log-format.conf" }
+    - { src: "{{ proxy.config }}", dest: "vhost.conf" }
   loop_control:
     label: '{{ item.dest }}'
   notify: "Reload proxy container"
@@ -58,7 +58,6 @@
   - proxy.secure is defined
   - secure_proxy is defined
   - secure_proxy[type] is defined
-  - secure_proxy[type]
 
 
 - name: "QoS"
