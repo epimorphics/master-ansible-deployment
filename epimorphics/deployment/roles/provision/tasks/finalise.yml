@@ -98,6 +98,7 @@
     - load_balancers is defined
     - subnet_ids is defined
     - iter.type
+    - load_balancers.security_groups[iter.type] is defined
 
 
 - name: "Provision EC2 Load Balancer (SG)"
@@ -143,6 +144,7 @@
     - load_balancers is defined
     - subnet_ids is defined
     - iter.type
+    - load_balancers.security_groups[iter.type] is defined
 
 
 - name: "LB DNS"
