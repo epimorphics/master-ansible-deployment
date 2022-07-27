@@ -51,6 +51,20 @@
     - iter.public_ip_address is defined
 
 
+- name: ACM
+  tags:
+    - acm
+    - elb
+  community.aws.aws_acm:
+    name_tag: ".{{ domain }}"
+    certificate: "{{ ssl.cert }}"
+    private_key: "{{ ssl.key }}"
+    certificate_chain: "{{ ssl.ca }}"
+    state: present
+    region: "{{ region }}"
+  register: acm_cert
+
+
 ## There is a bug that means ELB cannot be created while specifying SG by name.
 ## https://github.com/ansible-collections/amazon.aws/issues/589
 ## https://github.com/ansible-collections/amazon.aws/issues/914
@@ -65,8 +79,9 @@
     name: "{{ instance }}-{{ env }}-{{ iter.type }}"
     scheme: "{{ (iter.type == 'data') | ternary('internal', 'internet-facing', omit) }}"
     subnets: "{{ subnet_ids }}"
-#   security_group_names: "{{ load_balancers.security_groups[iter.type] }}"
+#   security_group_names: "{{ load_balancers[iter.type].security_groups }}"
     cross_az_load_balancing: yes
+    purge_listeners: "{{ load_balancers[iter.type].purge_listeners }}"
     listeners:
       - protocol: http
         load_balancer_port: 80
@@ -74,7 +89,7 @@
     health_check:
         ping_protocol: http
         ping_port: 80
-        ping_path: "{{ load_balancers.health_check[iter.type] | default('/server-status') }}"
+        ping_path: "{{ load_balancers[iter.type].health_check | default('/server-status') }}"
         response_timeout: 5 # seconds
         interval: 10 # seconds
         unhealthy_threshold: 2
@@ -98,7 +113,7 @@
     - load_balancers is defined
     - subnet_ids is defined
     - iter.type
-    - load_balancers.security_groups[iter.type] is defined
+    - load_balancers[iter.type].security_groups is defined
 
 
 - name: "Provision EC2 Load Balancer (SG)"
@@ -111,8 +126,9 @@
     name: "{{ instance }}-{{ env }}-{{ iter.type }}"
     scheme: "{{ (iter.type == 'data') | ternary('internal', 'internet-facing', omit) }}"
     subnets: "{{ subnet_ids }}"
-    security_group_names: "{{ load_balancers.security_groups[iter.type] }}"
+    security_group_names: "{{ load_balancers[iter.type].security_groups }}"
     cross_az_load_balancing: yes
+    purge_listeners: "{{ load_balancers[iter.type].purge_listeners }}"
     listeners:
       - protocol: http
         load_balancer_port: 80
@@ -120,7 +136,7 @@
     health_check:
         ping_protocol: http
         ping_port: 80
-        ping_path: "{{ load_balancers.health_check[iter.type] | default('/server-status') }}"
+        ping_path: "{{ load_balancers[iter.type].health_check | default('/server-status') }}"
         response_timeout: 5 # seconds
         interval: 10 # seconds
         unhealthy_threshold: 2
@@ -144,7 +160,7 @@
     - load_balancers is defined
     - subnet_ids is defined
     - iter.type
-    - load_balancers.security_groups[iter.type] is defined
+    - load_balancers[iter.type].security_groups is defined
 
 
 - name: "LB DNS"
