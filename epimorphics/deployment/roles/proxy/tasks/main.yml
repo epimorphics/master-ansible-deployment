@@ -4,18 +4,18 @@
     - cfg
   file:
     state: "directory"
-    path : "{{ item }}"
-    owner: root
+    path : "{{ item.path }}"
+    owner: "{{ item.owner | default('root') }}"
     group: root
-    mode: "0755"
+    mode: "{{ item.mode | default('0755') }}"
   loop: 
-    - "{{ proxy.directory }}"
-    - "{{ proxy.directory }}/cache"
-    - "{{ proxy.directory }}/ssl"
-    - "{{ proxy.directory }}/vhosts"
-    - "{{ proxy.directory }}/vhosts/extra"
-    - "{{ proxy.directory }}/vhosts/secure"
-    - "{{ proxy.directory }}/{{ vhosts_cfg_dir }}"
+    - { path: "{{ proxy.directory }}" }
+    - { path: "{{ proxy.directory }}/cache", mode: "0777" }
+    - { path: "{{ proxy.directory }}/ssl" }
+    - { path: "{{ proxy.directory }}/vhosts" }
+    - { path: "{{ proxy.directory }}/vhosts/extra" }
+    - { path: "{{ proxy.directory }}/vhosts/secure" }
+    - { path: "{{ proxy.directory }}/{{ vhosts_cfg_dir }}" }
 
 
 - name: "Install python-passlib"
