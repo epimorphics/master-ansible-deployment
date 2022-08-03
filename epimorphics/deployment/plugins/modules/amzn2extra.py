@@ -56,38 +56,40 @@ class Topic(object):
         self.version = version
         self.status = status
 
-    @classmethod
-    def from_text(cls, line):
-        import re
-        regex = re.compile(
-            r'\s+[-_\d]+\s+'
-            r'(?P<name>\S+)\s+'
-            r'(?P<status>\S+)\s+'
-            r'.+'
-        )
-        matched = regex.match(line)
+def from_text(line):
+    import re
+    regex = re.compile(
+        r'\s+[-_\d]+\s+'
+        r'(?P<name>\S+)\s+'
+        r'(?P<status>\S+)\s+'
+        r'.+'
+    )
+    matched = regex.match(line)
+    if matched:
         name_version = matched.group('name').split('=')
         name = name_version[0]
         version = name_version[1] if len(name_version) > 1 else None
         status = matched.group('status')
-        return cls(name, version, status)
+        return Topic(name, version, status)
 
 
 # TODO: Test cases are not exists
 def fetch_list(module):
     cmd = [COMMAND_PATH, 'list']
     rc, out, err = module.run_command(cmd)
-    lines = []
+    topics = []
     append_cur_line = False
+    l = ''
     for o in out.split('\n'):
         if o == '':
             continue
-        if append_cur_line:
-            lines[-1] += o
-        else:
-            lines.append(o)
-        append_cur_line = not o.endswith(']')
-    return [Topic.from_text(l) for l in lines]
+        l += o.rstrip('\\') 
+        if not o.endswith('\\'):
+            t = from_text(l)
+            if t:
+                topics.append(t)
+            l = ''
+    return topics
 
 
 def update_topic_state(module, topic, next_state):
@@ -124,7 +126,7 @@ def run_module():
     extras = fetch_list(module)
     topics = [e for e in extras if e.name == topic_name]
     if not topics:
-        module.fail_json(msg='Topic not found', **result)
+        module.fail_json(msg=f'Topic {topic_name} not found', **result)
 
     topic = topics[0]
     if topic_state == 'present' and topic.status == 'enabled':
