@@ -10,11 +10,50 @@
     label: "{{ item.label }}"
   loop:
     - { src: "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip", label: "awscli" }
-  register: awscli
+  register: aws_cli
 
 
 - name: "Install awscli"
   tags:
     - pkg
   command: "/root/aws/install --update"
-  when: awscli is defined and awscli.changed
+  when: aws_cli is defined and aws_cli.changed
+
+
+- name: "Record current version"
+  tags:
+    - pkg
+  stat:
+    path: "/usr/local/aws-cli/v2/current"
+  register: aws_cli_current
+  when: aws_cli
+
+
+- name: "Record old versions"
+  tags:
+    - pkg
+  find:
+    path: "/usr/local/aws-cli/v2"
+    pattern: '[0-9]+\.[0-9]+\.[0-9]+'
+    file_type: directory
+    recurse: no
+    use_regex: yes
+  register: aws_cli_dir
+  when: aws_cli_current
+
+
+- name: "Remove non-current versions"
+  tags:
+    - pkg
+  file:
+    path: "{{ item.path }}"
+    state: absent
+  loop: "{{ aws_cli_dir.files }}"
+  loop_control:
+    label: "{{ item.path }}"
+  when: 
+    - aws_cli_dir.files
+    - aws_cli_current
+    - aws_cli_current.stat
+    - aws_cli_current.stat.lnk_target
+    - item.path != aws_cli_current.stat.lnk_target
