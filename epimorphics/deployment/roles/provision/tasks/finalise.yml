@@ -82,10 +82,7 @@
 #   security_group_names: "{{ load_balancers[iter.type].security_groups }}"
     cross_az_load_balancing: yes
     purge_listeners: "{{ load_balancers[iter.type].purge_listeners }}"
-    listeners:
-      - protocol: http
-        load_balancer_port: 80
-        instance_port: 80
+    listeners: "{{ load_balancers[iter.type].listeners }}"
     health_check:
         ping_protocol: http
         ping_port: 80
@@ -129,10 +126,7 @@
     security_group_names: "{{ load_balancers[iter.type].security_groups }}"
     cross_az_load_balancing: yes
     purge_listeners: "{{ load_balancers[iter.type].purge_listeners }}"
-    listeners:
-      - protocol: http
-        load_balancer_port: 80
-        instance_port: 80
+    listeners: "{{ load_balancers[iter.type].listeners }}"
     health_check:
         ping_protocol: http
         ping_port: 80
