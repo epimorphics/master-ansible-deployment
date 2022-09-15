@@ -1,6 +1,12 @@
 {
   "index_patterns": [ "fluentd-*" ],
-  "settings": {},
+  "settings": {
+    "index": {
+      "lifecycle": {
+        "name": "fluentd"
+      }
+    }
+  },
   "mappings": {
     "_source": {
       "enabled": true

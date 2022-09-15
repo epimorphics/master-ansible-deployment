@@ -87,15 +87,14 @@
     - cfg
     - elasticsearch
   uri:
-    url: "http://localhost:{{ elasticsearch_container.port }}/_template/fluentd"
+    url: "http://localhost:{{ elasticsearch_container.port }}/{{ item.endpoint }}"
     method: PUT
-    body: "{{ lookup('template', item) }}"
+    body: "{{ lookup('template', item.body) }}"
     status_code: [ 200 ]
     body_format: json
   loop_control: 
-    label: "{{ item | basename }}"
+    label: "{{ item.name | basename }}"
   loop:
-    - fluentd-template.json.j2
+    - { name: "fluentd-lifecycle", body: "fluentd-lifecycle.json.j2", endpoint: "_ilm/policy/fluentd" }
+    - { name: "fluentd-template",  body: "fluentd-template.json.j2",  endpoint: "_template/fluentd" }
   register: uri
-
-

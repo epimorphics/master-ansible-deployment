@@ -185,7 +185,7 @@
   emit_invalid_record_to_error false
   <parse>
     @type regexp
-    expression /^(?<time>[0-9 ,-:]*) (?<level>[^ ]*) \[(?<trace>[^ ]*)\] \((?<logger>[^ ]*)\) - (?<request>Request [^ ]*)?((?<request>Response [^ ]*) (?<status>[^ ]*) (?<duration>.*))?(?<text>.+)?/
+    expression /^(?<time>[0-9 ,-:]*) (?<level>[^ ]*) \[(?<trace>[^ ]*)\] \((?<logger>[^ ]*)\) - (?<request>Request [^ ]*)?((?<request>Response [^ ]*) (?<status>[^ ]*) (?<time_taken>.*))?(?<text>.+)?/
     time_format %Y-%m-%d %H:%M:%S,%N
   </parse>
 </filter>
@@ -203,7 +203,7 @@
   emit_invalid_record_to_error false
   <parse>
     @type regexp
-    expression /^\[(?<time>[^\]]*)\] Fuseki\s+(?<level>[^ ]+)\s+\[[^ ]+\]\s+((?<method>(GET|POST)) (?<request>.+))?(Query = (?<query>.+))?((?<status>[^\(]*)\((?<duration>.+)\))?(?<text>.+)?/
+    expression /^\[(?<time>[^\]]*)\] Fuseki\s+(?<level>[^ ]+)\s+\[[^ ]+\]\s+((?<method>(GET|POST)) (?<request>.+))?(Query = (?<query>.+))?((?<status>[^\(]*)\((?<elapsed>.+)\))?(?<text>.+)?/
     time_format %Y-%m-%d %H:%M:%S
   </parse>
 </filter>
