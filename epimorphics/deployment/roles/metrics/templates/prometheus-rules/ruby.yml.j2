@@ -3,7 +3,7 @@ groups:
 - name: app_ruby.rules
   rules:
   - alert: APIConnectionError
-    expr: rate(api_connection_failures[10m]) > 0
+    expr: rate(api_connection_failure[10m]) > 0
     labels:
       severity: critical
     annotations:
@@ -30,7 +30,7 @@ groups:
 {% endraw %}
       runbook_url: "https://github.com/epimorphics/master-ansible-deployment/blob/main/epimorphics/deployment/roles/metrics/templates/prometheus-rules/Readme.md#apistatus"
   - alert: APIRequestFailures
-    expr: rate(api_request_failures{result!="success"}[10m]) > 0
+    expr: rate(api_requests{result!="success"}[10m]) > 0
     labels:
       severity: critical
     annotations:

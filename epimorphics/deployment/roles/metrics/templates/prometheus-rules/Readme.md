@@ -154,7 +154,7 @@ Projected Inode usage over previous {{ prom_rules.projected.critical }} is unsus
 #### Details
 
     - alert: APIConnectionError
-      expr: rate(api_connection_failures[10m]) > 0
+      expr: rate(api_connection_failure[10m]) > 0
       labels:
         severity: critical
       annotations:
@@ -190,7 +190,7 @@ Projected Inode usage over previous {{ prom_rules.projected.critical }} is unsus
 #### Details
 
     - alert: APIRequestFailures
-      expr: rate(api_request_failures{result!="success"}[10m]) > 0
+      expr: rate(api_requests{result!="success"}[10m]) > 0
       labels:
         severity: critical
       annotations:
