@@ -1,4 +1,6 @@
 ---
+apache_info_regexp: '^(?<client>[^, ]*)(, (?<chain1>[^, ]+))?(, (?<chain2>[^ ]+))? (?<host>[^ ]*) (?<user>[^ ]*) \[(?<localtime>[^\]]*)\] "(?<method>\S+)(?: +(?<path>[^ ]*) +(?<protocol>\S*))?" (?<status>[^ ]*) (?<size>[^ ]*)(?:\s+"(?<referrer>[^\"]*)" "(?<agent>[^\"]*)" (?<error_id>[^ ]+) (?<duration>[^ ]+) (?<request_id>[^ ]+))?( (?<connection_id>[^ ]+))?( (?<qos_ev>[^ ]+))?( (?<qos_cr>[^ ]+))?( (?<qos_com>[^ ]+))?'
+
 services:
   - "{{ elasticsearch_container }}"
   - "{{ kibana_container }}"

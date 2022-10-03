@@ -36,8 +36,16 @@ QS_ClientEventRequestLimit  {{ qos.ClientEventRequestLimit | default(10) }}
 # used to limit rate of access to UI interfaces
 QS_ClientEventLimitCount {{ qos.ClientEventLimitCount.number | default(10) }} {{ qos.ClientEventLimitCount.seconds | default(600) }}
 
+{% if qos.ClientEventBlockCount is defined %}
+QS_ClientEventBlockCount {{ qos.ClientEventBlockCount.number }} {{ qos.ClientEventBlockCount.seconds }}
+{% endif %}
+
+QS_ClientEventPerSecLimit {{ qos.ClientEventPerSecLimit | default(450) }}
+
 QS_ErrorResponseCode {{ qos.ErrorResponseCode | default(429) }}
+
 {% if qos.ErrorPage is defined %}
 QS_ErrorPage {{ qos.ErrorPage }}
 {% endif %}
+
 {% endif %}

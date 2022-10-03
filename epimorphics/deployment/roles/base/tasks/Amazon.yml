@@ -18,6 +18,16 @@
     state: present
 
 
+- name: "/var/log/sa directory"
+  tags:
+    - cfg
+  file:
+    path: /var/log/sa
+    state: directory
+    owner: root
+    group: root
+
+
 - name: "Kpatch installed"
   tags:
     - kpatch

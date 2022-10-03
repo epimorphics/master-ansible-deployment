@@ -143,24 +143,56 @@
   emit_invalid_record_to_error false
   <parse>
     @type regexp
-    expression /^(?<client>[^, ]*)(, (?<proxy>[^ ]+))? (?<host>[^ ]*) (?<user>[^ ]*) \[(?<localtime>[^\]]*)\] "(?<method>\S+)(?: +(?<path>[^ ]*) +(?<protocol>\S*))?" (?<status>[^ ]*) (?<size>[^ ]*)(?:\s+"(?<referrer>[^\"]*)" "(?<agent>[^\"]*)" (?<error_id>[^ ]+) (?<duration>[^ ]+) (?<request_id>[^ ]+))?/
+    expression /{{ apache_info_regexp}}/
   </parse>
 </filter>
 
-# Apache error parser
 <filter apache.err.**>
   @id parser_apache_error
   @type parser
   @log_level warn
   key_name message
   reserve_data true
-  remove_key_name_field false
+  remove_key_name_field true
   inject_key_prefix log_
   emit_invalid_record_to_error false
   <parse>
-    @type apache_error
+    @type regexp
+    expression /^(\[(?<time>[^]]+)\] )?(\[(?<module>[^:]+):(?<level>[^ ]+)\] )?(\[pid (?<pid>\d+):tid (?<tid>\d+)\] )?(\[client (?<client>[^:]+):\d+\] )?(mod_qos\((?<qos>\d{3})\): )?(?<message>.+)?/
+    time_format %a %b %d %H:%M:%S.%N %Y
   </parse>
 </filter>
+
+
+<filter apache.err.**>
+  @id qos_scoreboard
+  @type parser
+  key_name log_scoreboard
+  reserve_data true
+  remove_key_name_field true
+  inject_key_prefix log_
+  <parse>
+    @type json
+  </parse>
+</filter>
+
+
+## Apache error parser
+# This built in parser doesn't work
+# very well especially with QoS enabled.
+# <filter apache.err.**>
+#   @id parser_apache_error
+#   @type parser
+#   @log_level warn
+#   key_name message
+#   reserve_data true
+#   remove_key_name_field false
+#   inject_key_prefix log_
+#   emit_invalid_record_to_error false
+#   <parse>
+#     @type apache_error
+#   </parse>
+# </filter>
 
 # Ignroe apache server-status
 <filter apache.info.proxy>
