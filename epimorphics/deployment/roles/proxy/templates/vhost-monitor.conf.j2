@@ -17,6 +17,13 @@ OIDCRefreshAccessTokenBeforeExpiry 60
 OIDCUserInfoRefreshInterval 3600
 
 # -----------------------------------------------------------------------------
+<VirtualHost _default_:{{ proxy.port.http }}>
+    RewriteEngine On
+    RewriteCond %{HTTP:X-Forwarded-Proto} !https [NC]
+    RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+</VirtualHost>
+
+# -----------------------------------------------------------------------------
 LoadModule status_module modules/mod_status.so
 <VirtualHost *:{{ proxy.port.http }}>
     Include conf/vhosts/extra/localhost.conf
