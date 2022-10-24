@@ -62,7 +62,6 @@
 
 - name: "QoS"
   include_tasks: "qos.yml"
-  when: qos is defined
 
 
 - name: "{{ domain }} ssl"
