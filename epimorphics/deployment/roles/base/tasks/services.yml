@@ -2,6 +2,15 @@
 - meta: flush_handlers
 
 
+- name: "Journald service"
+  tags:
+    - services
+  service:
+    name:  "systemd-journald"
+    state: started
+    enabled: yes
+
+
 - name: "kpatch service"
   tags:
     - kpatch

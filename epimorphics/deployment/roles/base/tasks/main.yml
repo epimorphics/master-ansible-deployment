@@ -76,6 +76,19 @@
     -  logging is defined
 
 
+- name: "Journald volatile"
+  tags:
+    - cfg
+  lineinfile:
+    path: "/etc/systemd/journald.conf"
+    line: "Storage=volatile"
+    regexp: "#?Storage="
+    owner: root
+    group: root
+    mode:  0644
+  notify: "Restart journald"
+
+
 - name: "Utility packages"
   tags:
     - pkg

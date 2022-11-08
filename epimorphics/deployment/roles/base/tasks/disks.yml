@@ -21,7 +21,7 @@
       part_start: "{{ item.start | default(omit) }}"
       part_end: "{{ item.end | default(omit) }}"
     loop_control:
-      label: "{{ item.device }}{{ item.partition }}:{{ item.start | default('0') }}-{{ item.end | default('100%') }}"
+      label: "{{ item.device }}{{ item.prefix | default('') }}{{ item.partition }}:{{ item.start | default('0') }}-{{ item.end | default('100%') }}"
     loop: "{{ partitions }}"
   
   - name: Volume Groups
@@ -32,7 +32,7 @@
       vg: "{{ item.name }}"
       pvs: "{{ item.device }}{{ item.prefix | default('') }}{{ item.partition }}"
     loop_control:
-      label: "{{ item.name }} {{ item.device }}{{ item.partition }}"
+      label: "{{ item.name }} {{ item.device }}{{ item.prefix | default('') }}{{ item.partition }}"
     loop: "{{ partitions }}"
 
   - name: Logical Volumes

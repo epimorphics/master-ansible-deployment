@@ -1,24 +1,26 @@
 ---
-- name: "EC2 Launch Configuration"
+- name: "EC2 Launch Template"
   tags:
     - asg
     - ec2
-  ec2_lc:
+  ec2_launch_template:
     region: "{{ region }}"
     name: "{{ instance }}-{{ env-}}-{{ item.type }}"
     key_name: "{{ key.name }}"
-    assign_public_ip: "yes"
+    network_interfaces:
+      - associate_public_ip_address: "yes"
+        device_index: 0
+        delete_on_termination: "yes"
+        groups: "{{ item.security_groups | default([]) | epimorphics.deployment.ec2_sgId(vpc_id) }}"
     ebs_optimized: "{{ item.ebs_optimized | default('no') }}"
     image_id: "{{ item.image_id | default(ec2_default_image) }}"
-    instance_profile_name: "{{ iam_role }}"
+    iam_instance_profile: "{{ iam_role }}"
     instance_type: "{{ item.instance_type }}"
-    security_groups: "[ 'base' ] + {{ item.security_groups | default([]) }}" 
-    volumes: "{{ item.volumes | default(omit) }}"
-    vpc_id: "{{ vpc_id }}"
+    block_device_mappings: "{{ item.volumes | default(omit) }}"
   loop: "{{ ec2_inst_lc }}"
   loop_control:
     label: "{{ instance }}-{{ env-}}-{{ item.type }}"
-  register: launch_configurations
+  register: launch_templates
   when: ec2_inst_lc is defined
 
 
@@ -29,10 +31,12 @@
     - asg
   ec2_asg:
     name: "{{ instance }}-{{ env-}}-{{ item.type }}"
-    launch_config_name: "{{ instance }}-{{ env-}}-{{ item.type }}"
+    launch_template:
+      launch_template_name: "{{ instance }}-{{ env-}}-{{ item.type }}"
     min_size: 1
     desired_capacity: "{{ item.count }}"
     max_size: "{{ item.count }}"
+    replace_all_instances: yes
     tags:
       - Ansible: "True"
       - Env: "{{ env }}"
