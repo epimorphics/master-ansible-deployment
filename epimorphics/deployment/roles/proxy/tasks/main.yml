@@ -104,6 +104,18 @@
       - "{{ proxy.directory }}/ssl:/certs:rw"
       - "{{ proxy.directory }}/www:/app:rw"
       - "{{ proxy.directory }}/cache:/var/cache/apache2/mod_cache_disk:rw"
+
+
+- name: Proxy cache clean
+  cron:
+    name: "Proxy cache clean {{ item.title }}"
+    minute: "{{ item.time }}"
+    job: "docker exec proxy htcacheclean -tinp {{ proxy.directory }}/cache -i {{ item.options }}"
+  loop:
+    - { title: "size",  time: "10,30,50", options: "-L{{ proxy_cache.size }}" }
+    - { title: "inode", time: "00,20,40", options: "-l{{ proxy_cache.inode }}" }
+  loop_control:
+    label: '{{ item.title }}'
   
 
 - name: "Telegraf"

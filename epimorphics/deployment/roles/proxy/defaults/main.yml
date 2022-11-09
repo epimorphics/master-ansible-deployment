@@ -10,4 +10,8 @@ proxy:
     https: 8443
   secure: "{{ vault_proxy_secure | default(omit) }}"
 
+proxy_cache:
+  size: "250K"
+  inode: "1G"
+
 vhosts_cfg_dir: vhosts/conf.d
