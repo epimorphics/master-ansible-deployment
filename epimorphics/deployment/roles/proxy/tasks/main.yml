@@ -110,7 +110,7 @@
   cron:
     name: "Proxy cache clean {{ item.title }}"
     minute: "{{ item.time }}"
-    job: "docker exec proxy htcacheclean -tinp {{ proxy.directory }}/cache -i {{ item.options }}"
+    job: "docker exec proxy htcacheclean -tinp /var/cache/apache2/mod_cache_disk -i {{ item.options }} 2>&1 | logger -t htcacheclean"
   loop:
     - { title: "size",  time: "10,30,50", options: "-L{{ proxy_cache.size }}" }
     - { title: "inode", time: "00,20,40", options: "-l{{ proxy_cache.inode }}" }
