@@ -110,13 +110,14 @@
   cron:
     name: "Proxy cache clean {{ item.title }}"
     minute: "{{ item.time }}"
-    job: "docker exec proxy htcacheclean -tnp /var/cache/apache2/mod_cache_disk {{ item.options }} 2>&1 | logger -t htcacheclean"
+    job: "docker exec proxy htcacheclean -tp /var/cache/apache2/mod_cache_disk {{ item.options }} 2>&1 | logger -t htcacheclean"
   loop:
-    - { title: "size",  time: "10,30,50", options: "-L{{ proxy_cache.size }}" }
-    - { title: "inode", time: "00,20,40", options: "-l{{ proxy_cache.inode }}" }
+    - { title: "size",  time: "30", options: "-L{{ proxy_cache.size }}" }
+    - { title: "inode", time: "00", options: "-l{{ proxy_cache.inode }}" }
   loop_control:
     label: '{{ item.title }}'
-  
+  when:
+  - proxy_cache is defined
 
 - name: "Telegraf"
   include_tasks: "telegraf.yml"
