@@ -10,7 +10,7 @@ grafana:
 
 prometheus:
   image: "docker.io/prom/prometheus"
-  version: "v2.25.0"
+  version: "v2.40.2"
   directory: "{{ docker.directory }}/{{ prometheus_container.name }}"
 
 prometheus_rules:

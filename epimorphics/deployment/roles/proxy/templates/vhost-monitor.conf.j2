@@ -70,7 +70,8 @@ LoadModule status_module modules/mod_status.so
     </Proxy>
 
 {% if item.entrypoint is defined %}
-    RedirectMatch ^/?$ {{ item.entrypoint }}
+    RewriteEngine On
+    RewriteRule "^(/?)$" {{ item.entrypoint }} [R]
 {% endif %}
 
     <location />

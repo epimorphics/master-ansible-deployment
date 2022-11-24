@@ -46,6 +46,7 @@
     restart_policy: "unless-stopped"
     volumes:
       - "{{ sensu_backend.directory }}:{{ sensu_backend.state }}:rw"
+  register: sensu_instance
 
 
 - name: "Sensu-Alertmanager container"
@@ -85,3 +86,20 @@
   failed_when:
     - health.json is undefined
   when: not ansible_check_mode
+
+
+- name: "Sensu remove backend docker instance"
+  delegate_to: "{{ sensu_server }}"
+  sensu.sensu_go.entity:
+    auth: "{{ sensu.auth }}"
+    namespace: "sensu-system"
+    name: "{{ sensu_instance.container.Config.Hostname }}"
+    state: "absent"
+
+
+- name: "Remove sensu_system namespace"
+  delegate_to: "{{ sensu_server }}"
+  sensu.sensu_go.namespace:
+    auth: "{{ sensu.auth }}"
+    name: "sensu-system"
+    state: "absent"
