@@ -3,49 +3,71 @@
     "list": [
       {
         "builtIn": 1,
-        "datasource": "-- Grafana --",
+        "datasource": {
+          "type": "datasource",
+          "uid": "grafana"
+        },
         "enable": true,
         "hide": true,
         "iconColor": "rgba(0, 211, 255, 1)",
         "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
         "type": "dashboard"
       }
     ]
   },
   "description": "Performance metrics for Apache",
   "editable": true,
+  "fiscalYearStartMonth": 0,
   "gnetId": 9675,
   "graphTooltip": 0,
-  "id": 18,
-  "iteration": 1629985701987,
+  "id": 25,
   "links": [],
+  "liveNow": false,
   "panels": [
     {
-      "cacheTimeout": null,
-      "colorBackground": false,
-      "colorValue": false,
-      "colors": [
-        "rgba(245, 54, 54, 0.9)",
-        "rgba(237, 129, 40, 0.89)",
-        "rgba(50, 172, 45, 0.97)"
-      ],
-      "datasource": "Telegraf",
-      "decimals": 1,
-      "editable": true,
-      "error": false,
+      "datasource": {
+        "type": "influxdb",
+        "uid": "q1oIusd4z"
+      },
       "fieldConfig": {
         "defaults": {
-          "custom": {}
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 1,
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "s"
         },
         "overrides": []
-      },
-      "format": "s",
-      "gauge": {
-        "maxValue": 100,
-        "minValue": 0,
-        "show": false,
-        "thresholdLabels": false,
-        "thresholdMarkers": true
       },
       "gridPos": {
         "h": 3,
@@ -53,45 +75,30 @@
         "x": 0,
         "y": 0
       },
-      "height": "55px",
       "id": 10,
-      "interval": null,
-      "isNew": true,
       "links": [],
-      "mappingType": 1,
-      "mappingTypes": [
-        {
-          "name": "value to text",
-          "value": 1
-        },
-        {
-          "name": "range to text",
-          "value": 2
-        }
-      ],
       "maxDataPoints": 100,
-      "nullPointMode": "connected",
-      "nullText": null,
-      "postfix": "s",
-      "postfixFontSize": "80%",
-      "prefix": "",
-      "prefixFontSize": "50%",
-      "rangeMaps": [
-        {
-          "from": "null",
-          "text": "N/A",
-          "to": "null"
-        }
-      ],
-      "sparkline": {
-        "fillColor": "rgba(31, 118, 189, 0.18)",
-        "full": false,
-        "lineColor": "rgb(31, 120, 193)",
-        "show": false
+      "options": {
+        "colorMode": "none",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
       },
-      "tableColumn": "",
+      "pluginVersion": "9.2.5",
       "targets": [
         {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "q1oIusd4z"
+          },
           "dsType": "influxdb",
           "groupBy": [
             {
@@ -134,44 +141,46 @@
           ]
         }
       ],
-      "thresholds": "",
       "title": "Uptime",
-      "type": "singlestat",
-      "valueFontSize": "80%",
-      "valueMaps": [
-        {
-          "op": "=",
-          "text": "N/A",
-          "value": "null"
-        }
-      ],
-      "valueName": "avg"
+      "type": "stat"
     },
     {
-      "cacheTimeout": null,
-      "colorBackground": false,
-      "colorValue": false,
-      "colors": [
-        "rgba(245, 54, 54, 0.9)",
-        "rgba(237, 129, 40, 0.89)",
-        "rgba(50, 172, 45, 0.97)"
-      ],
-      "datasource": "Telegraf",
-      "editable": true,
-      "error": false,
+      "datasource": {
+        "type": "influxdb",
+        "uid": "q1oIusd4z"
+      },
       "fieldConfig": {
         "defaults": {
-          "custom": {}
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "none"
         },
         "overrides": []
-      },
-      "format": "none",
-      "gauge": {
-        "maxValue": 100,
-        "minValue": 0,
-        "show": false,
-        "thresholdLabels": false,
-        "thresholdMarkers": true
       },
       "gridPos": {
         "h": 3,
@@ -179,45 +188,30 @@
         "x": 4,
         "y": 0
       },
-      "height": "55px",
       "id": 2,
-      "interval": null,
-      "isNew": true,
       "links": [],
-      "mappingType": 1,
-      "mappingTypes": [
-        {
-          "name": "value to text",
-          "value": 1
-        },
-        {
-          "name": "range to text",
-          "value": 2
-        }
-      ],
       "maxDataPoints": 100,
-      "nullPointMode": "connected",
-      "nullText": null,
-      "postfix": "",
-      "postfixFontSize": "50%",
-      "prefix": "",
-      "prefixFontSize": "50%",
-      "rangeMaps": [
-        {
-          "from": "null",
-          "text": "N/A",
-          "to": "null"
-        }
-      ],
-      "sparkline": {
-        "fillColor": "rgba(31, 118, 189, 0.18)",
-        "full": false,
-        "lineColor": "rgb(31, 120, 193)",
-        "show": false
+      "options": {
+        "colorMode": "none",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
       },
-      "tableColumn": "",
+      "pluginVersion": "9.2.5",
       "targets": [
         {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "q1oIusd4z"
+          },
           "dsType": "influxdb",
           "groupBy": [
             {
@@ -260,44 +254,46 @@
           ]
         }
       ],
-      "thresholds": "",
       "title": "CPUs",
-      "type": "singlestat",
-      "valueFontSize": "80%",
-      "valueMaps": [
-        {
-          "op": "=",
-          "text": "N/A",
-          "value": "null"
-        }
-      ],
-      "valueName": "avg"
+      "type": "stat"
     },
     {
-      "cacheTimeout": null,
-      "colorBackground": false,
-      "colorValue": false,
-      "colors": [
-        "rgba(245, 54, 54, 0.9)",
-        "rgba(237, 129, 40, 0.89)",
-        "rgba(50, 172, 45, 0.97)"
-      ],
-      "datasource": "Telegraf",
-      "editable": true,
-      "error": false,
+      "datasource": {
+        "type": "influxdb",
+        "uid": "q1oIusd4z"
+      },
       "fieldConfig": {
         "defaults": {
-          "custom": {}
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "none"
         },
         "overrides": []
-      },
-      "format": "none",
-      "gauge": {
-        "maxValue": 100,
-        "minValue": 0,
-        "show": false,
-        "thresholdLabels": false,
-        "thresholdMarkers": true
       },
       "gridPos": {
         "h": 3,
@@ -305,45 +301,30 @@
         "x": 6,
         "y": 0
       },
-      "height": "55px",
       "id": 11,
-      "interval": null,
-      "isNew": true,
       "links": [],
-      "mappingType": 1,
-      "mappingTypes": [
-        {
-          "name": "value to text",
-          "value": 1
-        },
-        {
-          "name": "range to text",
-          "value": 2
-        }
-      ],
       "maxDataPoints": 100,
-      "nullPointMode": "connected",
-      "nullText": null,
-      "postfix": "",
-      "postfixFontSize": "50%",
-      "prefix": "",
-      "prefixFontSize": "50%",
-      "rangeMaps": [
-        {
-          "from": "null",
-          "text": "N/A",
-          "to": "null"
-        }
-      ],
-      "sparkline": {
-        "fillColor": "rgba(31, 118, 189, 0.18)",
-        "full": false,
-        "lineColor": "rgb(31, 120, 193)",
-        "show": false
+      "options": {
+        "colorMode": "none",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
       },
-      "tableColumn": "",
+      "pluginVersion": "9.2.5",
       "targets": [
         {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "q1oIusd4z"
+          },
           "dsType": "influxdb",
           "groupBy": [
             {
@@ -386,45 +367,47 @@
           ]
         }
       ],
-      "thresholds": "",
       "title": "CPU Load",
-      "type": "singlestat",
-      "valueFontSize": "80%",
-      "valueMaps": [
-        {
-          "op": "=",
-          "text": "N/A",
-          "value": "null"
-        }
-      ],
-      "valueName": "avg"
+      "type": "stat"
     },
     {
-      "cacheTimeout": null,
-      "colorBackground": false,
-      "colorValue": false,
-      "colors": [
-        "rgba(245, 54, 54, 0.9)",
-        "rgba(237, 129, 40, 0.89)",
-        "rgba(50, 172, 45, 0.97)"
-      ],
-      "datasource": "Telegraf",
-      "decimals": 0,
-      "editable": true,
-      "error": false,
+      "datasource": {
+        "type": "influxdb",
+        "uid": "q1oIusd4z"
+      },
       "fieldConfig": {
         "defaults": {
-          "custom": {}
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 0,
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "bytes"
         },
         "overrides": []
-      },
-      "format": "bytes",
-      "gauge": {
-        "maxValue": 100,
-        "minValue": 0,
-        "show": false,
-        "thresholdLabels": false,
-        "thresholdMarkers": true
       },
       "gridPos": {
         "h": 3,
@@ -432,45 +415,30 @@
         "x": 8,
         "y": 0
       },
-      "height": "55px",
       "id": 3,
-      "interval": null,
-      "isNew": true,
       "links": [],
-      "mappingType": 1,
-      "mappingTypes": [
-        {
-          "name": "value to text",
-          "value": 1
-        },
-        {
-          "name": "range to text",
-          "value": 2
-        }
-      ],
       "maxDataPoints": 100,
-      "nullPointMode": "connected",
-      "nullText": null,
-      "postfix": "",
-      "postfixFontSize": "50%",
-      "prefix": "",
-      "prefixFontSize": "50%",
-      "rangeMaps": [
-        {
-          "from": "null",
-          "text": "N/A",
-          "to": "null"
-        }
-      ],
-      "sparkline": {
-        "fillColor": "rgba(31, 118, 189, 0.18)",
-        "full": false,
-        "lineColor": "rgb(31, 120, 193)",
-        "show": false
+      "options": {
+        "colorMode": "none",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
       },
-      "tableColumn": "",
+      "pluginVersion": "9.2.5",
       "targets": [
         {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "q1oIusd4z"
+          },
           "dsType": "influxdb",
           "groupBy": [
             {
@@ -513,18 +481,8 @@
           ]
         }
       ],
-      "thresholds": "",
       "title": "RAM",
-      "type": "singlestat",
-      "valueFontSize": "80%",
-      "valueMaps": [
-        {
-          "op": "=",
-          "text": "N/A",
-          "value": "null"
-        }
-      ],
-      "valueName": "avg"
+      "type": "stat"
     },
     {
       "aliasColors": {
@@ -534,12 +492,9 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Telegraf",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {}
-        },
-        "overrides": []
+      "datasource": {
+        "type": "influxdb",
+        "uid": "q1oIusd4z"
       },
       "fill": 1,
       "fillGradient": 0,
@@ -565,8 +520,11 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "connected",
+      "options": {
+        "alertThreshold": true
+      },
       "percentage": true,
-      "pluginVersion": "7.1.5",
+      "pluginVersion": "9.2.5",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -577,6 +535,10 @@
       "targets": [
         {
           "alias": "Busy",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "q1oIusd4z"
+          },
           "groupBy": [
             {
               "params": [
@@ -620,6 +582,10 @@
         },
         {
           "alias": "Idle",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "q1oIusd4z"
+          },
           "groupBy": [
             {
               "params": [
@@ -663,9 +629,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Apache Thread Details",
       "tooltip": {
         "shared": true,
@@ -674,60 +638,64 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
-      "cacheTimeout": null,
-      "colorBackground": false,
-      "colorValue": false,
-      "colors": [
-        "rgba(245, 54, 54, 0.9)",
-        "rgba(237, 129, 40, 0.89)",
-        "rgba(50, 172, 45, 0.97)"
-      ],
-      "datasource": "Telegraf",
-      "editable": true,
-      "error": false,
+      "datasource": {
+        "type": "influxdb",
+        "uid": "q1oIusd4z"
+      },
       "fieldConfig": {
         "defaults": {
-          "custom": {}
+          "color": {
+            "fixedColor": "rgb(31, 120, 193)",
+            "mode": "fixed"
+          },
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "none"
         },
         "overrides": []
-      },
-      "format": "none",
-      "gauge": {
-        "maxValue": 100,
-        "minValue": 0,
-        "show": false,
-        "thresholdLabels": false,
-        "thresholdMarkers": true
       },
       "gridPos": {
         "h": 3,
@@ -735,45 +703,30 @@
         "x": 0,
         "y": 3
       },
-      "height": "55px",
       "id": 4,
-      "interval": null,
-      "isNew": true,
       "links": [],
-      "mappingType": 1,
-      "mappingTypes": [
-        {
-          "name": "value to text",
-          "value": 1
-        },
-        {
-          "name": "range to text",
-          "value": 2
-        }
-      ],
       "maxDataPoints": 100,
-      "nullPointMode": "connected",
-      "nullText": null,
-      "postfix": "%",
-      "postfixFontSize": "80%",
-      "prefix": "",
-      "prefixFontSize": "50%",
-      "rangeMaps": [
-        {
-          "from": "null",
-          "text": "N/A",
-          "to": "null"
-        }
-      ],
-      "sparkline": {
-        "fillColor": "rgba(31, 118, 189, 0.18)",
-        "full": true,
-        "lineColor": "rgb(31, 120, 193)",
-        "show": true
+      "options": {
+        "colorMode": "none",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
       },
-      "tableColumn": "",
+      "pluginVersion": "9.2.5",
       "targets": [
         {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "q1oIusd4z"
+          },
           "dsType": "influxdb",
           "groupBy": [
             {
@@ -816,33 +769,20 @@
           ]
         }
       ],
-      "thresholds": "",
       "title": "Memory Used",
-      "type": "singlestat",
-      "valueFontSize": "80%",
-      "valueMaps": [
-        {
-          "op": "=",
-          "text": "N/A",
-          "value": "null"
-        }
-      ],
-      "valueName": "avg"
+      "type": "stat"
     },
     {
       "aliasColors": {},
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Telegraf",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "q1oIusd4z"
+      },
       "editable": true,
       "error": false,
-      "fieldConfig": {
-        "defaults": {
-          "custom": {}
-        },
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 0,
       "grid": {},
@@ -870,8 +810,11 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "connected",
+      "options": {
+        "alertThreshold": true
+      },
       "percentage": false,
-      "pluginVersion": "7.1.5",
+      "pluginVersion": "9.2.5",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -882,6 +825,10 @@
       "targets": [
         {
           "alias": "Closing",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "q1oIusd4z"
+          },
           "dsType": "influxdb",
           "groupBy": [
             {
@@ -926,6 +873,10 @@
         },
         {
           "alias": "DNS",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "q1oIusd4z"
+          },
           "dsType": "influxdb",
           "groupBy": [
             {
@@ -970,6 +921,10 @@
         },
         {
           "alias": "Finishing",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "q1oIusd4z"
+          },
           "dsType": "influxdb",
           "groupBy": [
             {
@@ -1014,6 +969,10 @@
         },
         {
           "alias": "Idle Cleanup",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "q1oIusd4z"
+          },
           "dsType": "influxdb",
           "groupBy": [
             {
@@ -1058,6 +1017,10 @@
         },
         {
           "alias": "Keepalive",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "q1oIusd4z"
+          },
           "dsType": "influxdb",
           "groupBy": [
             {
@@ -1102,6 +1065,10 @@
         },
         {
           "alias": "Logging",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "q1oIusd4z"
+          },
           "dsType": "influxdb",
           "groupBy": [
             {
@@ -1146,6 +1113,10 @@
         },
         {
           "alias": "Reading",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "q1oIusd4z"
+          },
           "dsType": "influxdb",
           "groupBy": [
             {
@@ -1190,6 +1161,10 @@
         },
         {
           "alias": "Sending",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "q1oIusd4z"
+          },
           "dsType": "influxdb",
           "groupBy": [
             {
@@ -1234,6 +1209,10 @@
         },
         {
           "alias": "Starting",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "q1oIusd4z"
+          },
           "dsType": "influxdb",
           "groupBy": [
             {
@@ -1278,6 +1257,10 @@
         },
         {
           "alias": "Waiting",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "q1oIusd4z"
+          },
           "dsType": "influxdb",
           "groupBy": [
             {
@@ -1322,9 +1305,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Scoreboard",
       "tooltip": {
         "msResolution": false,
@@ -1334,33 +1315,24 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -1370,12 +1342,9 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Telegraf",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {}
-        },
-        "overrides": []
+      "datasource": {
+        "type": "influxdb",
+        "uid": "q1oIusd4z"
       },
       "fill": 1,
       "fillGradient": 0,
@@ -1404,8 +1373,11 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "connected",
+      "options": {
+        "alertThreshold": true
+      },
       "percentage": false,
-      "pluginVersion": "7.1.5",
+      "pluginVersion": "9.2.5",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -1416,6 +1388,10 @@
       "targets": [
         {
           "alias": "Requests per second",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "q1oIusd4z"
+          },
           "groupBy": [
             {
               "params": [
@@ -1459,9 +1435,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Requests per second",
       "tooltip": {
         "shared": true,
@@ -1470,38 +1444,32 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
       "collapsed": false,
-      "datasource": null,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "pZ2rUsO4z"
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -1510,6 +1478,15 @@
       },
       "id": 12,
       "panels": [],
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "pZ2rUsO4z"
+          },
+          "refId": "A"
+        }
+      ],
       "title": "System",
       "type": "row"
     },
@@ -1518,15 +1495,12 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Telegraf",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "q1oIusd4z"
+      },
       "editable": true,
       "error": false,
-      "fieldConfig": {
-        "defaults": {
-          "custom": {}
-        },
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 0,
       "grid": {},
@@ -1552,8 +1526,11 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "connected",
+      "options": {
+        "alertThreshold": true
+      },
       "percentage": false,
-      "pluginVersion": "7.1.5",
+      "pluginVersion": "9.2.5",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -1564,6 +1541,10 @@
       "targets": [
         {
           "alias": "short",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "q1oIusd4z"
+          },
           "dsType": "influxdb",
           "groupBy": [
             {
@@ -1607,6 +1588,10 @@
         },
         {
           "alias": "medium",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "q1oIusd4z"
+          },
           "dsType": "influxdb",
           "groupBy": [
             {
@@ -1650,6 +1635,10 @@
         },
         {
           "alias": "long",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "q1oIusd4z"
+          },
           "dsType": "influxdb",
           "groupBy": [
             {
@@ -1693,9 +1682,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Load",
       "tooltip": {
         "msResolution": false,
@@ -1706,33 +1693,25 @@
       "transparent": true,
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
           "min": 0,
           "show": true
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -1740,15 +1719,12 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Telegraf",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "q1oIusd4z"
+      },
       "editable": true,
       "error": false,
-      "fieldConfig": {
-        "defaults": {
-          "custom": {}
-        },
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 0,
       "grid": {},
@@ -1774,8 +1750,11 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "connected",
+      "options": {
+        "alertThreshold": true
+      },
       "percentage": false,
-      "pluginVersion": "7.1.5",
+      "pluginVersion": "9.2.5",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -1786,6 +1765,10 @@
       "targets": [
         {
           "alias": "read",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "q1oIusd4z"
+          },
           "dsType": "influxdb",
           "groupBy": [
             {
@@ -1835,6 +1818,10 @@
         },
         {
           "alias": "write",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "q1oIusd4z"
+          },
           "dsType": "influxdb",
           "groupBy": [
             {
@@ -1884,9 +1871,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "I/O",
       "tooltip": {
         "msResolution": false,
@@ -1897,33 +1882,24 @@
       "transparent": true,
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
           "format": "bytes",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -1931,15 +1907,12 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Telegraf",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "q1oIusd4z"
+      },
       "editable": true,
       "error": false,
-      "fieldConfig": {
-        "defaults": {
-          "custom": {}
-        },
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 0,
       "grid": {},
@@ -1965,8 +1938,11 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "connected",
+      "options": {
+        "alertThreshold": true
+      },
       "percentage": false,
-      "pluginVersion": "7.1.5",
+      "pluginVersion": "9.2.5",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -1977,6 +1953,10 @@
       "targets": [
         {
           "alias": "recveived",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "q1oIusd4z"
+          },
           "dsType": "influxdb",
           "groupBy": [
             {
@@ -2026,6 +2006,10 @@
         },
         {
           "alias": "sent",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "q1oIusd4z"
+          },
           "dsType": "influxdb",
           "groupBy": [
             {
@@ -2075,9 +2059,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Network",
       "tooltip": {
         "msResolution": false,
@@ -2088,38 +2070,29 @@
       "transparent": true,
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
           "format": "bytes",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     }
   ],
   "refresh": false,
-  "schemaVersion": 26,
+  "schemaVersion": 37,
   "style": "dark",
   "tags": [
     "Apache",
@@ -2131,10 +2104,9 @@
       {
         "current": {
           "selected": false,
-          "text": "",
-          "value": ""
+          "text": "InfluxDB",
+          "value": "InfluxDB"
         },
-        "datasource": null,
         "hide": 2,
         "includeAll": false,
         "label": "Environment",
@@ -2148,17 +2120,18 @@
         "type": "datasource"
       },
       {
-        "allValue": null,
         "current": {
-          "selected": true,
-          "text": "nrw-prod-app-165.epimorphics.net",
-          "value": "nrw-prod-app-165.epimorphics.net"
+          "selected": false,
+          "text": "hmlr-ctrl.epimorphics.net",
+          "value": "hmlr-ctrl.epimorphics.net"
         },
-        "datasource": "Telegraf",
+        "datasource": {
+          "type": "influxdb",
+          "uid": "q1oIusd4z"
+        },
         "definition": "",
         "hide": 0,
         "includeAll": false,
-        "label": null,
         "multi": false,
         "name": "host",
         "options": [],
@@ -2168,7 +2141,6 @@
         "skipUrlSync": false,
         "sort": 0,
         "tagValuesQuery": "",
-        "tags": [],
         "tagsQuery": "",
         "type": "query",
         "useTags": false
@@ -2207,5 +2179,6 @@
   "timezone": "browser",
   "title": "Apache Overview",
   "uid": "telegraf-apache-overview",
-  "version": 1
+  "version": 1,
+  "weekStart": ""
 }
