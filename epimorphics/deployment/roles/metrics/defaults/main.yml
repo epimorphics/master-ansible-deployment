@@ -5,7 +5,8 @@ services:
 
 grafana:
   image: "grafana/grafana-enterprise"
-  version: "7.1.5"
+# version: "8.5.15"
+  version: "9.2.5"
   directory: "{{ docker.directory }}/{{ grafana_container.name }}"
 
 prometheus:
