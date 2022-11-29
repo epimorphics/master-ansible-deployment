@@ -6,15 +6,17 @@ DEFAULT_GEODATA=/usr/local/share/GeoLite2/GeoLite2-City.mmdb
 
 Usage() {
   echo "Usage:"
-  echo "  `basename $0` [-m <month>|-d <day>] -o <file> -s <s3 location>"
+  echo "  `basename $0` [-d <day>] [-g <file>|-o <file>] -s <s3 location>"
   echo "  `basename $0` -h"
   echo
-  echo "  -c <directory>   Data cache directory."
+  echo "  -c <directory>   Go Access Data cache directory."
   echo "                   Default: <working directory>/<year-month>."
   echo "  -d <year-month-day> Year, month, date to parse. Default today."
-  echo "  -g <GeoIP data>  Path to GeoIP datafile. Default: $DEFAULT_GEODATA."
+  echo "  -g <file>        Resultant HTML file. -g or -o Mandatory." 
+  echo "  -G <GeoIP data>  Path to GeoIP datafile. Default: $DEFAULT_GEODATA."
   echo "  -h               Display Help message."
-  echo "  -o <file>        Resultant HTML file. Mandatory." 
+  echo "  -m <string>      Hostname to match. Default 'hmlr-prod-pres'." 
+  echo "  -o <file>        Append to VCOMBINED file. -g or -o Mandatory." 
   echo "  -p <profile>     AWS Profile."
   echo "  -s <s3 location> S3 Log location, this should contain a folder for each day."
   echo "                   Mandatory."
@@ -70,16 +72,19 @@ Validate() {
 
 
 Options() {
-  while getopts c:d:g:ho:p:s:w: opt
+  while getopts c:d:gG:hm:o:p:s:w: opt
   do
     case $opt in
       c)  DBPATH=$OPTARG;;
       d)  DAY=$OPTARG;;
-      g)  GEODATA=$OPTARG;;
+      G)  GEODATA=$OPTARG;;
+      g)  GOACCESS=1
+          OUTPUT=$OPTARG;;
       h)  Usage
           exit 0;;
+      m)  MATCH=$OPTARG;;
       o)  OUTPUT=$OPTARG;;
-      p)  PROOUTPUT=$OPTARG;;
+      p)  PROFILE=$OPTARG;;
       s)  S3=$OPTARG;;  # s3://hmlr-logs/logs/
       w)  DIRECTORY=$OPTARG;;
       *)  Usage
@@ -92,7 +97,7 @@ Options() {
 
 ConsolidateLogs() {
   rc=1
-  HOST_LIST=$($AWS s3 ls $S3/ | awk '$1=="PRE" && $2~/{{ parse.type }}/ {print $2}' | tr -d /)
+  HOST_LIST=$($AWS s3 ls $S3/ | awk '$1=="PRE" && $2~/'${MATCH}'/ {print $2}' | tr -d /)
   for HOST in $HOST_LIST
   do
     [ -d ${DIRECTORY}/${DAY}/${HOST} ] && rm -rf ${DIRECTORY}/${DAY}/${HOST}
@@ -111,6 +116,7 @@ ConsolidateLogs() {
 Options $*
 
 DIRECTORY="${DIRECTORY:-.}"
+MATCH="${MATCH:-hmlr-prod-pres}"
 MONTH=$(date -d $DAY +%Y-%m)
 DBPATH="${DBPATH:-$DIRECTORY/$MONTH}"
 GEODATA="${GEODATA:-$DEFAULT_GEODATA}"
@@ -121,10 +127,10 @@ EXCLUDE_OPT="-e 10.0.0.0-10.255.255.255"
 FORMAT_OPT="--log-format=VCOMBINED"
 [ -n "$GEODATA" ] && GEO_OPT="--geoip-database=$GEODATA"
 [ -z "`tty`" ] && PROGRESS_OPT="--no-progress"
-GOACCESS="/usr/local/bin/goaccess $CACHE_OPT $DATE_OPT $EXCLUDE_OPT $FORMAT_OPT $GEO_OPT $PROGRESS_OPT"
+GOACCESS_CMD="/usr/local/bin/goaccess $CACHE_OPT $DATE_OPT $EXCLUDE_OPT $FORMAT_OPT $GEO_OPT $PROGRESS_OPT"
 
 # echo DAY:$DAY
-# echo PROOUTPUT:$PROOUTPUT
+# echo PROFILE:$PROFILE
 # echo DIRECTORY:$DIRECTORY
 # echo DBPATH:$DBPATH
 # echo GEODATA:${GEODATA}
@@ -132,14 +138,19 @@ GOACCESS="/usr/local/bin/goaccess $CACHE_OPT $DATE_OPT $EXCLUDE_OPT $FORMAT_OPT 
 # echo S3:${S3}
 
 Validate
-[ -n "$PROOUTPUT" ] && PROOUTPUT_OPT="--profile $PROOUTPUT"
-AWS="aws $PROOUTPUT_OPT"
+[ -n "$PROFILE" ] && PROOUTPUT_OPT="--profile $PROFILE"
+AWS="aws $PROFILE"
 
 if ConsolidateLogs
 then
-  mkdir -p $DBPATH
   echo "Merging apache.info.proxy logs for $DAY ..."
-  /usr/local/bin/mergelog ${DIRECTORY}/${DAY}/*/apache.info.proxy | $GOACCESS - -o $OUTPUT
+  if [ -n "$GOACCESS" ]
+  then
+    mkdir -p $DBPATH
+    /usr/local/bin/mergelog ${DIRECTORY}/${DAY}/*/apache.info.proxy | $GOACCESS_CMD - -o $OUTPUT
+  else
+    /usr/local/bin/mergelog ${DIRECTORY}/${DAY}/*/apache.info.proxy >> $OUTPUT
+  fi
   rm -rf ${DIRECTORY}/${DAY}
 fi
 
