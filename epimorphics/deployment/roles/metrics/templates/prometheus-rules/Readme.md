@@ -135,6 +135,33 @@ Projected Inode usage over previous {{ prom_rules.projected.critical }} is unsus
       annotations:
         message: "Projected Inode: Usage Critical: {{ $labels.host }}:{{ $labels.path }}"
 
+### System Load Warning
+
+System load within one cpu core of limit
+
+#### Details
+
+  - alert: System Load Warning
+    expr: system_load1>(system_n_cpus-1)
+    for: 15m
+    labels:
+      severity: warning
+    annotations:
+      message: "System load within one cpu core of limit"
+
+### System Load Critical
+
+System load within half cpu core of limit
+
+#### Details
+
+  - alert: System Load Critical
+    expr: system_load1>(system_n_cpus-0.5)
+    for: 15m
+    labels:
+      severity: critical
+    annotations:
+      message: "System load within half cpu core of limit"
 
 ### Container Stopped
 

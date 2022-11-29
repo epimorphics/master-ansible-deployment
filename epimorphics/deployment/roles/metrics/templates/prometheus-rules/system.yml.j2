@@ -1,0 +1,24 @@
+groups:
+- name: system.rules
+  rules:
+  - alert: System Load Warning
+    expr: system_load1>(system_n_cpus-1)
+    for: 15m
+    labels:
+      severity: warning
+    annotations:
+{%- raw %}
+      message: "System load within one cpu core of limit"
+{% endraw %}
+      runbook_url: "https://github.com/epimorphics/master-ansible-deployment/blob/main/epimorphics/deployment/roles/metrics/templates/prometheus-rules/Readme.md#system-load-warning"
+
+  - alert: System Load Critical
+    expr: system_load1>(system_n_cpus-0.5)
+    for: 15m
+    labels:
+      severity: critical
+    annotations:
+{%- raw %}
+      message: "System load within half cpu core of limit"
+{% endraw %}
+      runbook_url: "https://github.com/epimorphics/master-ansible-deployment/blob/main/epimorphics/deployment/roles/metrics/templates/prometheus-rules/Readme.md#system-load-critical"
