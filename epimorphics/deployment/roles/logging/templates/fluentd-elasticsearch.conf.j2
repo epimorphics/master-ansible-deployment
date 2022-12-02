@@ -304,6 +304,19 @@
   </parse>
 </filter>
 
+# Update Grafana duration
+<filter json.info.grafana>
+  @id grafana_duration
+  @type record_transformer
+  enable_ruby
+  <record>
+    log_time_taken ${record['log_duration']}
+    log_epoch ${Time.parse(record['log_t']).to_f.round(3)}
+  </record>
+  renew_time_key log_epoch
+  remove_keys log_duration,log_epoch
+</filter>
+
 
 # Update timestamp
 <filter json.ts.**>
@@ -328,7 +341,6 @@
     tag json.${tag_parts[2]}.$1
   </rule>
 </match>
-
 
 # copy to elastic search
 <match json.** **>
