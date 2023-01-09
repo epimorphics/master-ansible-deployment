@@ -26,14 +26,14 @@
   "fiscalYearStartMonth": 0,
   "gnetId": 9675,
   "graphTooltip": 0,
-  "id": 25,
+  "id": 28,
   "links": [],
   "liveNow": false,
   "panels": [
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "q1oIusd4z"
+        "uid": "telegraf"
       },
       "fieldConfig": {
         "defaults": {
@@ -97,7 +97,7 @@
         {
           "datasource": {
             "type": "influxdb",
-            "uid": "q1oIusd4z"
+            "uid": "telegraf"
           },
           "dsType": "influxdb",
           "groupBy": [
@@ -147,7 +147,7 @@
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "q1oIusd4z"
+        "uid": "telegraf"
       },
       "fieldConfig": {
         "defaults": {
@@ -210,7 +210,7 @@
         {
           "datasource": {
             "type": "influxdb",
-            "uid": "q1oIusd4z"
+            "uid": "telegraf"
           },
           "dsType": "influxdb",
           "groupBy": [
@@ -260,7 +260,7 @@
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "q1oIusd4z"
+        "uid": "telegraf"
       },
       "fieldConfig": {
         "defaults": {
@@ -323,7 +323,7 @@
         {
           "datasource": {
             "type": "influxdb",
-            "uid": "q1oIusd4z"
+            "uid": "telegraf"
           },
           "dsType": "influxdb",
           "groupBy": [
@@ -373,7 +373,7 @@
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "q1oIusd4z"
+        "uid": "telegraf"
       },
       "fieldConfig": {
         "defaults": {
@@ -437,7 +437,7 @@
         {
           "datasource": {
             "type": "influxdb",
-            "uid": "q1oIusd4z"
+            "uid": "telegraf"
           },
           "dsType": "influxdb",
           "groupBy": [
@@ -494,7 +494,7 @@
       "dashes": false,
       "datasource": {
         "type": "influxdb",
-        "uid": "q1oIusd4z"
+        "uid": "telegraf"
       },
       "fill": 1,
       "fillGradient": 0,
@@ -537,7 +537,7 @@
           "alias": "Busy",
           "datasource": {
             "type": "influxdb",
-            "uid": "q1oIusd4z"
+            "uid": "telegraf"
           },
           "groupBy": [
             {
@@ -584,7 +584,7 @@
           "alias": "Idle",
           "datasource": {
             "type": "influxdb",
-            "uid": "q1oIusd4z"
+            "uid": "telegraf"
           },
           "groupBy": [
             {
@@ -661,7 +661,7 @@
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "q1oIusd4z"
+        "uid": "telegraf"
       },
       "fieldConfig": {
         "defaults": {
@@ -725,7 +725,7 @@
         {
           "datasource": {
             "type": "influxdb",
-            "uid": "q1oIusd4z"
+            "uid": "telegraf"
           },
           "dsType": "influxdb",
           "groupBy": [
@@ -779,7 +779,7 @@
       "dashes": false,
       "datasource": {
         "type": "influxdb",
-        "uid": "q1oIusd4z"
+        "uid": "telegraf"
       },
       "editable": true,
       "error": false,
@@ -827,7 +827,7 @@
           "alias": "Closing",
           "datasource": {
             "type": "influxdb",
-            "uid": "q1oIusd4z"
+            "uid": "telegraf"
           },
           "dsType": "influxdb",
           "groupBy": [
@@ -875,7 +875,7 @@
           "alias": "DNS",
           "datasource": {
             "type": "influxdb",
-            "uid": "q1oIusd4z"
+            "uid": "telegraf"
           },
           "dsType": "influxdb",
           "groupBy": [
@@ -923,7 +923,7 @@
           "alias": "Finishing",
           "datasource": {
             "type": "influxdb",
-            "uid": "q1oIusd4z"
+            "uid": "telegraf"
           },
           "dsType": "influxdb",
           "groupBy": [
@@ -971,7 +971,7 @@
           "alias": "Idle Cleanup",
           "datasource": {
             "type": "influxdb",
-            "uid": "q1oIusd4z"
+            "uid": "telegraf"
           },
           "dsType": "influxdb",
           "groupBy": [
@@ -1019,7 +1019,7 @@
           "alias": "Keepalive",
           "datasource": {
             "type": "influxdb",
-            "uid": "q1oIusd4z"
+            "uid": "telegraf"
           },
           "dsType": "influxdb",
           "groupBy": [
@@ -1067,7 +1067,7 @@
           "alias": "Logging",
           "datasource": {
             "type": "influxdb",
-            "uid": "q1oIusd4z"
+            "uid": "telegraf"
           },
           "dsType": "influxdb",
           "groupBy": [
@@ -1115,7 +1115,7 @@
           "alias": "Reading",
           "datasource": {
             "type": "influxdb",
-            "uid": "q1oIusd4z"
+            "uid": "telegraf"
           },
           "dsType": "influxdb",
           "groupBy": [
@@ -1163,7 +1163,7 @@
           "alias": "Sending",
           "datasource": {
             "type": "influxdb",
-            "uid": "q1oIusd4z"
+            "uid": "telegraf"
           },
           "dsType": "influxdb",
           "groupBy": [
@@ -1211,7 +1211,7 @@
           "alias": "Starting",
           "datasource": {
             "type": "influxdb",
-            "uid": "q1oIusd4z"
+            "uid": "telegraf"
           },
           "dsType": "influxdb",
           "groupBy": [
@@ -1259,7 +1259,7 @@
           "alias": "Waiting",
           "datasource": {
             "type": "influxdb",
-            "uid": "q1oIusd4z"
+            "uid": "telegraf"
           },
           "dsType": "influxdb",
           "groupBy": [
@@ -1344,7 +1344,7 @@
       "dashes": false,
       "datasource": {
         "type": "influxdb",
-        "uid": "q1oIusd4z"
+        "uid": "telegraf"
       },
       "fill": 1,
       "fillGradient": 0,
@@ -1390,7 +1390,7 @@
           "alias": "Requests per second",
           "datasource": {
             "type": "influxdb",
-            "uid": "q1oIusd4z"
+            "uid": "telegraf"
           },
           "groupBy": [
             {
@@ -1468,7 +1468,7 @@
       "collapsed": false,
       "datasource": {
         "type": "prometheus",
-        "uid": "pZ2rUsO4z"
+        "uid": "fqQgJ5F4k"
       },
       "gridPos": {
         "h": 1,
@@ -1482,7 +1482,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "pZ2rUsO4z"
+            "uid": "fqQgJ5F4k"
           },
           "refId": "A"
         }
@@ -1497,7 +1497,7 @@
       "dashes": false,
       "datasource": {
         "type": "influxdb",
-        "uid": "q1oIusd4z"
+        "uid": "telegraf"
       },
       "editable": true,
       "error": false,
@@ -1543,7 +1543,7 @@
           "alias": "short",
           "datasource": {
             "type": "influxdb",
-            "uid": "q1oIusd4z"
+            "uid": "telegraf"
           },
           "dsType": "influxdb",
           "groupBy": [
@@ -1590,7 +1590,7 @@
           "alias": "medium",
           "datasource": {
             "type": "influxdb",
-            "uid": "q1oIusd4z"
+            "uid": "telegraf"
           },
           "dsType": "influxdb",
           "groupBy": [
@@ -1637,7 +1637,7 @@
           "alias": "long",
           "datasource": {
             "type": "influxdb",
-            "uid": "q1oIusd4z"
+            "uid": "telegraf"
           },
           "dsType": "influxdb",
           "groupBy": [
@@ -1721,7 +1721,7 @@
       "dashes": false,
       "datasource": {
         "type": "influxdb",
-        "uid": "q1oIusd4z"
+        "uid": "telegraf"
       },
       "editable": true,
       "error": false,
@@ -1767,7 +1767,7 @@
           "alias": "read",
           "datasource": {
             "type": "influxdb",
-            "uid": "q1oIusd4z"
+            "uid": "telegraf"
           },
           "dsType": "influxdb",
           "groupBy": [
@@ -1820,7 +1820,7 @@
           "alias": "write",
           "datasource": {
             "type": "influxdb",
-            "uid": "q1oIusd4z"
+            "uid": "telegraf"
           },
           "dsType": "influxdb",
           "groupBy": [
@@ -1909,7 +1909,7 @@
       "dashes": false,
       "datasource": {
         "type": "influxdb",
-        "uid": "q1oIusd4z"
+        "uid": "telegraf"
       },
       "editable": true,
       "error": false,
@@ -1955,7 +1955,7 @@
           "alias": "recveived",
           "datasource": {
             "type": "influxdb",
-            "uid": "q1oIusd4z"
+            "uid": "telegraf"
           },
           "dsType": "influxdb",
           "groupBy": [
@@ -2008,7 +2008,7 @@
           "alias": "sent",
           "datasource": {
             "type": "influxdb",
-            "uid": "q1oIusd4z"
+            "uid": "telegraf"
           },
           "dsType": "influxdb",
           "groupBy": [
@@ -2127,7 +2127,7 @@
         },
         "datasource": {
           "type": "influxdb",
-          "uid": "q1oIusd4z"
+          "uid": "telegraf"
         },
         "definition": "",
         "hide": 0,
