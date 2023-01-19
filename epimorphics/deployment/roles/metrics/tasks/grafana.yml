@@ -134,23 +134,25 @@
   tags:
     - cfg
     - grafana
+  vars:
+    file: "datasources/{{ item }}.json.j2"
   uri:
     url: "http://localhost:{{ grafana_container.port }}/api/datasources"
     user: "admin"
     password: "{{ password.grafana.admin }}"
     method: POST
-    body: "{{ lookup('template', item) }}"
+    body: "{{ lookup('template', file) }}"
     force_basic_auth: yes
     status_code: [ 200, 409 ]
     body_format: json
   loop_control: 
-    label: "{{ item | basename }}"
+    label: "{{ item }}"
   loop:
-    - datasources/prometheus.json.j2
-    - datasources/cloudwatch.json.j2
-    - datasources/elasticsearch.json.j2
-    - datasources/influxdb.json.j2
-    - datasources/telegraf.json.j2
+    - prometheus
+    - cloudwatch
+    - elasticsearch
+    - influxdb
+    - telegraf
   register: uri
   changed_when: uri.status == 200
 
@@ -160,7 +162,7 @@
     - cfg
     - grafana
   uri:
-    url: "http://localhost:{{ grafana_container.port }}/api/alert-notifications/lookup"
+    url: "http://localhost:{{ grafana_container.port }}/api/v1/provisioning/contact-points"
     user: "admin"
     password: "{{ password.grafana.admin }}"
     method: GET
@@ -176,23 +178,21 @@
   vars:
     uid: "{{ channels.json | selectattr('uid', 'equalto', item) | map(attribute='uid') | join(',') }}"
     method: "{{ uid | ternary('PUT', 'POST') }}"
-    path: "api/alert-notifications{{ uid | ternary('/uid/'+ uid, '') }}"
+    path: "api/v1/provisioning/contact-points{{ uid | ternary('/'+ uid, '') }}"
     file: "channels/{{ item }}.json.j2"
   uri:
     url: "http://localhost:{{ grafana_container.port }}/{{ path }}"
+    force_basic_auth: yes
     user: "admin"
     password: "{{ password.grafana.admin }}"
     method: "{{ method }}"
-    body: "{{ lookup('template', file) }}"
-    force_basic_auth: yes
-    status_code: [ 200, 409 ]
     body_format: json
+    body: "{{ lookup('template', file) }}"
+    status_code: [ 200, 202 ]
   loop_control: 
-    label: "{{ item | basename }}"
+    label: "{{ item }}"
   loop:
     - alertmanager
     - email
     - slack
   register: uri
-  changed_when: uri.status == 200
-  when: channels is defined
