@@ -9,6 +9,11 @@
     name: "{{ influxdb_container.name }}"
     state: absent
 
+- name: "Influxdb2 container restart"
+  docker_container:
+    name: "{{ influxdb2_container.name }}"
+    state: absent
+
 - name: "Prometheus container restart"
   docker_container:
     name: "{{ prometheus_container.name }}"

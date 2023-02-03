@@ -152,6 +152,7 @@
     - cloudwatch
     - elasticsearch
     - influxdb
+    - influxdb2
     - telegraf
   register: uri
   changed_when: uri.status == 200

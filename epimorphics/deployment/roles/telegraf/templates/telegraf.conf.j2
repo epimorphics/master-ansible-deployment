@@ -17,13 +17,30 @@
   omit_hostname = false
 
 [[outputs.influxdb]]
-  urls = ["http://{{ influxdb_server }}:{{ influxdb_container.port.http }}"] # required
-  database = "{{ influxdb.database.telegraf  }}" # required
-  username = "{{ influxdb.user.admin }}"
+  urls = ["http://{{ influxdb_server }}:{{ influxdb_container.port }}"] # required
+  database = "{{ influxdb_database  }}" # required
+  username = "{{ influxdb_admin }}"
   password = "{{ password.influxdb.admin }}"
   retention_policy = ""
   write_consistency = "any"
   timeout = "5s"
+
+# Configuration for sending metrics to InfluxDB 2.0
+[[outputs.influxdb_v2]]
+  urls = ["http://{{ influxdb_server }}:{{ influxdb2_container.port }}"]
+
+  ## Token for authentication.
+  token = "{{ password.influxdb.admin }}"
+
+  ## Organization is the name of the organization you wish to write to.
+  organization = "epimorphics"
+
+  ## Destination bucket to write into.
+  bucket = "telegraf"
+
+  ## Timeout for HTTP messages.
+  # timeout = "5s"
+
 
 [[outputs.prometheus_client]]
   listen = "0.0.0.0:{{ telegraf.port.prometheus }}"

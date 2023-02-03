@@ -7,7 +7,7 @@ wal-dir = "{{ influxdb.store }}/wal"
 
 [http]
 enabled = true
-bind-address = ":{{ influxdb_container.port.http }}"
+bind-address = ":{{ influxdb_container.port }}"
 auth-enabled = true
 log-enabled = false
 

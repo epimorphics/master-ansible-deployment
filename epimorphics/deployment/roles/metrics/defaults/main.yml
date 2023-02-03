@@ -1,6 +1,7 @@
 ---
 services:
   - "{{ grafana_container }}"
+  - "{{ influxdb_container }}"
   - "{{ prometheus_container }}"
 
 grafana:
@@ -8,6 +9,20 @@ grafana:
 # version: "8.5.15"
   version: "9.2.5"
   directory: "{{ docker.directory }}/{{ grafana_container.name }}"
+
+influxdb:
+  image: "influxdb"
+  version: "1.8.10"
+  directory: "{{ docker.directory }}/{{ influxdb_container.name }}"
+  store: "/var/lib/influxdb"
+
+influxdb2:
+  image: "influxdb"
+  version: "2.6.1"
+  directory: "{{ docker.directory }}/{{ influxdb2_container.name }}"
+  config: "/etc/influxdb2"
+  data: "/var/lib/influxdb2"
+
 
 prometheus:
   image: "docker.io/prom/prometheus"
