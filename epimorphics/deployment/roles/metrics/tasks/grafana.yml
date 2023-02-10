@@ -37,7 +37,6 @@
   loop_control:
     label: "{{ item.name }}"
   loop:
-#   - { name: "Discrete",  src: "https://grafana.com/api/plugins/natel-discrete-panel/versions/0.1.0/download" }
     - { name: "Pie Chart", src: "https://grafana.com/api/plugins/grafana-piechart-panel/versions/latest/download" }
 
 
@@ -152,8 +151,6 @@
     - cloudwatch
     - elasticsearch
     - influxdb
-    - influxdb2
-    - telegraf
   register: uri
   changed_when: uri.status == 200
 

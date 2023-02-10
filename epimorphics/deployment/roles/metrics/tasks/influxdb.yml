@@ -4,31 +4,35 @@
     - cfg
     - influxdb
   file:
-    path: "{{ influxdb.directory }}"
+    path: "{{ influxdb.directory }}/{{ item.path }}"
     state: directory
-    owner: root
+    owner: "{{ default_user }}"
     group: root
-    mode: "0755"
+    mode: "{{ item.mode }}"
+  with_items:
+    - { path: "config", mode: "0775" }
+    - { path: "data",   mode: "0700" }
   notify: "Influxdb container restart"
 
 
-- name: "Influxdb config"
+- name: "Record Influxdb configuration file"
   tags:
-    - cfg
+    - container
     - influxdb
-  template:
-    src: "influxdb.conf.j2"
-    dest:  "{{ docker.directory }}/influxdb.conf"
-    owner: root
-    group: root
-    mode: "0644"
-  notify: "Influxdb container restart"
+  stat:
+    path: "{{ influxdb.directory }}/config/influx_configs"
+  register: influx_configs
 
 
 - meta: flush_handlers
 
 
-- name: "Influxdb container"
+- name: debug
+  debug:
+    var: influx_configs.stat.exists
+
+
+- name: "Influxdb setup container"
   tags:
     - container
     - influxdb
@@ -36,8 +40,14 @@
     name: "{{ influxdb_container.name }}"
     image: "{{ influxdb.image }}:{{ influxdb.version }}"
     env:
-      INFLUXDB_ADMIN_USER: "{{ influxdb_admin }}"
-      INFLUXDB_ADMIN_PASSWORD: "{{ password.influxdb.admin }}"
+      DOCKER_INFLUXDB_INIT_MODE: "{{ omit if influx_configs.stat.exists=='false' else 'setup' }}"
+      DOCKER_INFLUXDB_INIT_USERNAME: "telegraf"
+      DOCKER_INFLUXDB_INIT_PASSWORD: "{{ password.influxdb.telegraf }}"
+      DOCKER_INFLUXDB_INIT_ORG: "{{ influxdb_org }}"
+      DOCKER_INFLUXDB_INIT_BUCKET: "{{ influxdb_bucket }}"
+      DOCKER_INFLUXDB_INIT_RETENTION: "4w"
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: "{{ password.influxdb.admin }}"
+      INFLUXD_HTTP_BIND_ADDRESS: ":{{ influxdb_container.port }}"
     log_driver: "{{ docker.logging.driver }}"
     log_options: "{{ docker.logging.options }}"
     network_mode: "{{ docker.network.mode }}"
@@ -48,64 +58,6 @@
     ports:
       - "{{ influxdb_container.port }}:{{ influxdb_container.port }}"
     volumes:
-      - "{{ docker.directory }}/influxdb.conf:/etc/influxdb/influxdb.conf"
-      - "{{ influxdb.directory }}:{{ influxdb.store }}"
-
-
-- name: "Influxdb2 volume"
-  tags:
-    - cfg
-    - influxdb
-    - influxdb2
-  file:
-    path: "{{ influxdb2.directory }}/{{ item.path }}"
-    state: directory
-    owner: "{{ default_user }}"
-    group: root
-    mode: "{{ item.mode }}"
-  with_items:
-    - { path: "config", mode: "0775" }
-    - { path: "data",   mode: "0700" }
-  notify: "Influxdb2 container restart"
-
-
-- name: "Record Influxdb2 configuration file"
-  tags:
-    - container
-    - influxdb
-    - influxdb2
-  stat:
-    path: "{{ influxdb2.directory }}/config/influx_configs"
-  register: influx_configs
-
-
-- name: "Influxdb2 setup container"
-  tags:
-    - container
-    - influxdb
-    - influxdb2
-  docker_container:
-    name: "{{ influxdb2_container.name }}"
-    image: "{{ influxdb2.image }}:{{ influxdb2.version }}"
-    env:
-      DOCKER_INFLUXDB_INIT_MODE: "{{ omit if not influx_configs.stat.exists else 'setup' }}"
-      DOCKER_INFLUXDB_INIT_USERNAME: "telegraf"
-      DOCKER_INFLUXDB_INIT_PASSWORD: "{{ password.influxdb.telegraf }}"
-      DOCKER_INFLUXDB_INIT_ORG: "{{ influxdb2_org }}"
-      DOCKER_INFLUXDB_INIT_BUCKET: "{{ influxdb2_bucket }}"
-      DOCKER_INFLUXDB_INIT_RETENTION: "4w"
-      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: "{{ password.influxdb.admin }}"
-      INFLUXD_HTTP_BIND_ADDRESS: ":{{ influxdb2_container.port }}"
-    log_driver: "{{ docker.logging.driver }}"
-    log_options: "{{ docker.logging.options }}"
-    network_mode: "{{ docker.network.mode }}"
-    networks:
-      - name: "{{ docker.network.name }}"
-    restart_policy: "unless-stopped"
-    networks_cli_compatible: yes
-    ports:
-      - "{{ influxdb2_container.port }}:{{ influxdb2_container.port }}"
-    volumes:
-      - "{{ influxdb2.directory }}/config:{{ influxdb2.config }}"
-      - "{{ influxdb2.directory }}/data:{{ influxdb2.data }}"
+      - "{{ influxdb.directory }}/config:{{ influxdb.config }}"
+      - "{{ influxdb.directory }}/data:{{ influxdb.data }}"
   when: influx_configs.stat.exists is defined

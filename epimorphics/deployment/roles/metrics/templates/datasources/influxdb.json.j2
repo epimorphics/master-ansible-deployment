@@ -1,9 +1,9 @@
 {
-  "id": 4,
+  "id": 5,
   "orgId": 1,
   "name": "InfluxDB",
   "type": "influxdb",
-  "uid": "influxdb",
+  "uid": "influxdb2",
   "typeName": "InfluxDB",
   "typeLogoUrl": "public/app/plugins/datasource/influxdb/img/influxdb_logo.svg",
   "access": "proxy",
@@ -13,10 +13,13 @@
   "basicAuth": false,
   "isDefault": false,
   "jsonData": {
-    "httpMode": "GET"
+    "defaultBucket": "telegraf",
+    "httpMode": "POST",
+    "organization": "epimorphics",
+    "version": "Flux"
   },
   "secureJsonData": {
-    "password": "{{ password.influxdb.admin }}"
+    "token": "{{ password.influxdb.admin }}"
   },
   "readOnly": false
 }
