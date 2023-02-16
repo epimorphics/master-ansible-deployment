@@ -25,7 +25,7 @@
   "fiscalYearStartMonth": 0,
   "gnetId": 10507,
   "graphTooltip": 1,
-  "id": 30,
+  "id": 21,
   "links": [
     {
       "icon": "external link",
@@ -307,7 +307,7 @@
           ],
           "orderByTime": "ASC",
           "policy": "$policy",
-          "query": "// SELECT last(\"count_total\") FROM \"elasticsearch_clusterstats_nodes\" WHERE (\"cluster_name\" =~ /^$cluster$/) AND $timeFilter GROUP BY time($__interval) fill(null)\r\n\r\nfrom(bucket: \"telegraf\")\r\n\t|> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"elasticsearch_clusterstats_nodes\")\r\n  |> filter(fn: (r) => r._field == \"count_total\")\r\n  |> last()",
+          "query": "// SELECT last(\"count_total\") FROM \"elasticsearch_clusterstats_nodes\" WHERE (\"cluster_name\" =~ /^$cluster$/) AND $timeFilter GROUP BY time($__interval) fill(null)\r\n\r\nfrom(bucket: \"telegraf\")\r\n\t|> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"elasticsearch_clusterstats_nodes\")\r\n  |> filter(fn: (r) => r._field == \"count_total\")\r\n  |> group()\r\n  |> last()",
           "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series",
@@ -337,6 +337,7 @@
       ],
       "timeFrom": "30m",
       "title": "Active Nodes",
+      "transformations": [],
       "type": "stat"
     },
     {
@@ -662,7 +663,7 @@
           "measurement": "elasticsearch_indices",
           "orderByTime": "ASC",
           "policy": "$policy",
-          "query": "// SELECT mean(\"docs_count\") FROM \"$policy\".\"elasticsearch_indices\" WHERE (\"cluster_name\" =~ /^$cluster$/) AND $timeFilter GROUP BY time($__interval) fill(null)\r\n\r\nfrom(bucket: \"telegraf\")\r\n\t|> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"elasticsearch_indices\")\r\n  |> filter(fn: (r) => r._field == \"docs_count\")\r\n  |> last()",
+          "query": "// SELECT mean(\"docs_count\") FROM \"$policy\".\"elasticsearch_indices\" WHERE (\"cluster_name\" =~ /^$cluster$/) AND $timeFilter GROUP BY time($__interval) fill(null)\r\n\r\nfrom(bucket: \"telegraf\")\r\n\t|> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"elasticsearch_indices\")\r\n  |> filter(fn: (r) => r._field == \"docs_count\")\r\n  |> group()\r\n  |> last()",
           "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series",
@@ -778,7 +779,7 @@
           "measurement": "elasticsearch_clusterstats_indices",
           "orderByTime": "ASC",
           "policy": "$policy",
-          "query": "// SELECT mean(\"store_size_in_bytes\") FROM \"$policy\".\"elasticsearch_clusterstats_indices\" WHERE (\"cluster_name\" =~ /^$cluster$/) AND $timeFilter GROUP BY time($__interval) fill(null)\r\n\r\nfrom(bucket: \"telegraf\")\r\n\t|> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"elasticsearch_clusterstats_indices\")\r\n  |> filter(fn: (r) => r._field == \"store_size_in_bytes\")\r\n  |> last()",
+          "query": "// SELECT mean(\"store_size_in_bytes\") FROM \"$policy\".\"elasticsearch_clusterstats_indices\" WHERE (\"cluster_name\" =~ /^$cluster$/) AND $timeFilter GROUP BY time($__interval) fill(null)\r\n\r\nfrom(bucket: \"telegraf\")\r\n\t|> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"elasticsearch_clusterstats_indices\")\r\n  |> filter(fn: (r) => r._field == \"store_size_in_bytes\")\r\n  |> group()\r\n  |> last()",
           "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series",
@@ -895,7 +896,7 @@
           "measurement": "elasticsearch_jvm",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "// SELECT mean(\"mem_heap_used_percent\") FROM \"elasticsearch_jvm\" WHERE $timeFilter GROUP BY time(10s) fill(null)\r\n\r\nfrom(bucket: \"telegraf\")\r\n\t|> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"elasticsearch_jvm\")\r\n  |> filter(fn: (r) => r._field == \"mem_heap_used_percent\")\r\n  |> last()",
+          "query": "// SELECT mean(\"mem_heap_used_percent\") FROM \"elasticsearch_jvm\" WHERE $timeFilter GROUP BY time(10s) fill(null)\r\n\r\nfrom(bucket: \"telegraf\")\r\n\t|> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"elasticsearch_jvm\")\r\n  |> filter(fn: (r) => r._field == \"mem_heap_used_percent\")\r\n  |> group()\r\n  |> last()",
           "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series",
@@ -1362,62 +1363,106 @@
       }
     },
     {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
       "datasource": {
         "type": "influxdb",
         "uid": "influxdb2"
       },
       "fieldConfig": {
         "defaults": {
-          "links": []
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "links": [],
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "bytes"
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Size"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#65c5db",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 2
+              }
+            ]
+          }
+        ]
       },
-      "fill": 1,
-      "fillGradient": 0,
       "gridPos": {
         "h": 8,
         "w": 8,
         "x": 16,
         "y": 6
       },
-      "hiddenSeries": false,
       "hideTimeOverride": false,
       "id": 41,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": false,
-        "total": false,
-        "values": false
-      },
-      "lines": true,
-      "linewidth": 1,
       "links": [],
-      "nullPointMode": "null",
       "options": {
-        "alertThreshold": true
-      },
-      "percentage": false,
-      "pluginVersion": "9.2.5",
-      "pointradius": 5,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [
-        {
-          "alias": "Size",
-          "color": "#65c5db",
-          "linewidth": 2
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
         }
-      ],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
+      },
+      "pluginVersion": "9.2.5",
       "targets": [
         {
           "alias": "Size",
@@ -1469,35 +1514,8 @@
           ]
         }
       ],
-      "thresholds": [],
-      "timeRegions": [],
       "title": "Stored Size",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "mode": "time",
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "format": "bytes",
-          "logBase": 1,
-          "show": true
-        },
-        {
-          "format": "short",
-          "logBase": 1,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false
-      }
+      "type": "timeseries"
     },
     {
       "aliasColors": {},
@@ -5195,7 +5213,7 @@
       }
     }
   ],
-  "refresh": "1m",
+  "refresh": false,
   "schemaVersion": 37,
   "style": "dark",
   "tags": [
@@ -5207,7 +5225,7 @@
     "list": []
   },
   "time": {
-    "from": "now-24h",
+    "from": "now-12h",
     "to": "now"
   },
   "timepicker": {
@@ -5238,6 +5256,6 @@
   "timezone": "",
   "title": "Elasticsearch Metrics",
   "uid": "elasticsearch",
-  "version": 9,
+  "version": 2,
   "weekStart": ""
 }
