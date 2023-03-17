@@ -5,7 +5,7 @@
     - elasticsearch
   file:
     state: "directory"
-    path: "{{ elasticsearch.directory }}/nodes"
+    path: "{{ elasticsearch.directory }}"
     owner: "root"
     group: "root"
     mode: "0775"
