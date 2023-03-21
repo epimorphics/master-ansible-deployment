@@ -7,7 +7,7 @@ services:
 
 fluentd:
   image: "{{ registry.common }}/fluentd"
-  version: "v1.14.4-1.0"
+  version: "v1.15.3-1.0"
   directory: "{{ docker.directory }}/{{ fluentd_container.name }}"
   ports:
     - "{{ fluentd_container.port.metrics }}:{{ fluentd_container.port.metrics }}"
@@ -25,7 +25,7 @@ fluentd:
 
 elasticsearch:
   image: "docker.elastic.co/elasticsearch/elasticsearch"
-  version: "7.17.0"
+  version: "8.6.2"
   directory: "{{ docker.directory }}/{{ elasticsearch_container.name }}"
 
 es_exporter:
@@ -34,5 +34,5 @@ es_exporter:
 
 kibana:
   image: "docker.elastic.co/kibana/kibana"
-  version: "7.17.0"
+  version: "8.6.2"
   xpack_reporting_encryptionKey: "{{ vault_kibana.xpack_reporting_encryptionKey }}"
