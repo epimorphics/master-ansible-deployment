@@ -44,7 +44,7 @@ s3_readwrite:
 
 # staff: "{{ vault_staff }}"
 
-ssl_certificate_id: "arn:aws:acm:eu-west-1:{{ aws.account_id }}:certificate/aa40074e-6439-4158-b7c0-9fa8a5002718"
+ssl_certificate_id: "arn:aws:acm:eu-west-1:{{ aws.account }}:certificate/aa40074e-6439-4158-b7c0-9fa8a5002718"
 
 vpc:
   name: "{{ instance }}-vpc"
