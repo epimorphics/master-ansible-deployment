@@ -26,6 +26,15 @@
 #    name: python3.8
 #    state: latest
 
+- name: "Install python3 pin urllib3"
+  become: yes
+  tags:
+    - pkg
+    - pip
+  pip:
+    executable: pip3
+    name:
+      - urllib3<2
 
 - name: "Install python3 pip modules"
   become: yes
