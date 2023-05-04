@@ -18,12 +18,16 @@
     vpc_subnet_id:  "{{ subnet_ids[index % (subnet_ids | length)] }}"
     exact_count: "{{ item.count | default(1) }}"
     network:
-      assign_public_ip: "yes"
-      monitoring: "yes"
-      groups: "[ 'base' ] + {{ item.security_group | default([]) }}"
+      assign_public_ip: true
+    security_groups: "{{ item.security_groups | list }}"
+    detailed_monitoring: true
     instance_role: "{{ iam_role }}"
     purge_tags: false
+    filters:
+      instance-state-name: running
+      "tag:Type": "{{ item.type }}"
     tags:
+      Name: "{{ hostname_root }}-{{ item.type }}"
       Ansible: "True"
       Type: "{{ item.type }}"
       Env: "{{ env }}"
@@ -54,22 +58,20 @@
 
 # Tagging EC2 instance
 - name: "EC2 Instance Tags"
+  vars:
+    indx: "{{ item.private_ip_address.split('.')[-1] | default('') }}"
+    fcnt: "{{ '-%03d' | format(indx|int) }}"
   tags:
     - ec2
-  vars: 
-    indx: "{{  item.count | default(1) }}"
-    fcnt: "{{ '-%02d' | format(indx|int) }}"
-    name: "{{ hostname_root }}-{{ item.tags.Type }}{{ (((item.count|default(1)|int) != 1 ) or hostname_index ) | ternary(fcnt, '') }}"
   ec2_tag:
     region: "{{ region }}"
     resource: "{{ item.instance_id }}"
     purge_tags: false
     tags:
-      Name: "{{ name }}"
       Server: "{{ item.tags.Type }}{{ fcnt }}"
       Index: "{{ indx }}"
   loop_control:
-    label: "{{ item.instance_id }}: {{ name }}"
+    label: "{{ item.tags.Name | default(item.instance_id) }}"
   loop: "{{ ec2_instances.instances }}"
   when: 
     - ec2_inst is defined

@@ -27,11 +27,6 @@
 - meta: flush_handlers
 
 
-- name: debug
-  debug:
-    var: influx_configs.stat.exists
-
-
 - name: "Influxdb setup container"
   tags:
     - container
