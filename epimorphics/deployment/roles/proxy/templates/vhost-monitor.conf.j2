@@ -50,7 +50,7 @@ LoadModule status_module modules/mod_status.so
 
     Include conf/vhosts/extra/log-format.conf
 
-    ProxyRequests On 
+    ProxyRequests On
     ProxyPreserveHost On
     ProxyVia On
 
@@ -93,3 +93,6 @@ LoadModule status_module modules/mod_status.so
 # -----------------------------------------------------------------------------
 
 {% endfor %}
+
+IncludeOptional conf/{{ vhosts_cfg_dir }}/*.conf
+

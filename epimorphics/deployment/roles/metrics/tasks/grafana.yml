@@ -167,6 +167,7 @@
     method: GET
     force_basic_auth: yes
   check_mode: no
+  no_log: true
   register: channels
 
 
