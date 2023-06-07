@@ -95,7 +95,7 @@
           "calcs": [
             "lastNotNull"
           ],
-          "fields": "/^Value$/",
+          "fields": "",
           "values": false
         },
         "textMode": "auto"
@@ -107,9 +107,11 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
+          "editorMode": "code",
           "expr": "sum(rate(internal_application_error{job=\"$application\"}[1m]) or on() vector(0))",
           "interval": "",
           "legendFormat": "",
+          "range": true,
           "refId": "A"
         }
       ],
@@ -157,7 +159,7 @@
           "calcs": [
             "lastNotNull"
           ],
-          "fields": "/^Value$/",
+          "fields": "",
           "values": false
         },
         "textMode": "auto"
@@ -169,9 +171,11 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
+          "editorMode": "code",
           "expr": "sum(rate(api_connection_failure{job=\"$application\"}[1m]) or on() vector(0))",
           "interval": "",
           "legendFormat": "",
+          "range": true,
           "refId": "A"
         }
       ],
@@ -219,7 +223,7 @@
           "calcs": [
             "lastNotNull"
           ],
-          "fields": "/^Value$/",
+          "fields": "",
           "values": false
         },
         "textMode": "auto"
@@ -281,7 +285,7 @@
           "calcs": [
             "lastNotNull"
           ],
-          "fields": "/^Value$/",
+          "fields": "",
           "values": false
         },
         "textMode": "auto"
@@ -335,6 +339,9 @@
       },
       "fieldConfig": {
         "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -362,9 +369,9 @@
         "orientation": "auto",
         "reduceOptions": {
           "calcs": [
-            "lastNotNull"
+            "last"
           ],
-          "fields": "/^Value$/",
+          "fields": "",
           "values": false
         },
         "textMode": "auto"
@@ -376,9 +383,11 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
+          "editorMode": "code",
           "expr": "sum(rate(api_status{job=\"$application\",status=~\"2..\"}[1m]) or on() vector(0))",
           "interval": "",
-          "legendFormat": "",
+          "legendFormat": "{{$application}}",
+          "range": true,
           "refId": "A"
         }
       ],
@@ -421,7 +430,7 @@
           "calcs": [
             "lastNotNull"
           ],
-          "fields": "/^Value$/",
+          "fields": "",
           "values": false
         },
         "textMode": "auto"
@@ -482,7 +491,7 @@
           "calcs": [
             "lastNotNull"
           ],
-          "fields": "/^Value$/",
+          "fields": "",
           "values": false
         },
         "textMode": "auto"
@@ -543,7 +552,7 @@
           "calcs": [
             "lastNotNull"
           ],
-          "fields": "/^Value$/",
+          "fields": "",
           "values": false
         },
         "textMode": "auto"
@@ -1190,8 +1199,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1367,8 +1375,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1545,8 +1552,8 @@
       {
         "current": {
           "selected": true,
-          "text": "landing",
-          "value": "landing"
+          "text": "ukhpi",
+          "value": "ukhpi"
         },
         "datasource": {
           "type": "prometheus",
@@ -1625,6 +1632,6 @@
   "timezone": "",
   "title": "Ruby Application",
   "uid": "RubyApp",
-  "version": 1,
+  "version": 2,
   "weekStart": ""
 }

@@ -76,6 +76,19 @@
     -  logging is defined
 
 
+- name: "Syslog rotate"
+  tags:
+    - cfg
+    - logging
+    - syslog
+  template:
+    dest: "/etc/logrotate.conf"
+    src: "logrotate.conf.j2"
+    owner: root
+    group: root
+  when: logrotate is defined
+
+
 - name: "Journald volatile"
   tags:
     - cfg
