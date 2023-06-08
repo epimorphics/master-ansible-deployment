@@ -25,10 +25,16 @@
     - cfg
     - cron
   file:
-    path: "{{ parse.cache }}"
+    path: "{{ parse.directory }}/{{ item }}"
     owner: root
     group: root
     state: directory
+  loop_control:
+    label: "{{ item }}"
+  loop:
+    - month
+    - today
+
 
 
 - name: "Log result directories"
@@ -71,7 +77,8 @@
   loop_control:
     label: "{{ item | basename }}"
   loop:
-    - "{{ parse.wrapper }}"
+    - "{{ parse.wrapper.month }}"
+    - "{{ parse.wrapper.today }}"
 
 
 - name: "Cron tasks"
@@ -88,5 +95,6 @@
   loop_control:
     label: "{{ item.name }}"
   loop:
-    - { name: "Monthly Cache cleanup", day: "2", minute: "1", hour: "0", job: "rm -r {{ parse.cache }}" }
-    - { name: "Daily Proxy Parse",  day: "*", minute: "30", hour: "3", job: "{{ parse.wrapper }}" }
+    - { name: "Monthly Cache cleanup", day: "2", minute: "1", hour: "0", job: "rm -r {{ parse.directory }}/month/cache" }
+    - { name: "Month Proxy Parse",  day: "*", minute: "30", hour: "3", job: "{{ parse.wrapper.month }}" }
+    - { name: "Today Proxy Parse",  day: "*", minute: "01", hour: "*", job: "{{ parse.wrapper.today }}" }

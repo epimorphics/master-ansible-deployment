@@ -120,6 +120,14 @@
   </rule>
 </match>
 
+<filter dhclient.syslog.** postfix*.syslog.** sshd.syslog.** sudo.syslog.** systemd*.syslog.**>
+  @id syslog_level
+  @type record_transformer
+  <record>
+    log_level ${tag_parts[3]}
+  </record>
+</filter>
+
 # Transform Proxy tag
 <match proxy.syslog.daemon.*>
   @id rewrite_proxy_tag
@@ -147,6 +155,7 @@
     expression /{{ apache_info_regexp}}/
   </parse>
 </filter>
+
 
 <filter apache.err.**>
   @id parser_apache_error
@@ -195,7 +204,7 @@
 #   </parse>
 # </filter>
 
-# Ignroe apache server-status
+# Ignore apache server-status
 <filter apache.info.proxy>
   @id apache-server-status
   @type grep
@@ -274,14 +283,14 @@
   </parse>
 </filter>
 
-## Generic Key-Value Parser
-#<match pattern>
-#  @id parser_kv
-#  @type kv_parser
-#  key message
-#  remove_key false
-#  inject_key_prefix log_
-#</match>
+## # Keep raw
+## <filter json.**>
+##   @id raw_json
+##   @type record_transformer
+##   <record>
+##     raw ${record["message"]}
+##   </record>
+## </filter>
 
 # JSON parser
 <filter json.**>
@@ -304,17 +313,36 @@
   </parse>
 </filter>
 
-# Update Grafana duration
+# Grafana hacks
 <filter json.info.grafana>
   @id grafana_duration
   @type record_transformer
   enable_ruby
   <record>
-    log_time_taken ${record['log_duration']}
-    log_epoch ${Time.parse(record['log_t']).to_f.round(3)}
+    log_time_taken ${record["log_duration"]}
+    log_epoch ${Time.parse(record["log_t"]).to_f.round(3)}
   </record>
   renew_time_key log_epoch
   remove_keys log_duration,log_epoch
+</filter>
+
+<filter json.info.grafana>
+  @id grafana_license
+  @type grep
+  <exclude>
+    key log_logger
+    pattern /licensing/
+  </exclude>
+</filter>
+
+# normalise log_level
+<filter ansible*.** apache.** dhclient.syslog.** es_exporter.syslog.** postfix*.syslog.** sshd.syslog.** sudo.syslog.** systemd*.syslog.**>
+  @type record_transformer
+  @id level_upcase
+  enable_ruby true
+  <record>
+    log_level ${if record.has_key?("log_level"); record ["log_level"].upcase; elsif record.has_key?("level"); record ["level"].upcase; else "INFO"; end}
+  </record>
 </filter>
 
 
@@ -341,6 +369,16 @@
     tag json.${tag_parts[2]}.$1
   </rule>
 </match>
+
+# Keep raw
+<filter json.**>
+  @id raw_json
+  @type record_transformer
+  <record>
+    raw ${record["message"]}
+  </record>
+  remove_keys message
+</filter>
 
 # copy to elastic search
 <match json.** **>

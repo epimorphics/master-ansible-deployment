@@ -1,6 +1,5 @@
 #! /bin/bash
 
-
 TODAY=$(date +%Y-%m-%d)
 DEFAULT_GEODATA=/usr/local/share/GeoLite2/GeoLite2-City.mmdb
 
@@ -23,6 +22,7 @@ Usage() {
   echo "  -w <directory>   Working directory. Default: ."
   echo 
 }
+
 
 Validate() {
   if [ -n "$DAY" ]
@@ -138,8 +138,8 @@ GOACCESS_CMD="/usr/local/bin/goaccess $CACHE_OPT $DATE_OPT $EXCLUDE_OPT $FORMAT_
 # echo S3:${S3}
 
 Validate
-[ -n "$PROFILE" ] && PROOUTPUT_OPT="--profile $PROFILE"
-AWS="aws $PROFILE"
+[ -n "$PROFILE" ] && PROFILE_OPT="--profile $PROFILE"
+AWS="aws $PROFILE_OPT"
 
 if ConsolidateLogs
 then
