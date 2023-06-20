@@ -1,5 +1,6 @@
 #! /bin/bash
 
+[ -z `tty` ] && PREFIX="$(basename $0): "
 TODAY=$(date +%Y-%m-%d)
 DEFAULT_GEODATA=/usr/local/share/GeoLite2/GeoLite2-City.mmdb
 
@@ -23,49 +24,58 @@ Usage() {
   echo 
 }
 
+err() {
+  printf "%s%s\n" "$PREFIX" "$*" >&2
+}
+
+log() {
+  printf "%s%s\n" "$PREFIX" "$*"
+}
+
 
 Validate() {
-  if [ -n "$DAY" ]
+  if [ "$DAY" != $(date -d $DAY +%Y-%m-%d) ]
   then
-    if [ "$DAY" != $(date -d $DAY +%Y-%m-%d) ]
-    then
-      echo "Invalid DAY: $DAY" >&2
-      exit 1
-    fi
-  else
-    DAY="${DAY:-$TODAY}"
+    err "Invalid DAY: $DAY"
+    exit 1
   fi
 
   if [ -z "$OUTPUT" ]
   then
     Usage
-    echo "No destination file" >&2
+    err "No destination file"
     exit 1
   fi
 
   if [ -z "$S3" ]
   then
     Usage
-    echo "No S3 log location" >&2
+    err "No S3 log location"
     exit 1
   fi
 
   if [ -d "$OUTPUT" ]
   then
-    echo "Destination $OUTPUT: is a directory" >&2
+    err "Destination $OUTPUT: is a directory"
     exit 1
   fi
 
   DIR=$(dirname $OUTPUT)
   if [ ! -w "$DIR" ]
   then
-    echo "Destination $DIR: not a writable directory" >&2
+    err "Destination $DIR: not a writable directory"
     exit 1
   fi
 
   if [ ! -w "$DIRECTORY" ] || [ ! -d "$DIRECTORY" ]
   then
-    echo "Working directory $DIRECTORY: not a writable directory" >&2
+    err "Working directory $DIRECTORY: not a writable directory"
+    exit 1
+  fi
+
+  if [ ! -f "$GEODATA" ]
+  then
+    err "GeoIP Data file $GEODATA: not found"
     exit 1
   fi
 }
@@ -105,7 +115,7 @@ ConsolidateLogs() {
     for LOG in $($AWS s3 ls $D | awk -v D=$D '$4~/apache.info.proxy-/ {printf "%s%s\n",D,$4}')
     do
       mkdir -p ${DIRECTORY}/${DAY}/${HOST}
-      echo "Retrieving $LOG ..."
+      log "Retrieving $LOG ..."
       $AWS s3 cp $LOG - | gzip -dc | grep -wv "408" | /usr/local/bin/json2combined.py >> ${DIRECTORY}/${DAY}/${HOST}/apache.info.proxy
       rc=0
     done 
@@ -115,19 +125,12 @@ ConsolidateLogs() {
 
 Options $*
 
+DAY="${DAY:-$TODAY}"
 DIRECTORY="${DIRECTORY:-.}"
 MATCH="${MATCH:-hmlr-prod-pres}"
 MONTH=$(date -d $DAY +%Y-%m)
 DBPATH="${DBPATH:-$DIRECTORY/$MONTH}"
 GEODATA="${GEODATA:-$DEFAULT_GEODATA}"
-
-CACHE_OPT="--persist --restore --db-path=$DBPATH"
-DATE_OPT="--time-format=%T --date-format=%d/%b/%Y"
-EXCLUDE_OPT="-e 10.0.0.0-10.255.255.255"
-FORMAT_OPT="--log-format=VCOMBINED"
-[ -n "$GEODATA" ] && GEO_OPT="--geoip-database=$GEODATA"
-[ -z "`tty`" ] && PROGRESS_OPT="--no-progress"
-GOACCESS_CMD="/usr/local/bin/goaccess $CACHE_OPT $DATE_OPT $EXCLUDE_OPT $FORMAT_OPT $GEO_OPT $PROGRESS_OPT"
 
 # echo DAY:$DAY
 # echo PROFILE:$PROFILE
@@ -138,12 +141,21 @@ GOACCESS_CMD="/usr/local/bin/goaccess $CACHE_OPT $DATE_OPT $EXCLUDE_OPT $FORMAT_
 # echo S3:${S3}
 
 Validate
+
+CACHE_OPT="--persist --restore --db-path=$DBPATH"
+DATE_OPT="--time-format=%T --date-format=%d/%b/%Y"
+EXCLUDE_OPT="-e 10.0.0.0-10.255.255.255"
+FORMAT_OPT="--log-format=VCOMBINED"
+[ -n "$GEODATA" ] && GEO_OPT="--geoip-database=$GEODATA"
+[ -z "`tty`" ] && PROGRESS_OPT="--no-progress"
+GOACCESS_CMD="/usr/local/bin/goaccess $CACHE_OPT $DATE_OPT $EXCLUDE_OPT $FORMAT_OPT $GEO_OPT $PROGRESS_OPT"
+
 [ -n "$PROFILE" ] && PROFILE_OPT="--profile $PROFILE"
 AWS="aws $PROFILE_OPT"
 
 if ConsolidateLogs
 then
-  echo "Merging apache.info.proxy logs for $DAY ..."
+  log "Merging apache.info.proxy logs for $DAY ..."
   if [ -n "$GOACCESS" ]
   then
     mkdir -p $DBPATH

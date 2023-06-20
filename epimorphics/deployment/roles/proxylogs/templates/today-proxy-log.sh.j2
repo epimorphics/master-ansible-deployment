@@ -1,4 +1,4 @@
 #! /bin/bash
 
-{{ parse.file }} -g /var/lib/docker/proxy/www/logs/.today.html -m  -m {{ parse.type }} -s {{ parse.src }} -w {{ parse.directory }}/today -c {{ parse.directory }}/today/cache 2>&1 | logger -t cron  && mv /var/lib/docker/proxy/www/logs/.today.html /var/lib/docker/proxy/www/logs/today.html
+{{ parse.file }} -g /var/lib/docker/proxy/www/logs/.today.html -m {{ parse.type }} -s {{ parse.src }} -w {{ parse.directory }}/today -c {{ parse.directory }}/today/cache 2>&1 | logger -t cron  && mv /var/lib/docker/proxy/www/logs/.today.html /var/lib/docker/proxy/www/logs/today.html
 rm -rf {{ parse.directory }}/today/cache
