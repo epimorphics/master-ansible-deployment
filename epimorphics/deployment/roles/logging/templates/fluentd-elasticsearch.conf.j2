@@ -157,6 +157,18 @@
 </filter>
 
 
+# Apache info parser
+<filter apache.info.**>
+  @id apache_size
+  @type record_transformer
+  enable_ruby true
+  auto_typecast true
+  <record>
+    log_size ${record["log_size"] == '-' ? 0 : record["log_size"]}
+  </record>
+</filter>
+
+
 <filter apache.err.**>
   @id parser_apache_error
   @type parser
@@ -337,8 +349,8 @@
 
 # normalise log_level
 <filter ansible*.** apache.** dhclient.syslog.** es_exporter.syslog.** postfix*.syslog.** sshd.syslog.** sudo.syslog.** systemd*.syslog.**>
-  @type record_transformer
   @id level_upcase
+  @type record_transformer
   enable_ruby true
   <record>
     log_level ${if record.has_key?("log_level"); record ["log_level"].upcase; elsif record.has_key?("level"); record ["level"].upcase; else "INFO"; end}

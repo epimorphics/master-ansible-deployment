@@ -144,7 +144,7 @@
     force_basic_auth: yes
     status_code: [ 200, 409 ]
     body_format: json
-  no_log: true
+# no_log: true
   loop_control: 
     label: "{{ item }}"
   loop:
@@ -161,6 +161,7 @@
     - cfg
     - grafana
   uri:
+#   url: "http://localhost:{{ grafana_container.port }}/api/alert-notifications/lookup"
     url: "http://localhost:{{ grafana_container.port }}/api/v1/provisioning/contact-points"
     user: "admin"
     password: "{{ password.grafana.admin }}"
@@ -178,6 +179,7 @@
   vars:
     uid: "{{ channels.json | selectattr('uid', 'equalto', item) | map(attribute='uid') | join(',') }}"
     method: "{{ uid | ternary('PUT', 'POST') }}"
+#   path: "api/alert-notifications{{ uid | ternary('/uid/'+ uid, '') }}"
     path: "api/v1/provisioning/contact-points{{ uid | ternary('/'+ uid, '') }}"
     file: "channels/{{ item }}.json.j2"
   uri:
@@ -195,4 +197,5 @@
     - alertmanager
     - email
     - slack
+# no_log: true
   register: uri
