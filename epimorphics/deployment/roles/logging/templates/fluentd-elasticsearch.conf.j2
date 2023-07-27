@@ -159,12 +159,18 @@
 
 # Apache info parser
 <filter apache.info.**>
-  @id apache_size
+  @id apache_nil
   @type record_transformer
   enable_ruby true
-  auto_typecast true
   <record>
-    log_size ${record["log_size"] == '-' ? 0 : record["log_size"]}
+    log_error_id ${record["log_error_id"] == '-' ? nil : record["log_error_id"]}
+    log_host     ${record["log_host"]     == '-' ? nil : record["log_host"]}
+    log_qos_cr   ${record["log_qos_cr"]   == '-' ? nil : record["log_qos_cr"]}
+    log_qos_com  ${record["log_qos_com"]  == '-' ? nil : record["log_qos_com"]}
+    log_qos_ev   ${record["log_qos_ev"]   == '-' ? nil : record["log_qos_ev"]}
+    log_referrer ${record["log_referrer"] == '-' ? nil : record["log_referrer"]}
+    log_size     ${record["log_size"]     == '-' ? nil : record["log_size"]}
+    log_user     ${record["log_user"]     == '-' ? nil : record["log_user"]}
   </record>
 </filter>
 
