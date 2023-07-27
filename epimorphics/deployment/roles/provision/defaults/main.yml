@@ -33,7 +33,7 @@ iam_policies:
  - "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
 
 key:
-  name: "{{ instance }}"
+  name: "{{ keyname | default(instance) }}"
   material: "{{ lookup('file', 'id_rsa.pub') }}"
 
 security_group: "default"
