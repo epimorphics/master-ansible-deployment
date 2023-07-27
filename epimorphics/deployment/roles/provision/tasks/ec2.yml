@@ -25,6 +25,7 @@
     purge_tags: false
     filters:
       instance-state-name: running
+      "tag:Env": "{{ env }}"
       "tag:Type": "{{ item.type }}"
     tags:
       Name: "{{ hostname_root }}-{{ item.type }}"
