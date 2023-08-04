@@ -49,7 +49,3 @@ jobs:
         prerelease: false
         files: |
           epimorphics-deployment-${{ steps.gitinfo.outputs.tag }}.tar.gz
-#       upload_url: ${{ steps.release.outputs.upload_url }}
-#       asset_path: epimorphics/deployment/epimorphics-deployment-${{ steps.gitinfo.outputs.tag }}.tar.gz
-#       asset_name: epimorphics-deployment-${{ steps.gitinfo.outputs.tag }}.tar.gz
-#       asset_content_type: application/gzip
