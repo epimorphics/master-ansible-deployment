@@ -11,25 +11,13 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: "Build Changelog"
       id: github_release
-      uses: mikepenz/release-changelog-builder-action@v1
+      uses: mikepenz/release-changelog-builder-action@v4
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Create Release
-      id: release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
-        body: ${{steps.github_release.outputs.changelog}}
-        draft: false
-        prerelease: false
 
     - name: "Git Information"
       id: gitinfo
@@ -46,14 +34,22 @@ jobs:
       env:
         VERSION: ${{ steps.gitinfo.outputs.tag }}
       shell: "bash"
-      run: "cd epimorphics/deployment && make && ls -l"
+      run: "make && ls -l"
 
-    - name: "Upload Artifact"
-      uses: actions/upload-release-asset@v1
+    - name: Create Release
+      id: release
+      uses: softprops/action-gh-release@v1
       env:
-        GITHUB_TOKEN: ${{ github.token }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ steps.release.outputs.upload_url }}
-        asset_path: epimorphics/deployment/epimorphics-deployment-${{ steps.gitinfo.outputs.tag }}.tar.gz
-        asset_name: epimorphics-deployment-${{ steps.gitinfo.outputs.tag }}.tar.gz
-        asset_content_type: application/gzip
+        tag_name: ${{ github.ref }}
+        name: Release ${{ github.ref }}
+        body: ${{steps.github_release.outputs.changelog}}
+        draft: false
+        prerelease: false
+        files: |
+          epimorphics-deployment-${{ steps.gitinfo.outputs.tag }}.tar.gz
+#       upload_url: ${{ steps.release.outputs.upload_url }}
+#       asset_path: epimorphics/deployment/epimorphics-deployment-${{ steps.gitinfo.outputs.tag }}.tar.gz
+#       asset_name: epimorphics-deployment-${{ steps.gitinfo.outputs.tag }}.tar.gz
+#       asset_content_type: application/gzip
