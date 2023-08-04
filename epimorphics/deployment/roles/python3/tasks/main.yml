@@ -47,6 +47,10 @@
     - pkg
     - pip
   pip:
-    name: [ 'boto3', 'pytz', 'simplejson' ]
+    name:
+    - 'boto3'
+    - 'pytz'
+    - 'requests'
+    - 'simplejson'
     executable: pip3
     state: latest

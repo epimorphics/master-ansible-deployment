@@ -43,10 +43,12 @@
   collect_cpu_time = false
 
 [[inputs.disk]]
+  interval = "30s"
   # mount_points = ["/"]
   ignore_fs = ["tmpfs", "devtmpfs", "devfs", "overlay", "squashfs" ]
 
 [[inputs.diskio]]
+  interval = "30s"
   # devices = ["sda", "sdb"]
   # skip_serial_number = false
   #

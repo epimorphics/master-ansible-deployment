@@ -8,7 +8,7 @@
     name: "{{ instance }}-{{ env-}}-{{ item.type }}"
     key_name: "{{ key.name }}"
     network_interfaces:
-      - associate_public_ip_address: "yes"
+      - associate_public_ip_address: "{{ item.public_ip | default('yes') }}"
         device_index: 0
         delete_on_termination: "yes"
         groups: "{{ item.security_groups | default([]) | epimorphics.deployment.ec2_sgId(vpc_id) }}"
