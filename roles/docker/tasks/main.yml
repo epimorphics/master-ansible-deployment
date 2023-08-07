@@ -63,6 +63,7 @@
     - pkg
     - pip
   pip:
+    executable: pip3
     name: docker
     state: latest
 
