@@ -24,7 +24,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 18,
+  "id": 17,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -108,7 +108,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sum(rate(internal_application_error{job=\"$application\"}[1m]) or on() vector(0))",
+          "expr": "sum(rate(internal_application_error{job=\"$application\",instance=\"$instance\"}[1m]) or on() vector(0))",
           "interval": "",
           "legendFormat": "",
           "range": true,
@@ -172,7 +172,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sum(rate(api_connection_failure{job=\"$application\"}[1m]) or on() vector(0))",
+          "expr": "sum(rate(api_connection_failure{job=\"$application\",instance=\"$instance\"}[1m]) or on() vector(0))",
           "interval": "",
           "legendFormat": "",
           "range": true,
@@ -235,9 +235,11 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum(rate(api_service_exception{job=\"$application\"}[1m]) or on() vector(0))",
+          "editorMode": "code",
+          "expr": "sum(rate(api_service_exception{job=\"$application\",instance=\"$instance\"}[1m]) or on() vector(0))",
           "interval": "",
           "legendFormat": "",
+          "range": true,
           "refId": "A"
         }
       ],
@@ -297,9 +299,11 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum(rate(api_requests{result!=\"success\",job=\"$application\",}[1m]) or on() vector(0))",
+          "editorMode": "code",
+          "expr": "sum(rate(api_requests{result!=\"success\",job=\"$application\",instance=\"$instance\"}[1m]) or on() vector(0))",
           "interval": "",
           "legendFormat": "",
+          "range": true,
           "refId": "A"
         }
       ],
@@ -384,7 +388,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sum(rate(api_status{job=\"$application\",status=~\"2..\"}[1m]) or on() vector(0))",
+          "expr": "sum(rate(api_status{job=\"$application\",status=~\"2..\",instance=\"$instance\"}[1m]) or on() vector(0))",
           "interval": "",
           "legendFormat": "{{$application}}",
           "range": true,
@@ -442,9 +446,11 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum(rate(api_status{job=\"$application\",status=~\"3..\"}[1m]) or on() vector(0))",
+          "editorMode": "code",
+          "expr": "sum(rate(api_status{job=\"$application\",status=~\"3..\",instance=\"$instance\"}[1m]) or on() vector(0))",
           "interval": "",
           "legendFormat": "",
+          "range": true,
           "refId": "A"
         }
       ],
@@ -503,9 +509,11 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum(rate(api_status{job=\"$application\",status=~\"4..\"}[1m]) or on() vector(0))",
+          "editorMode": "code",
+          "expr": "sum(rate(api_status{job=\"$application\",status=~\"4..\",instance=\"$instance\"}[1m]) or on() vector(0))",
           "interval": "",
           "legendFormat": "",
+          "range": true,
           "refId": "A"
         }
       ],
@@ -564,9 +572,11 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum(rate(api_status{job=\"$application\",status=~\"5..\"}[1m]) or on() vector(0))",
+          "editorMode": "code",
+          "expr": "sum(rate(api_status{job=\"$application\",status=~\"5..\",instance=\"$instance\"}[1m]) or on() vector(0))",
           "interval": "",
           "legendFormat": "",
+          "range": true,
           "refId": "A"
         }
       ],
@@ -652,7 +662,8 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "memory_used_mb{job=\"$application\"}",
+          "editorMode": "code",
+          "expr": "memory_used_mb{job=\"$application\",instance=\"$instance\"}",
           "format": "time_series",
           "instant": false,
           "interval": "",
@@ -747,7 +758,8 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum(rate(http_server_request_duration_seconds_count{job=\"$application\"}[1m] )) by (instance) > 0.00001",
+          "editorMode": "code",
+          "expr": "sum(rate(http_server_request_duration_seconds_count{job=\"$application\",instance=\"$instance\"}[1m] )) by (instance) > 0.00001",
           "format": "time_series",
           "instant": false,
           "interval": "",
@@ -840,7 +852,8 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum(rate(api_connection_failure{job=\"$application\"}[1m])) by (instance)",
+          "editorMode": "code",
+          "expr": "sum(rate(api_connection_failure{job=\"$application\",instance=\"$instance\"}[1m])) by (instance)",
           "format": "time_series",
           "instant": false,
           "interval": "",
@@ -935,7 +948,8 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum(rate(http_server_request_duration_seconds_count{job=\"$application\"}[1m] )) by (path,method) > 0.00001",
+          "editorMode": "code",
+          "expr": "sum(rate(http_server_request_duration_seconds_count{job=\"$application\",instance=\"$instance\"}[1m] )) by (path,method) > 0.00001",
           "format": "time_series",
           "instant": false,
           "interval": "",
@@ -1028,7 +1042,8 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "rate(api_requests{job=\"$application\"}[1m])",
+          "editorMode": "code",
+          "expr": "rate(api_requests{job=\"$application\",instance=\"$instance\"}[1m])",
           "format": "time_series",
           "instant": false,
           "interval": "",
@@ -1121,7 +1136,8 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "avg by (method,path) (rate(http_server_request_duration_seconds_sum{job=\"$application\"}[1m])/rate(http_server_request_duration_seconds_count{job=\"$application\"}[1m])) > 0",
+          "editorMode": "code",
+          "expr": "avg by (method,path) (rate(http_server_request_duration_seconds_sum{job=\"$application\",instance=\"$instance\"}[1m])/rate(http_server_request_duration_seconds_count{job=\"$application\",instance=\"$instance\"}[1m])) > 0",
           "format": "time_series",
           "instant": false,
           "interval": "",
@@ -1199,7 +1215,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -1240,7 +1257,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "sum by (le) (rate(http_server_request_duration_seconds_bucket{job=\"$application\"}[$__rate_interval]))",
+          "expr": "sum by (le) (rate(http_server_request_duration_seconds_bucket{job=\"$application\",instance=\"$instance\"}[$__rate_interval]))",
           "format": "heatmap",
           "interval": "",
           "legendFormat": "{{le}}",
@@ -1261,7 +1278,10 @@
         "mode": "opacity"
       },
       "dataFormat": "timeseries",
-      "datasource": {},
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
       "fieldConfig": {
         "defaults": {
           "custom": {
@@ -1339,7 +1359,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "sum(rate(http_server_request_duration_seconds_bucket{job=\"$application\"}[$__interval]) > 0.0000000001) by (le)  ",
+          "expr": "sum(rate(http_server_request_duration_seconds_bucket{job=\"$application\",instance=\"$instance\"}[$__interval]) > 0.0000000001) by (le)  ",
           "format": "time_series",
           "interval": "",
           "legendFormat": "{{le}}",
@@ -1375,7 +1395,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -1416,7 +1437,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "sum by (le) (rate(api_response_times_bucket{job=\"$application\"}[$__rate_interval]))",
+          "expr": "sum by (le) (rate(api_response_times_bucket{job=\"$application\",instance=\"$instance\"}[$__rate_interval]))",
           "format": "heatmap",
           "interval": "",
           "legendFormat": "{{le}}",
@@ -1518,7 +1539,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "sum(rate(api_response_times_bucket{job=\"$application\"}[$__interval]) > 0.0000000001) by (le)",
+          "expr": "sum(rate(api_response_times_bucket{job=\"$application\",instance=\"$instance\"}[$__interval]) > 0.0000000001) by (le)",
           "format": "time_series",
           "interval": "",
           "legendFormat": "{{le}}",
@@ -1552,8 +1573,8 @@
       {
         "current": {
           "selected": true,
-          "text": "ukhpi",
-          "value": "ukhpi"
+          "text": "landing",
+          "value": "landing"
         },
         "datasource": {
           "type": "prometheus",
@@ -1582,32 +1603,74 @@
       {
         "current": {
           "selected": false,
-          "text": "All",
-          "value": "$__all"
+          "text": "preprod",
+          "value": "preprod"
         },
-        "datasource": {
-          "type": "prometheus",
-          "uid": "prometheus"
-        },
-        "definition": "label_values(http_server_request_duration_seconds_count{job=\"$application\"},instance)",
-        "hide": 2,
-        "includeAll": true,
-        "label": "Instance",
+        "definition": "label_values(http_server_request_duration_seconds_count{job=\"$application\"},env)",
+        "description": "Environment",
+        "hide": 0,
+        "includeAll": false,
+        "label": "Env",
         "multi": false,
-        "name": "instance",
+        "name": "env",
         "options": [],
         "query": {
-          "query": "label_values(http_server_request_duration_seconds_count{job=\"$application\"},instance)",
-          "refId": "Prometheus-instance-Variable-Query"
+          "query": "label_values(http_server_request_duration_seconds_count{job=\"$application\"},env)",
+          "refId": "StandardVariableQuery"
         },
         "refresh": 2,
         "regex": "",
         "skipUrlSync": false,
         "sort": 1,
-        "tagValuesQuery": "",
-        "tagsQuery": "",
-        "type": "query",
-        "useTags": false
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "hmlr-preprod-pres-106",
+          "value": "hmlr-preprod-pres-106"
+        },
+        "definition": "label_values(http_server_request_duration_seconds_count{env=\"$env\",job=\"$application\"},host)",
+        "description": "Host",
+        "hide": 0,
+        "includeAll": false,
+        "label": "Host",
+        "multi": false,
+        "name": "host",
+        "options": [],
+        "query": {
+          "query": "label_values(http_server_request_duration_seconds_count{env=\"$env\",job=\"$application\"},host)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "10.10.10.106:3000",
+          "value": "10.10.10.106:3000"
+        },
+        "definition": "label_values(http_server_request_duration_seconds_count{env=\"$env\",job=\"$application\"},instance)",
+        "description": "",
+        "hide": 0,
+        "includeAll": false,
+        "label": "Instance",
+        "multi": false,
+        "name": "instance",
+        "options": [],
+        "query": {
+          "query": "label_values(http_server_request_duration_seconds_count{env=\"$env\",job=\"$application\"},instance)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
       }
     ]
   },
@@ -1632,6 +1695,6 @@
   "timezone": "",
   "title": "Ruby Application",
   "uid": "RubyApp",
-  "version": 2,
+  "version": 1,
   "weekStart": ""
 }

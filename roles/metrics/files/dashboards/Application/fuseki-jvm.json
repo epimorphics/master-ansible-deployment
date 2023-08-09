@@ -43,10 +43,345 @@
   "fiscalYearStartMonth": 0,
   "gnetId": 9568,
   "graphTooltip": 1,
-  "id": 3,
+  "id": 4,
   "links": [],
   "liveNow": false,
   "panels": [
+    {
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 185,
+      "title": "Fuseki",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "description": "fuseki_requests_good",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 0,
+        "y": 1
+      },
+      "id": 183,
+      "links": [],
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "9.2.5",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "rate(fuseki_requests_good{application=\"fuseki\",instance=\"$instance\"}[1m])",
+          "format": "time_series",
+          "hide": false,
+          "instant": false,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "{{description}}/{{endpoint}}",
+          "refId": "B"
+        }
+      ],
+      "title": "Fuseki Requests Good",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "description": "fuseki_requests_bad",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 8,
+        "x": 12,
+        "y": 1
+      },
+      "id": 187,
+      "links": [],
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "9.2.5",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "rate(fuseki_requests_bad{application=\"$fuseki\",instance=\"$instance\"}[1m])",
+          "format": "time_series",
+          "hide": false,
+          "instant": false,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "{{description}}/{{endpoint}}",
+          "refId": "B"
+        }
+      ],
+      "title": "Fuseki Requests Bad",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 4,
+        "x": 20,
+        "y": 1
+      },
+      "id": 189,
+      "links": [],
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "9.2.5",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "disk_total_bytes{application=\"fuseki\",instance=\"$instance\"} - disk_free_bytes{application=\"fuseki\",instance=\"$instance\"}",
+          "format": "time_series",
+          "hide": false,
+          "instant": false,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "Used: {{path}}",
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "disk_total_bytes{application=\"fuseki\",instance=\"$instance\"}",
+          "format": "time_series",
+          "hide": false,
+          "instant": false,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "Total: {{path}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Fuseki Disk Usage",
+      "type": "timeseries"
+    },
     {
       "collapsed": false,
       "datasource": {
@@ -57,7 +392,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 0
+        "y": 8
       },
       "id": 125,
       "panels": [],
@@ -106,7 +441,7 @@
         "h": 3,
         "w": 6,
         "x": 0,
-        "y": 1
+        "y": 9
       },
       "id": 63,
       "links": [],
@@ -187,7 +522,7 @@
         "h": 6,
         "w": 3,
         "x": 6,
-        "y": 1
+        "y": 9
       },
       "id": 145,
       "links": [],
@@ -246,7 +581,7 @@
         "h": 6,
         "w": 6,
         "x": 9,
-        "y": 1
+        "y": 9
       },
       "hiddenSeries": false,
       "id": 151,
@@ -364,7 +699,7 @@
         "h": 6,
         "w": 3,
         "x": 15,
-        "y": 1
+        "y": 9
       },
       "id": 139,
       "links": [],
@@ -423,7 +758,7 @@
         "h": 6,
         "w": 6,
         "x": 18,
-        "y": 1
+        "y": 9
       },
       "hiddenSeries": false,
       "id": 157,
@@ -532,7 +867,7 @@
         "h": 3,
         "w": 6,
         "x": 0,
-        "y": 4
+        "y": 12
       },
       "id": 92,
       "links": [],
@@ -584,7 +919,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 7
+        "y": 15
       },
       "id": 127,
       "panels": [],
@@ -627,7 +962,7 @@
         "h": 7,
         "w": 6,
         "x": 0,
-        "y": 8
+        "y": 16
       },
       "hiddenSeries": false,
       "id": 24,
@@ -771,7 +1106,7 @@
         "h": 7,
         "w": 6,
         "x": 6,
-        "y": 8
+        "y": 16
       },
       "hiddenSeries": false,
       "id": 25,
@@ -915,7 +1250,7 @@
         "h": 7,
         "w": 6,
         "x": 12,
-        "y": 8
+        "y": 16
       },
       "hiddenSeries": false,
       "id": 26,
@@ -1153,7 +1488,7 @@
         "h": 7,
         "w": 6,
         "x": 18,
-        "y": 8
+        "y": 16
       },
       "hiddenSeries": false,
       "id": 86,
@@ -1252,7 +1587,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 15
+        "y": 23
       },
       "id": 128,
       "panels": [
@@ -1283,7 +1618,7 @@
             "h": 7,
             "w": 6,
             "x": 0,
-            "y": 16
+            "y": 56
           },
           "hiddenSeries": false,
           "id": 106,
@@ -1425,7 +1760,7 @@
             "h": 7,
             "w": 6,
             "x": 6,
-            "y": 16
+            "y": 56
           },
           "hiddenSeries": false,
           "id": 93,
@@ -1551,7 +1886,7 @@
             "h": 7,
             "w": 6,
             "x": 12,
-            "y": 16
+            "y": 56
           },
           "hiddenSeries": false,
           "id": 32,
@@ -1705,7 +2040,7 @@
             "h": 7,
             "w": 6,
             "x": 18,
-            "y": 16
+            "y": 56
           },
           "hiddenSeries": false,
           "id": 124,
@@ -1815,7 +2150,7 @@
             "h": 7,
             "w": 18,
             "x": 0,
-            "y": 23
+            "y": 63
           },
           "height": "",
           "hiddenSeries": false,
@@ -1942,7 +2277,7 @@
             "h": 7,
             "w": 6,
             "x": 18,
-            "y": 23
+            "y": 63
           },
           "hiddenSeries": false,
           "id": 61,
@@ -2091,7 +2426,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 16
+        "y": 24
       },
       "id": 129,
       "panels": [
@@ -2122,7 +2457,7 @@
             "h": 7,
             "w": 24,
             "x": 0,
-            "y": 4
+            "y": 44
           },
           "hiddenSeries": false,
           "id": 3,
@@ -2266,7 +2601,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 17
+        "y": 25
       },
       "id": 130,
       "panels": [
@@ -2297,7 +2632,7 @@
             "h": 7,
             "w": 24,
             "x": 0,
-            "y": 5
+            "y": 45
           },
           "hiddenSeries": false,
           "id": 78,
@@ -2440,7 +2775,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 18
+        "y": 26
       },
       "id": 131,
       "panels": [
@@ -2460,7 +2795,7 @@
             "h": 7,
             "w": 6,
             "x": 0,
-            "y": 6
+            "y": 46
           },
           "hiddenSeries": false,
           "id": 163,
@@ -2569,7 +2904,7 @@
             "h": 7,
             "w": 6,
             "x": 6,
-            "y": 6
+            "y": 46
           },
           "hiddenSeries": false,
           "id": 169,
@@ -2664,7 +2999,7 @@
             "h": 7,
             "w": 6,
             "x": 12,
-            "y": 6
+            "y": 46
           },
           "hiddenSeries": false,
           "id": 175,
@@ -2773,7 +3108,7 @@
             "h": 7,
             "w": 6,
             "x": 18,
-            "y": 6
+            "y": 46
           },
           "hiddenSeries": false,
           "id": 181,
@@ -2873,7 +3208,7 @@
             "h": 7,
             "w": 8,
             "x": 0,
-            "y": 13
+            "y": 53
           },
           "hiddenSeries": false,
           "id": 98,
@@ -2972,7 +3307,7 @@
             "h": 7,
             "w": 8,
             "x": 8,
-            "y": 13
+            "y": 53
           },
           "hiddenSeries": false,
           "id": 101,
@@ -3086,7 +3421,7 @@
             "h": 7,
             "w": 8,
             "x": 16,
-            "y": 13
+            "y": 53
           },
           "hiddenSeries": false,
           "id": 99,
@@ -3199,7 +3534,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 19
+        "y": 27
       },
       "id": 132,
       "panels": [
@@ -3230,7 +3565,7 @@
             "h": 7,
             "w": 12,
             "x": 0,
-            "y": 7
+            "y": 47
           },
           "hiddenSeries": false,
           "id": 37,
@@ -3342,7 +3677,7 @@
             "h": 7,
             "w": 12,
             "x": 12,
-            "y": 7
+            "y": 47
           },
           "hiddenSeries": false,
           "id": 38,
@@ -3453,7 +3788,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 20
+        "y": 28
       },
       "id": 133,
       "panels": [
@@ -3484,7 +3819,7 @@
             "h": 7,
             "w": 6,
             "x": 0,
-            "y": 42
+            "y": 82
           },
           "hiddenSeries": false,
           "id": 33,
@@ -3610,7 +3945,7 @@
             "h": 7,
             "w": 6,
             "x": 6,
-            "y": 42
+            "y": 82
           },
           "hiddenSeries": false,
           "id": 83,
@@ -3723,7 +4058,7 @@
             "h": 7,
             "w": 6,
             "x": 12,
-            "y": 42
+            "y": 82
           },
           "hiddenSeries": false,
           "id": 85,
@@ -3849,7 +4184,7 @@
             "h": 7,
             "w": 6,
             "x": 18,
-            "y": 42
+            "y": 82
           },
           "hiddenSeries": false,
           "id": 84,
@@ -3957,7 +4292,7 @@
     "list": [
       {
         "current": {
-          "selected": true,
+          "selected": false,
           "text": "fuseki",
           "value": "fuseki"
         },
@@ -3965,15 +4300,15 @@
           "type": "prometheus",
           "uid": "prometheus"
         },
-        "definition": "label_values(jvm_memory_used_bytes, job)",
-        "hide": 0,
+        "definition": "label_values(fuseki_requests, job)",
+        "hide": 2,
         "includeAll": false,
         "label": "Job",
         "multi": false,
         "name": "job",
         "options": [],
         "query": {
-          "query": "label_values(jvm_memory_used_bytes, job)",
+          "query": "label_values(fuseki_requests, job)",
           "refId": "StandardVariableQuery"
         },
         "refresh": 1,
@@ -3988,7 +4323,7 @@
       {
         "allFormat": "glob",
         "current": {
-          "selected": true,
+          "selected": false,
           "text": "prod",
           "value": "prod"
         },
@@ -4020,9 +4355,9 @@
       {
         "allFormat": "glob",
         "current": {
-          "selected": false,
-          "text": "sl-prod-editor",
-          "value": "sl-prod-editor"
+          "selected": true,
+          "text": "nrw-prod-app-169",
+          "value": "nrw-prod-app-169"
         },
         "datasource": {
           "type": "prometheus",
@@ -4053,8 +4388,8 @@
         "allFormat": "glob",
         "current": {
           "selected": false,
-          "text": "10.10.12.148:3030",
-          "value": "10.10.12.148:3030"
+          "text": "10.10.11.169:3030",
+          "value": "10.10.11.169:3030"
         },
         "datasource": {
           "type": "prometheus",
@@ -4085,8 +4420,8 @@
         "allFormat": "glob",
         "current": {
           "selected": false,
-          "text": "G1 Eden Space",
-          "value": "G1 Eden Space"
+          "text": "All",
+          "value": "$__all"
         },
         "datasource": {
           "type": "prometheus",
@@ -4117,8 +4452,8 @@
         "allFormat": "glob",
         "current": {
           "selected": false,
-          "text": "Metaspace",
-          "value": "Metaspace"
+          "text": "All",
+          "value": "$__all"
         },
         "datasource": {
           "type": "prometheus",
@@ -4177,7 +4512,7 @@
     ]
   },
   "timezone": "browser",
-  "title": "JVM",
+  "title": "Fuseki-JVM",
   "uid": "JVM",
   "version": 1,
   "weekStart": ""
