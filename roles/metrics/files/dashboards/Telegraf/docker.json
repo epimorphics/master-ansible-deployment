@@ -29,6 +29,19 @@
   "liveNow": false,
   "panels": [
     {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 23,
+      "panels": [],
+      "title": "Containers",
+      "type": "row"
+    },
+    {
       "datasource": {
         "type": "influxdb",
         "uid": "influxdb2"
@@ -60,10 +73,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 8,
+        "h": 7,
         "w": 2,
         "x": 0,
-        "y": 0
+        "y": 1
       },
       "id": 2,
       "options": {
@@ -126,10 +139,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 8,
+        "h": 7,
         "w": 2,
         "x": 2,
-        "y": 0
+        "y": 1
       },
       "id": 4,
       "options": {
@@ -192,10 +205,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 8,
+        "h": 7,
         "w": 2,
         "x": 4,
-        "y": 0
+        "y": 1
       },
       "id": 3,
       "options": {
@@ -234,10 +247,10 @@
       },
       "fontSize": "100%",
       "gridPos": {
-        "h": 8,
+        "h": 7,
         "w": 18,
         "x": 6,
-        "y": 0
+        "y": 1
       },
       "hideTimeOverride": true,
       "id": 19,
@@ -515,6 +528,19 @@
       "type": "table-old"
     },
     {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 8
+      },
+      "id": 25,
+      "panels": [],
+      "title": "CPU/Memory",
+      "type": "row"
+    },
+    {
       "datasource": {
         "type": "influxdb",
         "uid": "influxdb2"
@@ -568,7 +594,8 @@
                 "value": 80
               }
             ]
-          }
+          },
+          "unit": "percent"
         },
         "overrides": []
       },
@@ -576,7 +603,7 @@
         "h": 9,
         "w": 12,
         "x": 0,
-        "y": 8
+        "y": 9
       },
       "id": 6,
       "options": {
@@ -673,7 +700,7 @@
         "h": 9,
         "w": 12,
         "x": 12,
-        "y": 8
+        "y": 9
       },
       "id": 21,
       "options": {
@@ -707,6 +734,19 @@
       "title": "Menory Usage %",
       "transformations": [],
       "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 18
+      },
+      "id": 27,
+      "panels": [],
+      "title": "Disk",
+      "type": "row"
     },
     {
       "datasource": {
@@ -774,7 +814,7 @@
         "h": 9,
         "w": 12,
         "x": 0,
-        "y": 17
+        "y": 19
       },
       "id": 12,
       "options": {
@@ -799,7 +839,7 @@
             "type": "influxdb",
             "uid": "influxdb2"
           },
-          "query": "from(bucket: \"telegraf\")\r\n\t|> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"docker_container_blkio\")\r\n  |> filter(fn: (r) => r[\"host\"] =~ /${host}/)\r\n  |> filter(fn: (r) => r._field == \"io_service_bytes_recursive_read\")\r\n  |> group(columns: [\"container_name\"])\r\n",
+          "query": "from(bucket: \"telegraf\")\r\n\t|> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"docker_container_blkio\")\r\n  |> filter(fn: (r) => r[\"host\"] =~ /${host}/)\r\n  |> filter(fn: (r) => r[\"device\"] == \"total\")\r\n  |> filter(fn: (r) => r._field == \"io_service_bytes_recursive_read\")\r\n  |> derivative(unit: 1s, nonNegative: true)\r\n  |> yield(name: \"container_name\")\r\n",
           "refId": "A"
         }
       ],
@@ -869,7 +909,7 @@
         "h": 9,
         "w": 12,
         "x": 12,
-        "y": 17
+        "y": 19
       },
       "id": 10,
       "options": {
@@ -894,13 +934,26 @@
             "type": "influxdb",
             "uid": "influxdb2"
           },
-          "query": "from(bucket: \"telegraf\")\r\n\t|> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"docker_container_blkio\")\r\n  |> filter(fn: (r) => r[\"host\"] =~ /${host}/)\r\n  |> filter(fn: (r) => r._field == \"io_service_bytes_recursive_write\")\r\n  |> group(columns: [\"container_name\"])\r\n  |> yield(name: \"container_name\")\r\n",
+          "query": "from(bucket: \"telegraf\")\r\n\t|> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"docker_container_blkio\")\r\n  |> filter(fn: (r) => r[\"host\"] =~ /${host}/)\r\n  |> filter(fn: (r) => r[\"device\"] == \"total\")\r\n  |> filter(fn: (r) => r._field == \"io_service_bytes_recursive_write\")\r\n  |> derivative(unit: 1s, nonNegative: true)\r\n  |> yield(name: \"container_name\")\r\n",
           "refId": "A"
         }
       ],
       "title": "Disk I/O Writes",
       "transformations": [],
       "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 28
+      },
+      "id": 29,
+      "panels": [],
+      "title": "Network",
+      "type": "row"
     },
     {
       "datasource": {
@@ -964,7 +1017,7 @@
         "h": 9,
         "w": 12,
         "x": 0,
-        "y": 26
+        "y": 29
       },
       "id": 20,
       "options": {
@@ -989,7 +1042,7 @@
             "type": "influxdb",
             "uid": "influxdb2"
           },
-          "query": "from(bucket: \"telegraf\")\r\n\t|> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"docker_container_net\")\r\n  |> filter(fn: (r) => r[\"host\"] =~ /${host}/)\r\n  |> filter(fn: (r) => r._field == \"rx_bytes\")\r\n  |> group(columns: [\"container_name\"])\r\n  |> yield(name: \"container_name\")\r\n",
+          "query": "from(bucket: \"telegraf\")\r\n\t|> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"docker_container_net\")\r\n  |> filter(fn: (r) => r[\"host\"] =~ /${host}/)\r\n  |> filter(fn: (r) => r[\"network\"] == \"total\")\r\n  |> filter(fn: (r) => r._field == \"rx_bytes\")\r\n  |> derivative(unit: 1s, nonNegative: true)\r\n  |> yield(name: \"container_name\")\r\n",
           "refId": "A"
         }
       ],
@@ -1059,7 +1112,7 @@
         "h": 9,
         "w": 12,
         "x": 12,
-        "y": 26
+        "y": 29
       },
       "id": 11,
       "options": {
@@ -1084,7 +1137,7 @@
             "type": "influxdb",
             "uid": "influxdb2"
           },
-          "query": "from(bucket: \"telegraf\")\r\n\t|> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"docker_container_net\")\r\n  |> filter(fn: (r) => r[\"host\"] =~ /${host}/)\r\n  |> filter(fn: (r) => r._field == \"tx_bytes\")\r\n  |> group(columns: [\"container_name\"])\r\n  |> yield(name: \"container_name\")\r\n",
+          "query": "from(bucket: \"telegraf\")\r\n\t|> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"docker_container_net\")\r\n  |> filter(fn: (r) => r[\"host\"] =~ /${host}/)\r\n  |> filter(fn: (r) => r[\"network\"] == \"total\")\r\n  |> filter(fn: (r) => r._field == \"tx_bytes\")\r\n  |> derivative(unit: 1s, nonNegative: true)\r\n  |> yield(name: \"container_name\")\r\n",
           "refId": "A"
         }
       ],
@@ -1106,8 +1159,8 @@
       {
         "current": {
           "selected": true,
-          "text": "hmlr-ctrl.epimorphics.net",
-          "value": "hmlr-ctrl.epimorphics.net"
+          "text": "hmlr-prod-pres-188.epimorphics.net",
+          "value": "hmlr-prod-pres-188.epimorphics.net"
         },
         "datasource": {
           "type": "influxdb",
@@ -1137,6 +1190,6 @@
   "timezone": "",
   "title": "Docker Influx v2.0",
   "uid": "docker",
-  "version": 2,
+  "version": 3,
   "weekStart": ""
 }
