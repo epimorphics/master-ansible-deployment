@@ -1,0 +1,10 @@
+    # set up a disk cache
+    FileEtag Mtime Size
+    CacheIgnoreNoLastMod On
+    CacheRoot   "{{ proxy_cache.directory }}"
+    CacheMaxFileSize 50000000
+    CacheMaxExpire   14400
+
+    CacheLock on
+    CacheLockPath /tmp/mod_cache-lock
+    CacheLockMaxAge 60
