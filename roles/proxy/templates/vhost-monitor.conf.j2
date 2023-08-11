@@ -82,11 +82,15 @@ LoadModule status_module modules/mod_status.so
 
         authtype openid-connect
         require valid-user
+
+        CacheEnable disk
     </location>
 {% else %}
     <location />
         authtype openid-connect
         require valid-user
+
+        CacheEnable disk
     </location>
 {% endif %}
 </VirtualHost>
