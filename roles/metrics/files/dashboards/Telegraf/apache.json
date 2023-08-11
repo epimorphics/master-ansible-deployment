@@ -24,7 +24,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 29,
+  "id": 19,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -303,7 +303,7 @@
           "refId": "A"
         }
       ],
-      "title": "Apache Cache",
+      "title": "Shared Object Memory Cache",
       "transformations": [],
       "type": "timeseries"
     },
@@ -493,7 +493,7 @@
           "refId": "A"
         }
       ],
-      "title": "Apache Cache Entries",
+      "title": "Shared Object Memory Cache Entries",
       "transformations": [],
       "type": "timeseries"
     },
@@ -681,6 +681,6 @@
   "timezone": "",
   "title": "Apache",
   "uid": "apache",
-  "version": 3,
+  "version": 1,
   "weekStart": ""
 }
