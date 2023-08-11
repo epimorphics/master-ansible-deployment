@@ -11,7 +11,8 @@ proxy:
   secure: "{{ vault_proxy_secure | default(omit) }}"
 
 proxy_cache:
-  size: "250K"
-  inode: "1G"
+  size: "1G"
+  inode: "250K"
+  directory: "/var/cache/apache2/mod_cache_disk"
 
 vhosts_cfg_dir: vhosts/conf.d
