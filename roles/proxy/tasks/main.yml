@@ -112,8 +112,8 @@
     minute: "{{ item.time }}"
     job: "docker exec proxy htcacheclean -tp /var/cache/apache2/mod_cache_disk {{ item.options }} 2>&1 | logger -t htcacheclean"
   loop:
-    - { title: "size",  time: "30", options: "-L{{ proxy_cache.size }}" }
-    - { title: "inode", time: "00", options: "-l{{ proxy_cache.inode }}" }
+    - { title: "size",  time: "30", options: "-l{{ proxy_cache.size }}" }
+    - { title: "inode", time: "00", options: "-L{{ proxy_cache.inode }}" }
   loop_control:
     label: '{{ item.title }}'
   when:
