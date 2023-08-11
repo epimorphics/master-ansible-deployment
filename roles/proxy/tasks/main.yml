@@ -40,6 +40,7 @@
     - { src: "block.conf.j2",      dest: "extra/block.conf" }
     - { src: "localhost.conf.j2",  dest: "extra/localhost.conf" }
     - { src: "log-format.conf.j2", dest: "extra/log-format.conf" }
+    - { src: "cache.conf.j2",      dest: "extra/cache.conf" }
     - { src: "{{ proxy.config }}", dest: "vhost.conf" }
   loop_control:
     label: '{{ item.dest }}'
@@ -103,14 +104,14 @@
       - "{{ proxy.directory }}/vhosts:/vhosts:rw"
       - "{{ proxy.directory }}/ssl:/certs:rw"
       - "{{ proxy.directory }}/www:/app:rw"
-      - "{{ proxy.directory }}/cache:/var/cache/apache2/mod_cache_disk:rw"
+      - "{{ proxy.directory }}/cache:{{ proxy_cache.directory }}:rw"
 
 
 - name: Proxy cache clean
   cron:
     name: "Proxy cache clean {{ item.title }}"
     minute: "{{ item.time }}"
-    job: "docker exec proxy htcacheclean -tp /var/cache/apache2/mod_cache_disk {{ item.options }} 2>&1 | logger -t htcacheclean"
+    job: "docker exec proxy htcacheclean -tp {{ proxy_cache.directory }} {{ item.options }} 2>&1 | logger -t htcacheclean"
   loop:
     - { title: "size",  time: "30", options: "-l{{ proxy_cache.size }}" }
     - { title: "inode", time: "00", options: "-L{{ proxy_cache.inode }}" }
