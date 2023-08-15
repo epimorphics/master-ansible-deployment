@@ -118,4 +118,4 @@
   loop_control:
     label: "{{ item.name }}"
   loop:
-    - { name: "Docker prune",  day: "*", minute: "30", hour: "22", job: "docker image prune -f; docker volume prune -f" }
+    - { name: "Docker prune",  day: "*", minute: "30", hour: "22", job: "docker image prune -fa; docker volume prune -f" }
