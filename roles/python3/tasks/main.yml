@@ -17,6 +17,15 @@
     state: present
 
 
+- name: "Remove python3.7"
+  become: yes
+  tags:
+    - pkg
+  package:
+    name: python3
+    state: absent
+
+
 - name: "Install python3.8"
   become: yes
   tags:
@@ -25,11 +34,17 @@
     name: python3.8
     state: latest
 
-- name: "Python 3.8 symlink"
+
+- name: "Python 3.8 symlinks"
   file:
-    src: "python3.8"
-    dest: "/usr/bin/python3"
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
     state: link
+  loop_control:
+    label: "{{ item.src }}"
+  loop:
+    - { src: "python3.8", dest: "/usr/bin/python3" }
+    - { src: "pip3.8", dest: "/usr/bin/pip3" }
 
 - name: "Install python3 pin urllib3"
   become: yes
