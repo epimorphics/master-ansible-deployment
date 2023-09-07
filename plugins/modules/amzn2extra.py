@@ -59,7 +59,7 @@ class Topic(object):
 def from_text(line):
     import re
     regex = re.compile(
-        r'\s+[-_\d]+\s+'
+        r'\s+[-_\d]+\s.'
         r'(?P<name>\S+)\s+'
         r'(?P<status>\S+)\s+'
         r'.+'
