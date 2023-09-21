@@ -90,7 +90,7 @@ Absolute Inode usage over {{ prom_rulese.absolute.inode.warning }}%.
 #### Details
 
     - alert: AbsoluteInodeUsageWarning
-      expr: ( 100*disk_inodes_used/disk_inodes_total ) > {{ prom_rules.absolute.inode.warning }} and ( 100*disk_inodes_used/disk_inodes_total ) < {{ prom_rules.absolute.inode.critical }}
+      expr: ( 100*disk_inodes_used{fstype!="xfs"}/disk_inodes_total ) > {{ prom_rules.absolute.inode.warning }} and ( 100*disk_inodes_used{fstype!="xfs"}/disk_inodes_total ) < {{ prom_rules.absolute.inode.critical }}
       labels:
         severity: warning
       annotations:
@@ -103,7 +103,7 @@ Absolute Inode usage over {{ prom_rules.absolute.inode.critical }}%.
 #### Details
 
     - alert: AbsoluteInodeUsageCritical
-      expr: ( 100*disk_inodes_used/disk_inodes_total ) >= {{ prom_rules.absolute.inode.critical }}
+      expr: ( 100*disk_inodes_used{fstype!="xfs"}/disk_inodes_total ) >= {{ prom_rules.absolute.inode.critical }}
       labels:
         severity: critical
       annotations:
@@ -116,7 +116,7 @@ Projected Inode usage over previous {{ prom_rules.projected.warning }} is unsust
 #### Details
 
     - alert: ProjectedInodeUsageWarning
-      expr: disk_inodes_free+delta(disk_inodes_free[{{ prom_rules.projected.warning }}]) < 0
+      expr: disk_inodes_free{fstype!="xfs"}+delta(disk_inodes_free{fstype!="xfs"}[{{ prom_rules.projected.warning }}]) < 0
       labels:
         severity: warning
       annotations:
@@ -129,7 +129,7 @@ Projected Inode usage over previous {{ prom_rules.projected.critical }} is unsus
 #### Details
 
     - alert: ProjectedInodeUsageCritical
-      expr: disk_inodes_free+delta(disk_inodes_free[{{ prom_rules.projected.critical }}]) < 0
+      expr: disk_inodes_free{fstype!="xfs"}+delta(disk_inodes_free{fstype!="xfs"}[{{ prom_rules.projected.critical }}]) < 0
       labels:
         severity: critical
       annotations:

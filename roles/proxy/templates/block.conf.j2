@@ -4,14 +4,12 @@ RewriteCond %{QUERY_STRING} "SERVICE(%20|\+)*%3C"
 RewriteRule .* - [F,L]
 
 {% for agent in blocked.agents | sort %}
-RewriteCond %{HTTP_USER_AGENT} "{{ agent }}"
-RewriteRule .* - [F,L]
-
+RewriteCond %{HTTP_USER_AGENT} "{{ agent }}"{{ "" if loop.last else "\t[OR]" }}
 {% endfor %}
+RewriteRule .* - [F,L]
 
 
 {% for origin in blocked.origins | sort %}
-RewriteCond %{HTTP:X-Forwarded-For} "{{ origin }}"
-RewriteRule .* - [F,L]
-
+RewriteCond %{HTTP:X-Forwarded-For} "^{{ origin | replace(".", "\\.") }}\b"{{ "" if loop.last else "\t[OR]" }}
 {% endfor %}
+RewriteRule .* - [F,L]

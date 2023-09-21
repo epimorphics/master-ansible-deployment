@@ -39,7 +39,7 @@ groups:
 {% endraw %}
       runbook_url: "https://github.com/epimorphics/master-ansible-deployment/blob/main/epimorphics/deployment/roles/metrics/templates/prometheus-rules/Readme.md#user-content-projected-disk-usage-critical"
   - alert: Absolute Inode Usage Warning
-    expr: ( 100*disk_inodes_used/disk_inodes_total ) > {{ prom_rules.absolute.inode.warning }} and ( 100*disk_inodes_used/disk_inodes_total ) < {{ prom_rules.absolute.inode.critical }}
+    expr: ( 100*disk_inodes_used{fstype!="xfs"}/disk_inodes_total ) > {{ prom_rules.absolute.inode.warning }} and ( 100*disk_inodes_used{fstype!="xfs"}/disk_inodes_total ) < {{ prom_rules.absolute.inode.critical }}
     labels:
       severity: warning
     annotations:
@@ -48,7 +48,7 @@ groups:
 {% endraw %}
       runbook_url: "https://github.com/epimorphics/master-ansible-deployment/blob/main/epimorphics/deployment/roles/metrics/templates/prometheus-rules/Readme.md#user-content-absolute-inode-usage-warning"
   - alert: Absolute Inode Usage Critical
-    expr: ( 100*disk_inodes_used/disk_inodes_total ) >= {{ prom_rules.absolute.inode.critical }}
+    expr: ( 100*disk_inodes_used{fstype!="xfs"}/disk_inodes_total ) >= {{ prom_rules.absolute.inode.critical }}
     labels:
       severity: critical
     annotations:
@@ -57,7 +57,7 @@ groups:
 {% endraw %}
       runbook_url: "https://github.com/epimorphics/master-ansible-deployment/blob/main/epimorphics/deployment/roles/metrics/templates/prometheus-rules/Readme.md#user-content-absolute-inode-usage-critical"
   - alert: Projected Inode Usage Warning
-    expr: disk_inodes_free+delta(disk_inodes_free[{{ prom_rules.projected.warning }}]) < 0
+    expr: disk_inodes_free{fstype!="xfs"}+delta(disk_inodes_free{fstype!="xfs"}[{{ prom_rules.projected.warning }}]) < 0
     labels:
       severity: warning
     annotations:
@@ -66,7 +66,7 @@ groups:
 {% endraw %}
       runbook_url: "https://github.com/epimorphics/master-ansible-deployment/blob/main/epimorphics/deployment/roles/metrics/templates/prometheus-rules/Readme.md#user-content-projected-inode-usage-warning"
   - alert: Projected Inode Usage Critical
-    expr: disk_inodes_free+delta(disk_inodes_free[{{ prom_rules.projected.critical }}]) < 0
+    expr: disk_inodes_free{fstype!="xfs"}+delta(disk_inodes_free{fstype!="xfs"}[{{ prom_rules.projected.critical }}]) < 0
     labels:
       severity: critical
     annotations:

@@ -1,6 +1,6 @@
 #! /bin/bash
 
-[ -z `tty` ] && PREFIX="$(basename $0): "
+[ -z "`tty`" ] && PREFIX="$(basename $0): "
 TODAY=$(date +%Y-%m-%d)
 DEFAULT_GEODATA=/usr/local/share/GeoLite2/GeoLite2-City.mmdb
 
@@ -116,7 +116,7 @@ ConsolidateLogs() {
     do
       mkdir -p ${DIRECTORY}/${DAY}/${HOST}
       log "Retrieving $LOG ..."
-      $AWS s3 cp $LOG - | gzip -dc | grep -wv "408" | /usr/local/bin/json2combined.py >> ${DIRECTORY}/${DAY}/${HOST}/apache.info.proxy
+      $AWS s3 cp $LOG - | gzip -dc | grep -wv "408" | /usr/local/bin/json2combined.py | grep -wv "\[-\]" >> ${DIRECTORY}/${DAY}/${HOST}/apache.info.proxy
       rc=0
     done 
   done
