@@ -22,7 +22,7 @@
   tags:
     - goaccess
   unarchive:
-    src: https://epi-repository.s3.eu-west-1.amazonaws.com/release/goaccess/goaccess-1.5.2.tgz
+    src: https://epi-repository.s3.eu-west-1.amazonaws.com/release/goaccess/goaccess-1.7.2.tgz
     dest: /usr/local
     remote_src: yes
 

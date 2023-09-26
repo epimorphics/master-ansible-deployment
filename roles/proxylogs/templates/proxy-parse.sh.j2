@@ -1,6 +1,6 @@
 #! /bin/bash
 
-[ -z "`tty`" ] && PREFIX="$(basename $0): "
+[ "`tty`" == "not a tty" ] && PREFIX="$(basename $0): "
 TODAY=$(date +%Y-%m-%d)
 DEFAULT_GEODATA=/usr/local/share/GeoLite2/GeoLite2-City.mmdb
 
@@ -151,7 +151,9 @@ EXCLUDE_OPT="-e 10.0.0.0-10.255.255.255
 "
 FORMAT_OPT="--log-format=VCOMBINED"
 [ -n "$GEODATA" ] && GEO_OPT="--geoip-database=$GEODATA"
-[ -z "`tty`" ] && PROGRESS_OPT="--no-progress"
+CAT=cat
+[ "`tty`" != "not a tty" ] && CAT=pv
+PROGRESS_OPT="--no-progress"
 GOACCESS_CMD="/usr/local/bin/goaccess $CACHE_OPT $DATE_OPT $EXCLUDE_OPT $FORMAT_OPT $GEO_OPT $PROGRESS_OPT"
 
 [ -n "$PROFILE" ] && PROFILE_OPT="--profile $PROFILE"
@@ -163,11 +165,14 @@ then
   if [ -n "$GOACCESS" ]
   then
     mkdir -p $DBPATH
-    nice /usr/local/bin/mergelog ${DIRECTORY}/${DAY}/*/apache.info.proxy | nice $GOACCESS_CMD - -o $OUTPUT
+    nice /usr/local/bin/mergelog ${DIRECTORY}/${DAY}/*/apache.info.proxy > ${DIRECTORY}/${DAY}//apache.info.proxy
+    $CAT ${DIRECTORY}/${DAY}//apache.info.proxy | nice $GOACCESS_CMD - -o $OUTPUT
   else
     /usr/local/bin/mergelog ${DIRECTORY}/${DAY}/*/apache.info.proxy >> $OUTPUT
   fi
   rm -rf ${DIRECTORY}/${DAY}
 fi
+
+log "$OUTPUT updated"
 
 exit 0
