@@ -36,28 +36,6 @@
 # notify: "Restart docker"
 
 
-- name: "Pip requests 2.6 installed"
-  tags:
-    - pkg
-    - pip
-  stat:
-    path: /usr/lib/python2.7/site-packages/requests-2.6.0-py2.7.egg-info
-  register: st
-
-
-- name: "Pip request hack"
-  tags:
-    - pkg
-    - pip
-  command:
-    cmd: "mv /usr/lib/python2.7/site-packages/{{ item }} /usr/lib/python2.7/site-packages/{{ item }}.os"
-  loop:
-    - "requests"
-    - "requests-2.6.0-py2.7.egg-info"
-  when:
-    st.stat.exists
-
-
 - name: "Install python-docker"
   tags:
     - pkg

@@ -23,7 +23,7 @@ ec2_state: "running"
 elastic_ip_groups: []
 email: "{{ instance }}-ops-alerts@epimorphics.com" # Note {{ domain }} is .net
 
-hostname_root: "{{ instance }}-{{ env }}" # basis for the hostname
+hostname_root: "{{ instance }}-{{ band | default(env) }}" # basis for the hostname
 hostname_index: true                      # are hosts numbered (even if there is only 1)
 
 iam_role: "{{ instance }}-ec2"

@@ -126,7 +126,7 @@ def run_module():
     extras = fetch_list(module)
     topics = [e for e in extras if e.name == topic_name]
     if not topics:
-        module.fail_json(msg=f'Topic {topic_name} not found', **result)
+        module.fail_json(msg=('Topic %s not found' % topic_name), **result)
 
     topic = topics[0]
     if topic_state == 'present' and topic.status == 'enabled':
@@ -139,7 +139,7 @@ def run_module():
         # TODO: It is stub
         cmd_ok = update_topic_state(module, topic, topic_state)
         if not cmd_ok:
-            module.fail_json(msg='Topic toggle is failed', **result)
+            module.fail_json(msg=('Toggle on topic %s failed' % topic_name), **result)
         result['changed'] = True
 
     module.exit_json(**result)

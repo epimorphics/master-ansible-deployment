@@ -13,6 +13,7 @@
     region: "{{ region }}"
     filters:
       "tag:Ansible": "True"
+      "tag:Band": "{{ band | default(env) }}"
       "tag:Env": "{{ env }}"
       instance-state-name: ["running"]
   register: ec2_instances

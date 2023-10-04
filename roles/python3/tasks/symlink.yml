@@ -1,0 +1,10 @@
+- name: "Python 3.8 symlinks"
+  file:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    state: link
+  loop_control:
+    label: "{{ item.src }}"
+  loop:
+    - { src: "python3.8", dest: "/usr/bin/python3" }
+    - { src: "pip3.8", dest: "/usr/bin/pip3" }

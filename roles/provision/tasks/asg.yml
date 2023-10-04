@@ -1,11 +1,11 @@
 ---
-- name: "EC2 Launch Template"
+- name: "EC2 Launch Template ({{ band | default(env) }})"
   tags:
     - asg
     - ec2
   ec2_launch_template:
     region: "{{ region }}"
-    name: "{{ instance }}-{{ env-}}-{{ item.type }}"
+    name: "{{ instance }}-{{ band | default(env) }}-{{ item.type }}"
     key_name: "{{ key.name }}"
     network_interfaces:
       - associate_public_ip_address: "{{ item.public_ip | default('yes') }}"
@@ -19,33 +19,34 @@
     block_device_mappings: "{{ item.volumes | default(omit) }}"
   loop: "{{ ec2_inst_lc }}"
   loop_control:
-    label: "{{ instance }}-{{ env-}}-{{ item.type }}"
+    label: "{{ instance }}-{{ band | default(env) }}-{{ item.type }}"
   register: launch_templates
   when: ec2_inst_lc is defined
 
 
 # It would be prefereable to loop on launch_configurations here
 # but the user data is not accessible.
-- name: "EC2 Auto Scaling Groups"
+- name: "EC2 Auto Scaling Groups ({{ band | default(env) }})"
   tags:
     - asg
   ec2_asg:
-    name: "{{ instance }}-{{ env-}}-{{ item.type }}"
+    name: "{{ instance }}-{{ band | default(env) }}-{{ item.type }}"
     launch_template:
-      launch_template_name: "{{ instance }}-{{ env-}}-{{ item.type }}"
+      launch_template_name: "{{ instance }}-{{ band | default(env) }}-{{ item.type }}"
     min_size: 1
     desired_capacity: "{{ item.count }}"
     max_size: "{{ item.count }}"
     replace_all_instances: yes
     tags:
       - Ansible: "True"
+      - Band: "{{ band | default(env) }}"
       - Env: "{{ env }}"
       - Inst: "{{ instance }}"
       - Type: "{{ item.type }}"
     vpc_zone_identifier: "{{ subnet_ids }}"
   loop: "{{ ec2_inst_lc }}"
   loop_control:
-    label: "{{ instance }}-{{ env-}}-{{ item.type }}"
+    label: "{{ instance }}-{{ band | default(env) }}-{{ item.type }}"
   register: asg
   when: ec2_inst_lc is defined
 

@@ -1,3 +1,0 @@
----
-dependencies:
-  - { role: epimorphics.deployment.python3 }

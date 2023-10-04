@@ -1,0 +1,7 @@
+- name: "Remove python3.7"
+  become: yes
+  tags:
+    - pkg
+  package:
+    name: python3
+    state: absent

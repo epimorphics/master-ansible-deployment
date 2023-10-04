@@ -26,10 +26,12 @@
     filters:
       instance-state-name: running
       "tag:Env": "{{ env }}"
+      "tag:Band": "{{ band | default(env) }}"
       "tag:Type": "{{ item.type }}"
     tags:
       Name: "{{ hostname_root }}-{{ item.type }}"
       Ansible: "True"
+      Band: "{{ band | default(env) }}"
       Type: "{{ item.type }}"
       Env: "{{ env }}"
       Inst: "{{ instance }}"
@@ -155,6 +157,7 @@
       Host: "{{ item.0.tags.Name | default('') }}"
       Path: "{{ item.1.ebs.device_name }}"
       Env: "{{ env }}"
+      Band: "{{ band | default(env) }}"
       Inst: "{{ instance }}"
   with_nested:
     - "{{ ec2_instances.instances }}"
@@ -186,6 +189,7 @@
       Host: "{{ item.0.tags.Name | default('') }}"
       Path: "{{ item.1.device_name }}"
       Env: "{{ env }}"
+      Band: "{{ band | default(env) }}"
       Inst: "{{ instance }}"
   loop_control:
     label: "{{ item.1.ebs.volume_id }} - {{ item.0.tags.Name | default('') }}:{{ item.1.device_name }}"
