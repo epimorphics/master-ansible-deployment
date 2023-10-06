@@ -56,6 +56,18 @@
   loop:
     - "{{ default_user }}"
     - sensu
+  register: docker_group
+
+
+- name: "Reboot"
+  reboot:
+    msg: "Reboot initiated by Ansible"
+    connect_timeout: 5
+    reboot_timeout: 600
+    pre_reboot_delay: 0
+    post_reboot_delay: 30
+    test_command: hostname
+  when: docker_group.changed
 
 
 - name: "{{ ansible_distribution }}"
