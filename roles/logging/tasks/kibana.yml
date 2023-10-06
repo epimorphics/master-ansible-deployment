@@ -37,11 +37,26 @@
   register: searches
 
 
+- name: "Kibana api operational"
+  tags:
+    - cfg
+    - kibana
+  uri:
+    url: "http://localhost:{{ kibana_container.port }}/kibana/api/status"
+  register: health
+  retries: 10
+  delay: 5
+  until: health.status == 200
+  failed_when:
+    - health.json is undefined or health.json.status.core.savedObjects.level != "available"
+  when: not ansible_check_mode
+
+
 - name: "Load Saved Searches"
   tags:
     - kibana
     - searches
   command: 
-    cmd: "curl http://localhost:{{ kibana_container.port }}/api/saved_objects/_import?overwrite=true -H 'kbn-xsrf:true' -sF file=@/home/ec2-user/searches.ndjson"
+    cmd: "curl http://localhost:{{ kibana_container.port }}/kibana/api/saved_objects/_import?overwrite=true -H 'kbn-xsrf:true' -sF file=@/home/ec2-user/searches.ndjson"
     warn: false
   when: searches.changed 
