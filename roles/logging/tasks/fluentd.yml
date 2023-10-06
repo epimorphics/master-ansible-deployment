@@ -5,7 +5,7 @@
     - fluentd
   file:
     state: "directory"
-    path: "{{ fluentd.directory }}"
+    path: "{{ fluentd.directory }}/buffers"
     owner: "nobody"
     group: "nobody"
     mode: "0777"
@@ -17,7 +17,7 @@
     - fluentd
   template:
     src: "fluentd-elasticsearch.conf.j2"
-    dest:  "/etc/fluentd-elasticsearch.conf"
+    dest:  "{{ fluentd.directory }}/fluentd-elasticsearch.conf"
   register: fluentd_conf
   notify: "Fluentd container restart"
 
@@ -35,10 +35,6 @@
     env:
       FLUENTD_CONF: fluentd-elasticsearch.conf
       S3_BUCKET_NAME: "{{ s3_logs }}"
-##  Standard syslog - can result in feedback loop
-#   log_driver: "{{ docker.logging.driver }}"
-#   log_options: "{{ docker.logging.options }}"
-##  Fluentd on disk. limited by size
     log_driver: "{{ fluentd.logging.driver }}"
     log_options: "{{ fluentd.logging.options }}"
     network_mode: "{{ docker.network.mode }}"
@@ -48,5 +44,5 @@
     ports: "{{ fluentd.ports }}"
     restart_policy: "unless-stopped"
     volumes:
-      - "/etc/fluentd-elasticsearch.conf:/fluentd/etc/fluentd-elasticsearch.conf"
-      - "{{ fluentd.directory }}:{{ fluentd.buffer }}:rw"
+      - "{{ fluentd.directory }}/fluentd-elasticsearch.conf:/fluentd/etc/fluentd-elasticsearch.conf"
+      - "{{ fluentd.directory }}/buffers:{{ fluentd.buffer }}:rw"
