@@ -22,7 +22,7 @@
   tags:
     - goaccess
   unarchive:
-    src: https://epi-repository.s3.eu-west-1.amazonaws.com/release/goaccess/goaccess-1.7.2.tgz
+    src: "{{ goaccess.url }}"
     dest: /usr/local
     remote_src: yes
 
@@ -31,7 +31,7 @@
   tags:
     - geoip
   unarchive:
-    src: https://epi-repository.s3.eu-west-1.amazonaws.com/release/GeoLite2/GeoLite2-City_20211019.tar.gz
+    src: "{{ GeoLite2.url }}"
     dest: /usr/local/share
     remote_src: yes
 
@@ -41,8 +41,8 @@
     - geoip
     - goaccess
   file:
-    src:  ./GeoLite2-City_20211019
-    path: /usr/local/share/GeoLite2
+    src:  "GeoLite2-{{ GeoLite2.version }}"
+    path: "/usr/local/share/GeoLite2"
     state: link
 
 

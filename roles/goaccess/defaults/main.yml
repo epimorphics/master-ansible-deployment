@@ -1,3 +1,10 @@
 ---
 services:
   - "{{ access_container }}"
+
+goaccess:
+  url: "https://epi-repository.s3.eu-west-1.amazonaws.com/release/goaccess/goaccess-1.7.2.tgz"
+
+GeoLite2:
+  url: "https://epi-repository.s3.eu-west-1.amazonaws.com/release/GeoLite2/GeoLite2-City_20231006.tar.gz"
+  version: "City_20231006"
