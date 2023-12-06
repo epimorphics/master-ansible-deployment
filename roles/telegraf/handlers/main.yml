@@ -1,5 +1,7 @@
 ---
 - name: "Telegraf service restart"
+  tags:
+    - telegraf
   service:
     name:  "telegraf"
     state: restarted

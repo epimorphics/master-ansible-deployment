@@ -11,6 +11,7 @@
   service:
     name:  "kpatch"
     state: restarted
+  when: ansible_distribution == "Amazon"
 
 
 - name: "Restart NTP"

@@ -1,0 +1,11 @@
+- name: "Amazon Linux 2 - Python 3.8"
+  include_tasks: "al2/python38.yml"
+
+- name: "Amazon Linux 2 - Python 3.7"
+  include_tasks: "al2/python37.yml"
+
+- name: "Amazon Linux 2 - Python 3"
+  include_tasks: "al2/symlink.yml"
+
+- name: "Amazon Linux 2 - pip hack"
+  include_tasks: "al2/hack.yml"

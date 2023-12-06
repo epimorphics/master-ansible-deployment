@@ -105,7 +105,7 @@
 - name: "Utility packages"
   tags:
     - pkg
-  yum:
+  package:
     name: 
       - jq
       - pv

@@ -1,0 +1,17 @@
+- name: "EPEL Repository"
+  yum_repository:
+    name: "epel"
+    description: "EPEL YUM repo"
+    file: "epel"
+    baseurl: "https://download.fedoraproject.org/pub/epel/$releasever/Everything/$basearch/"
+    gpgcheck: "yes"
+    gpgkey: "https://download.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-{{ ansible_distribution_major_version }}"
+
+
+- name: "Yum Utils package"
+  tags:
+    - pkg
+  package:
+    name:
+      - yum-utils
+    state: latest

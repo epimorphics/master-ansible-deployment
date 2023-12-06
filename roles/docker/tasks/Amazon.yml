@@ -4,19 +4,3 @@
   yum:
     name: amazon-ecr-credential-helper
     state: latest
-
-
-- name: "AWS ECR docker config directory ( {{ ansible_user_dir }}/.docker )"
-  tags:
-    - cfg
-  file:
-    dest: "{{ ansible_user_dir }}/.docker"
-    state: directory
-
-
-- name: "AWS ECR docker config"
-  tags:
-    - cfg
-  copy:
-    content: '{ "credsStore": "ecr-login" }'
-    dest: "{{ ansible_user_dir }}/.docker/config.json"

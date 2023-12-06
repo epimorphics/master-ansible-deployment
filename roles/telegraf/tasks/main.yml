@@ -22,18 +22,29 @@
     - /etc/telegraf/telegraf.d
 
 
+- name: "Telegraf repository"
+  yum_repository:
+    name: influxdb
+    description: InfluxData Repository - Stable
+    file: influxdb
+    baseurl: "https://repos.influxdata.com/stable/$basearch/main"
+    gpgkey: "https://repos.influxdata.com/influxdata-archive_compat.key"
+    gpgcheck: yes
+
+
 - name: "Install telegraf"
   tags:
     - pkg
-  yum:
-    name:  https://dl.influxdata.com/telegraf/releases/telegraf-1.15.3-1.x86_64.rpm
-    state: latest
+  package:
+    name: "telegraf"
+    state: "latest"
   notify: "Telegraf service restart"
 
 
 - name: "Telegraf configuration"
   tags:
     - cfg
+    - telegraf
   template:
     dest: "/etc/telegraf/telegraf.conf"
     src: "telegraf.conf.j2"

@@ -1,0 +1,23 @@
+- name: "Install python3"
+  become: yes
+  tags:
+    - pkg
+  package:
+    name:
+      - python3
+      - python3-pip
+    state: latest
+
+
+- name: "Install python3 pip modules"
+  become: yes
+  tags:
+    - pkg
+    - pip
+  pip:
+    name:
+    - 'boto3'
+    - 'pytz'
+    - 'requests'
+    - 'simplejson'
+    state: latest
