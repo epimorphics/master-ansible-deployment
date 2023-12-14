@@ -3,7 +3,7 @@ parse:
   dest: "/var/lib/docker/proxy/www/logs"
   file: "/usr/local/bin/proxy-parse.sh"
   src: "s3://{{ s3_logs }}/logs"
-  type: "{{ external_proxy_host_type | default('pres') }}"
+  types: "{{ external_proxy_host_types }}"
   wrapper:
     month: "/root/yesterday-proxy-log.sh"
     today: "/root/today-proxy-log.sh"
