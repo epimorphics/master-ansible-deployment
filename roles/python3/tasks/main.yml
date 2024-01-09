@@ -1,6 +1,3 @@
-- import_tasks: "python38.yml"
-
-- import_tasks: "python37.yml"
-
-- import_tasks: "symlink.yml"
-- import_tasks: "hack.yml"
+---
+- name: "{{ ansible_distribution }}"
+  include_tasks: "{{ ansible_distribution }}.yml"

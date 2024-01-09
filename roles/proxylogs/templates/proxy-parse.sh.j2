@@ -145,8 +145,12 @@ Validate
 CACHE_OPT="--persist --restore --db-path=$DBPATH"
 DATE_OPT="--time-format=%T --date-format=%d/%b/%Y"
 EXCLUDE_OPT="-e 10.0.0.0-10.255.255.255
-{%- for host in groups[parse.type] %}
+{%- for type in parse.types %}
+{% if groups[type] is defined %}
+{%- for host in groups[type] %}
  -e {{ hostvars[host].public_ip_address }}
+{%- endfor -%}
+{%- endif -%}
 {%- endfor -%}
 "
 FORMAT_OPT="--log-format=VCOMBINED"

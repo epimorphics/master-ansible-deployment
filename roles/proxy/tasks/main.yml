@@ -50,8 +50,8 @@
 - name: "Secure access"
   htpasswd:
     path: "{{ proxy.directory }}/vhosts/secure/htpasswd"
-    name: "{{ proxy.secure.username }}"
-    password: "{{ proxy.secure.password }}"
+    name: "{{ proxy_secure.username }}"
+    password: "{{ proxy_secure.password }}"
     owner: root
     group: root
     mode: 0640

@@ -4,8 +4,8 @@
     name: docker
     description: Docker CE
     file: docker
-    baseurl: https://download.docker.com/linux/$contentdir/$releasever/$basearch/stable
-    gpgkey: https://download.docker.com/linux/$contentdir/gpg
+    baseurl: "https://download.docker.com/linux/centos/{{ ansible_distribution_major_version }}/$basearch/stable"
+    gpgkey: https://download.docker.com/linux/centos/gpg
     gpgcheck: yes
   when: docker.package.name == "docker-ce"
 
@@ -33,7 +33,7 @@
     dest: /etc/systemd/system/docker.service.d/override.conf
     owner: root
     group: root
-# notify: "Restart docker"
+  notify: "Restart docker"
 
 
 - name: "Install python-docker"
@@ -48,6 +48,22 @@
 
 - name: "{{ ansible_distribution }}"
   include_tasks: "{{ ansible_distribution }}.yml"
+
+
+- name: "AWS ECR docker config directory ( {{ ansible_user_dir }}/.docker )"
+  tags:
+    - cfg
+  file:
+    dest: "{{ ansible_user_dir }}/.docker"
+    state: directory
+
+
+- name: "AWS ECR docker config"
+  tags:
+    - cfg
+  copy:
+    content: '{ "credsStore": "ecr-login" }'
+    dest: "{{ ansible_user_dir }}/.docker/config.json"
 
 
 - name: "Add users to group docker"

@@ -19,6 +19,7 @@
     name:  "kpatch"
     state: started
     enabled: yes
+  when: ansible_distribution == "Amazon"
 
 
 - name: "NTP service ({{ ntp.service }})"
