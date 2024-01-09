@@ -1,7 +1,16 @@
 ---
-- name: "Sensu namespace"
+- name: "Sensu namespace {{ logging.server }}"
   delegate_to: "{{ sensu_server }}"
   sensu.sensu_go.namespace:
     auth: "{{ sensu.auth }}"
     name: "{{ sensu.namespace }}"
     state: "present"
+
+- name: "Sensu yum check-updates permission"
+  copy:
+    src: 01-sensu-yum 
+    dest: /etc/sudoers.d/01-sensu-yum
+    owner: root
+    group: root
+    mode: 0440
+  when: ansible_distribution == "AlmaLinux"

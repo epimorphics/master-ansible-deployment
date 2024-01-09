@@ -1,0 +1,3 @@
+# User rules for sensu
+sensu ALL=(ALL) NOPASSWD: /usr/bin/yum check-update -q
+sensu ALL=(ALL) NOPASSWD: /usr/bin/yum check-update -q --security
