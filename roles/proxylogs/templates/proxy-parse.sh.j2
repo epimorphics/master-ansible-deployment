@@ -161,7 +161,7 @@ PROGRESS_OPT="--no-progress"
 GOACCESS_CMD="/usr/local/bin/goaccess $CACHE_OPT $DATE_OPT $EXCLUDE_OPT $FORMAT_OPT $GEO_OPT $PROGRESS_OPT"
 
 [ -n "$PROFILE" ] && PROFILE_OPT="--profile $PROFILE"
-AWS="aws $PROFILE_OPT"
+AWS="/usr/local/bin/aws $PROFILE_OPT"
 
 if ConsolidateLogs
 then
