@@ -15,3 +15,10 @@
     name:
       - yum-utils
     state: latest
+
+
+- name: "Text Selection bracketing"
+  lineinfile:
+    path: "/etc/inputrc"
+    regexp: "enable-bracketed-paste"
+    line: "set enable-bracketed-paste off"

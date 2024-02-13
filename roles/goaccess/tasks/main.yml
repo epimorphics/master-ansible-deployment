@@ -1,22 +1,6 @@
 ---
-- name: "Remove goaccess (if present)"
-  tags:
-    - goaccess
-    - pkg
-  package:
-    name: goaccess
-    state: absent
-
-
-- name: "Goaccess requirements"
-  tags:
-    - goaccess
-    - pkg
-  package:
-#   name: libmaxminddb
-    name: http://mirror.centos.org/centos/7/os/x86_64/Packages/libmaxminddb-1.2.0-6.el7.x86_64.rpm
-    state: latest
-
+- name: "{{ ansible_distribution }}"
+  include_tasks: "{{ ansible_distribution }}.yml"
 
 - name: "Goaccess archive"
   tags:

@@ -1,0 +1,16 @@
+- name: "Goaccess requirements: MaxMinDDB"
+  tags:
+    - goaccess
+    - pkg
+  package:
+    name: libmaxminddb
+    state: latest
+
+
+- name: "Goaccess requirements: NSL"
+  tags:
+    - goaccess
+    - pkg
+  package:
+    name: libnsl
+    state: latest
