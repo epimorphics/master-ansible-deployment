@@ -51,6 +51,32 @@
     - iter.public_ip_address is defined
 
 
+- name:  "Band DNS CName"
+  tags:
+    - dns
+  route53:
+    state: present
+    overwrite: true
+    profile: "{{ route53_profile }}"
+    zone: "{{ domain }}"
+    type: CNAME
+    ttl: 60
+    record: "{{ instance }}-{{ env }}-{{ iter.tags.Type }}.{{ domain }}"
+    value:
+      - "{{ iter.tags.Name }}.{{ domain }}"
+  loop: "{{ ec2_instances.instances }}"
+  loop_control:
+    label: "{{ iter.tags.Name | default(iter.instance_id) }} -> {{ instance }}-{{ env }}-{{ iter.tags.Type }}"
+    loop_var: iter
+  when:
+    - iter.tags.Ansible is defined
+    - iter.tags.Env is defined
+    - iter.tags.Band is defined
+    - iter.tags.Env == env
+    - iter.public_ip_address is defined
+    - iter.tags['aws:ec2launchtemplate:id'] is not defined
+
+
 - name: ACM
   tags:
     - acm
