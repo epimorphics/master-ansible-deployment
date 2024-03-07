@@ -23,7 +23,7 @@
 
 - name: Python interpreter check
   fail:
-    msg: "Ansible is running with the wrong version of Python ({{ interpreter.version }}). Delete the cache (.cache/{{ ansible_hostname }}) and re-run."
+    msg: "Ansible is running with the wrong version of Python ({{ interpreter.version }}). Delete the cache (.cache/<hostanme>) and re-run."
   when: interpreter.version is not regex('^3\.8\.')
 
 
