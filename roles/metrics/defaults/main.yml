@@ -12,7 +12,7 @@ grafana:
 
 influxdb:
   image: "influxdb"
-  version: "2.6.1"
+  version: "2.7.5"
   directory: "{{ docker.directory }}/{{ influxdb_container.name }}"
   config: "/etc/influxdb2"
   data: "/var/lib/influxdb2"
