@@ -37,7 +37,7 @@
     zone: "{{ domain }}"
     record: "{{ iter.tags.Name }}.{{ domain }}"
     type: A
-    ttl: 600
+    ttl: 300
     value:
       - "{{ iter.public_ip_address }}"
   loop: "{{ ec2_instances.instances }}"
@@ -169,7 +169,7 @@
     zone: "{{ domain }}"
     record: "{{ iter.elb.name | default('NAME1') }}.{{ domain }}"
     type: CNAME
-    ttl: 600
+    ttl: 300
     value:
       - "{{ iter.elb.dns_name }}"
   loop: "{{ ec2_lb.results }}"
