@@ -109,7 +109,7 @@
 </match>
 
 # Transform JSON tag
-<match elasticsearch.syslog.daemon.info grafana.syslog.daemon.* kibana.syslog.daemon.* sensu.syslog.daemon.*>
+<match elasticsearch.syslog.daemon.info grafana.syslog.daemon.* kibana.syslog.daemon.* sensu.syslog.daemon.* sensu-agent.syslog.daemon.*>
   @id rewrite_json_tag
   @type rewrite_tag_filter
   @log_level warn
