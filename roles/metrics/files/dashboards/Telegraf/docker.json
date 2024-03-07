@@ -24,7 +24,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 21,
+  "id": 24,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -972,17 +972,14 @@
             "axisPlacement": "auto",
             "barAlignment": 0,
             "drawStyle": "line",
-            "fillOpacity": 10,
+            "fillOpacity": 0,
             "gradientMode": "none",
             "hideFrom": {
               "legend": false,
               "tooltip": false,
               "viz": false
             },
-            "lineInterpolation": "smooth",
-            "lineStyle": {
-              "fill": "solid"
-            },
+            "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 5,
             "scaleDistribution": {
@@ -998,7 +995,6 @@
               "mode": "off"
             }
           },
-          "displayName": "${__field.labels.container_name}",
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -1006,37 +1002,15 @@
               {
                 "color": "green",
                 "value": null
-              }
-            ]
-          },
-          "unit": "binBps"
-        },
-        "overrides": [
-          {
-            "__systemRef": "hideSeriesFrom",
-            "matcher": {
-              "id": "byNames",
-              "options": {
-                "mode": "exclude",
-                "names": [
-                  "landing"
-                ],
-                "prefix": "All except:",
-                "readOnly": true
-              }
-            },
-            "properties": [
+              },
               {
-                "id": "custom.hideFrom",
-                "value": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": true
-                }
+                "color": "red",
+                "value": 80
               }
             ]
           }
-        ]
+        },
+        "overrides": []
       },
       "gridPos": {
         "h": 9,
@@ -1048,9 +1022,7 @@
       "options": {
         "legend": {
           "calcs": [
-            "lastNotNull",
-            "min",
-            "max"
+            "lastNotNull"
           ],
           "displayMode": "table",
           "placement": "right",
@@ -1061,13 +1033,14 @@
           "sort": "none"
         }
       },
+      "pluginVersion": "9.2.5",
       "targets": [
         {
           "datasource": {
             "type": "influxdb",
             "uid": "influxdb2"
           },
-          "query": "from(bucket: \"telegraf\")\r\n\t|> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"docker_container_net\")\r\n  |> filter(fn: (r) => r[\"host\"] =~ /${host}/)\r\n  |> filter(fn: (r) => r[\"network\"] == \"total\")\r\n  |> filter(fn: (r) => r._field == \"rx_bytes\")\r\n  |> derivative(unit: 1s, nonNegative: true)\r\n  |> keep(columns: [\"_measurement\",\"_time\",\"_field\",\"_value\",\"container_name\"])\r\n",
+          "query": "from(bucket: \"telegraf\")\r\n\t|> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"docker_container_net\")\r\n  |> filter(fn: (r) => r[\"host\"] == \"${host}\")\r\n  |> filter(fn: (r) => r[\"network\"] == \"total\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"rx_bytes\")\r\n  |> derivative(unit: 1s, nonNegative: true)\r\n  |> keep(columns: [\"_measurement\",\"_time\",\"_value\",\"container_name\"])\r\n",
           "refId": "A"
         }
       ],
@@ -1092,17 +1065,14 @@
             "axisPlacement": "auto",
             "barAlignment": 0,
             "drawStyle": "line",
-            "fillOpacity": 10,
+            "fillOpacity": 0,
             "gradientMode": "none",
             "hideFrom": {
               "legend": false,
               "tooltip": false,
               "viz": false
             },
-            "lineInterpolation": "smooth",
-            "lineStyle": {
-              "fill": "solid"
-            },
+            "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 5,
             "scaleDistribution": {
@@ -1118,7 +1088,6 @@
               "mode": "off"
             }
           },
-          "displayName": "${__field.labels.container_name}",
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -1126,37 +1095,15 @@
               {
                 "color": "green",
                 "value": null
-              }
-            ]
-          },
-          "unit": "binBps"
-        },
-        "overrides": [
-          {
-            "__systemRef": "hideSeriesFrom",
-            "matcher": {
-              "id": "byNames",
-              "options": {
-                "mode": "exclude",
-                "names": [
-                  "ukhpi"
-                ],
-                "prefix": "All except:",
-                "readOnly": true
-              }
-            },
-            "properties": [
+              },
               {
-                "id": "custom.hideFrom",
-                "value": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": true
-                }
+                "color": "red",
+                "value": 80
               }
             ]
           }
-        ]
+        },
+        "overrides": []
       },
       "gridPos": {
         "h": 9,
@@ -1164,13 +1111,11 @@
         "x": 12,
         "y": 29
       },
-      "id": 11,
+      "id": 30,
       "options": {
         "legend": {
           "calcs": [
-            "lastNotNull",
-            "min",
-            "max"
+            "lastNotNull"
           ],
           "displayMode": "table",
           "placement": "right",
@@ -1181,13 +1126,14 @@
           "sort": "none"
         }
       },
+      "pluginVersion": "9.2.5",
       "targets": [
         {
           "datasource": {
             "type": "influxdb",
             "uid": "influxdb2"
           },
-          "query": "from(bucket: \"telegraf\")\r\n\t|> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"docker_container_net\")\r\n  |> filter(fn: (r) => r[\"host\"] =~ /${host}/)\r\n  |> filter(fn: (r) => r[\"network\"] == \"total\")\r\n  |> filter(fn: (r) => r._field == \"tx_bytes\")\r\n  |> derivative(unit: 1s, nonNegative: true)\r\n  |> keep(columns: [\"_measurement\",\"_time\",\"_field\",\"_value\",\"container_name\"])",
+          "query": "from(bucket: \"telegraf\")\r\n\t|> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"docker_container_net\")\r\n  |> filter(fn: (r) => r[\"host\"] == \"${host}\")\r\n  |> filter(fn: (r) => r[\"network\"] == \"total\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"tx_bytes\")\r\n  |> derivative(unit: 1s, nonNegative: true)\r\n  |> keep(columns: [\"_measurement\",\"_time\",\"_value\",\"container_name\"])\r\n",
           "refId": "A"
         }
       ],
@@ -1208,9 +1154,9 @@
     "list": [
       {
         "current": {
-          "selected": true,
-          "text": "hmlr-ctrl.epimorphics.net",
-          "value": "hmlr-ctrl.epimorphics.net"
+          "selected": false,
+          "text": "sl-monitor.epimorphics.net",
+          "value": "sl-monitor.epimorphics.net"
         },
         "datasource": {
           "type": "influxdb",
@@ -1233,13 +1179,13 @@
     ]
   },
   "time": {
-    "from": "now-24h",
+    "from": "now-6h",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Docker Influx v2.0",
   "uid": "docker",
-  "version": 5,
+  "version": 1,
   "weekStart": ""
 }

@@ -25,7 +25,7 @@
   "fiscalYearStartMonth": 0,
   "gnetId": 10507,
   "graphTooltip": 1,
-  "id": 21,
+  "id": 9,
   "links": [
     {
       "icon": "external link",
@@ -116,7 +116,7 @@
           "calcs": [
             "lastNotNull"
           ],
-          "fields": "/^status \\{host=\"hmlr\\-monitor\\.epimorphics\\.net\", name=\"docker\\-cluster\"\\}$/",
+          "fields": "/.*/",
           "values": false
         },
         "textMode": "auto"
@@ -167,7 +167,7 @@
           ],
           "orderByTime": "ASC",
           "policy": "$policy",
-          "query": "from(bucket: \"telegraf\")\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"elasticsearch_cluster_health\")\n  |> filter(fn: (r) => r._field == \"status\")",
+          "query": "from(bucket: \"telegraf\")\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"elasticsearch_cluster_health\")\n  |> filter(fn: (r) => r._field == \"status\")\n  |> last()\n  |> keep(columns: [\"_value\"])",
           "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series",
@@ -3976,8 +3976,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -4268,8 +4267,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -4409,8 +4407,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -4550,8 +4547,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -4697,8 +4693,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -5256,6 +5251,6 @@
   "timezone": "",
   "title": "Elasticsearch Metrics",
   "uid": "elasticsearch",
-  "version": 2,
+  "version": 1,
   "weekStart": ""
 }
