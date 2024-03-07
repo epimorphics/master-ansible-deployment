@@ -28,6 +28,7 @@
       cluster.routing.allocation.disk.watermark.enable_for_single_data_node: "true"
       discovery.type: single-node
       ES_JAVA_OPTS: -Xms512m -Xmx512m
+      ingest.geoip.downloader.enabled: "false"
 #     logger.level: DEBUG
       logger.level: ERROR
       xpack.security.enabled: "false"
@@ -95,8 +96,8 @@
     status_code: [ 200 ]
     body_format: json
   loop_control: 
-    label: "{{ item.name | basename }}"
+    label: "{{ item.name }}"
   loop:
-    - { name: "fluentd-lifecycle", body: "fluentd-lifecycle.json.j2", endpoint: "_ilm/policy/fluentd" }
-    - { name: "fluentd-template",  body: "fluentd-template.json.j2",  endpoint: "_index_template/fluentd" }
+    - { name: "Fluentd Lifecycle", body: "fluentd-lifecycle.json.j2", endpoint: "_ilm/policy/fluentd" }
+    - { name: "Fluentd Template",  body: "fluentd-template.json.j2",  endpoint: "_index_template/fluentd" }
   register: uri
