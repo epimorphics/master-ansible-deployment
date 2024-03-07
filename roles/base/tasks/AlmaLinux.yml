@@ -22,3 +22,11 @@
     path: "/etc/inputrc"
     regexp: "enable-bracketed-paste"
     line: "set enable-bracketed-paste off"
+
+
+- name: "Disable swappiness"
+  lineinfile:
+    line: vm.swappiness = 0
+    regexp: ^vm.swappiness
+    path: /etc/sysctl.d/90-swappiness
+    create: true
