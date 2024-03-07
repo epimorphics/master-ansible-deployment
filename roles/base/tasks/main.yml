@@ -34,18 +34,6 @@
     - "/etc/ssh/sshd_banner"
 
 
-- name: "Sysctl config"
-  tags:
-    - cfg
-  copy:
-    src: "sysctl.conf"
-    dest: "/etc/sysctl.conf"
-    owner: root
-    group: root
-    mode: 0644
-  notify: "Sysctl reload"
-
-
 - name: "SSH daemon config"
   tags:
     - cfg
