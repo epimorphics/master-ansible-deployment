@@ -1,7 +1,7 @@
 RequestHeader set "x-request-id" "%{UNIQUE_ID}e" 
 
 # QoS quiet
-RequestHeader   setIfEmpty      X-Forwarded-For     "10.10.10.1" early
+RequestHeader   setIfEmpty      X-Forwarded-For     "%{REMOTE_ADDR}s" early
 
 SetEnvIf X-Forwarded-For "^." is-forwarder
 LogFormat "%h %l %u %t \"%r\" %>s %b  \"%{Referer}i\" \"%{User-Agent}i\" %L %D %{UNIQUE_ID}e %{QS_ConnectionId}e %{mod_qos_ev}e %{mod_qos_cr}e %{mod_qos_con}e" combined-duration
