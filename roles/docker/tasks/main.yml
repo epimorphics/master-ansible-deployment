@@ -51,6 +51,7 @@
 
 
 - name: "AWS ECR docker config directory ( {{ ansible_user_dir }}/.docker )"
+  become: yes
   tags:
     - cfg
   file:

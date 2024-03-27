@@ -107,6 +107,17 @@
       - "{{ proxy.directory }}/cache:{{ proxy_cache.directory }}:rw"
 
 
+- name: "Proxy ping file"
+  tags:
+    - proxy
+  file:
+    state: "touch"
+    path : "{{ proxy.directory }}/www/ping"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+
+
 - name: Proxy cache clean
   cron:
     name: "Proxy cache clean {{ item.title }}"

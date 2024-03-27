@@ -12,11 +12,11 @@
     CustomLog /dev/null server-status
     <Location /server-status>
         SetHandler server-status
-        Order allow,deny
-        Allow from all
+        Order deny,allow
+        Deny from {{ internal_subnet }}
     </Location>
     <Location /qos>
         SetHandler qos-viewer
-        Order allow,deny
-        Allow from all
+        Order deny,allow
+        Deny from {{ internal_subnet }}
     </Location>
