@@ -1,4 +1,4 @@
 - name: "Telegraf"
-  include_tasks: "Telegraf.yml"
+  include_tasks: "telegraf.yml"
   when: telegraf is defined
 

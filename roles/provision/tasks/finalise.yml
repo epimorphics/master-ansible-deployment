@@ -156,7 +156,7 @@
     health_check:
         ping_protocol: http
         ping_port: 80
-        ping_path: "{{ load_balancers[iter.type].health_check | default('/'ping) }}"
+        ping_path: "{{ load_balancers[iter.type].health_check | default('/ping') }}"
         response_timeout: 5 # seconds
         interval: 10 # seconds
         unhealthy_threshold: 2
