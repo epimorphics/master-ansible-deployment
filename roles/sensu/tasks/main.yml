@@ -19,7 +19,7 @@
     - { path: "{{ sensu_backend.directory }}" }
 
 
-- name: "Sensu container"
+- name: "Sensu container ({{ tag }})"
   tags:
     - container
   docker_container:

@@ -1,5 +1,5 @@
 ---
-tag: "6.9.0"
+tag: "6.11.0"
 
 sensu_backend:
   config: "/etc/sensu/backend.yml"
