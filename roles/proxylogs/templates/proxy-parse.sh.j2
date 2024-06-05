@@ -169,8 +169,8 @@ then
   if [ -n "$GOACCESS" ]
   then
     mkdir -p $DBPATH
-    nice /usr/local/bin/mergelog ${DIRECTORY}/${DAY}/*/apache.info.proxy > ${DIRECTORY}/${DAY}//apache.info.proxy
-    $CAT ${DIRECTORY}/${DAY}//apache.info.proxy | nice $GOACCESS_CMD - -o $OUTPUT
+    nice /usr/local/bin/mergelog ${DIRECTORY}/${DAY}/*/apache.info.proxy > ${DIRECTORY}/${DAY}/apache.info.proxy
+    $CAT ${DIRECTORY}/${DAY}/apache.info.proxy | nice $GOACCESS_CMD - -o $OUTPUT
   else
     /usr/local/bin/mergelog ${DIRECTORY}/${DAY}/*/apache.info.proxy >> $OUTPUT
   fi

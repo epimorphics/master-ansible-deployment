@@ -1,6 +1,6 @@
 #! /bin/bash
 
 YESTERDAY=$(date -d '-1 day' +%F)
-MONTH=$(date -d '-1 day' +%Y-%m)
+FILENAME=$(date -d '-1 day' +%G-%V).html
 
-{{ parse.file }} -d $YESTERDAY -g {{ parse.dest }}/$MONTH.html -m '{{ parse.types | join('|') }}' -s {{ parse.src }} -w {{ parse.directory }}/month -c {{ parse.directory }}/month/cache 2>&1 | logger -t cron && ln -fs $MONTH.html {{ parse.dest }}/index.html
+{{ parse.file }} -d $YESTERDAY -g {{ parse.dest }}/$FILENAME -m '{{ parse.types | join('|') }}' -s {{ parse.src }} -w {{ parse.directory }}/daily -c {{ parse.directory }}/daily/cache 2>&1 | logger -t cron && ln -fs $FILENAME {{ parse.dest }}/index.html

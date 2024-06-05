@@ -32,7 +32,7 @@
   loop_control:
     label: "{{ item }}"
   loop:
-    - month
+    - daily
     - today
 
 
@@ -77,7 +77,7 @@
   loop_control:
     label: "{{ item | basename }}"
   loop:
-    - "{{ parse.wrapper.month }}"
+    - "{{ parse.wrapper.daily }}"
     - "{{ parse.wrapper.today }}"
 
 
@@ -95,6 +95,6 @@
   loop_control:
     label: "{{ item.name }}"
   loop:
-    - { name: "Monthly Cache cleanup", day: "2", minute: "1", hour: "0", job: "rm -r {{ parse.directory }}/month/cache" }
-    - { name: "Month Proxy Parse",  day: "*", minute: "30", hour: "3", job: "{{ parse.wrapper.month }}" }
+    - { name: "Daily Cache cleanup", weekday: "1", minute: "1", hour: "0", job: "rm -r {{ parse.directory }}/daily/cache" }
+    - { name: "Daily Proxy Parse",  day: "*", minute: "30", hour: "3", job: "{{ parse.wrapper.daily }}" }
     - { name: "Today Proxy Parse",  day: "*", minute: "01", hour: "*", job: "{{ parse.wrapper.today }}" }

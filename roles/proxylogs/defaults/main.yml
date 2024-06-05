@@ -5,6 +5,6 @@ parse:
   src: "s3://{{ s3_logs }}/logs"
   types: "{{ external_proxy_host_types }}"
   wrapper:
-    month: "/root/yesterday-proxy-log.sh"
+    daily: "/root/yesterday-proxy-log.sh"
     today: "/root/today-proxy-log.sh"
 

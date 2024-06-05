@@ -1,5 +1,5 @@
 ---
-- name: "Sensu namespace {{ logging.server }}"
+- name: "Sensu namespace {{ sensu.namespace }}"
   delegate_to: "{{ sensu_server }}"
   sensu.sensu_go.namespace:
     auth: "{{ sensu.auth }}"
