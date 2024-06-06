@@ -87,14 +87,14 @@
     - cron
   cron:
     user: root
+    day:    "*"
     name:   "{{ item.name }}"
     minute: "{{ item.minute }}"
-    day:    "{{ item.day }}"
     hour:   "{{ item.hour }}"
     job:    "{{ item.job }}"
   loop_control:
     label: "{{ item.name }}"
   loop:
-    - { name: "Daily Cache cleanup", weekday: "1", minute: "1", hour: "0", job: "rm -r {{ parse.directory }}/daily/cache" }
-    - { name: "Daily Proxy Parse",  day: "*", minute: "30", hour: "3", job: "{{ parse.wrapper.daily }}" }
-    - { name: "Today Proxy Parse",  day: "*", minute: "01", hour: "*", job: "{{ parse.wrapper.today }}" }
+    - { name: "Daily Cache cleanup", minute: "1",  hour: "0", weekday: "1", job: "rm -r {{ parse.directory }}/daily/cache" }
+    - { name: "Daily Proxy Parse",   minute: "30", hour: "3",               job: "{{ parse.wrapper.daily }}" }
+    - { name: "Today Proxy Parse",   minute: "01", hour: "*",               job: "{{ parse.wrapper.today }}" }

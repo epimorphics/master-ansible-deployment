@@ -13,3 +13,10 @@ RewriteRule .* - [F,L]
 RewriteCond %{HTTP:X-Forwarded-For} "^{{ origin | replace(".", "\\.") }}\b"{{ "" if loop.last else "\t[OR]" }}
 {% endfor %}
 RewriteRule .* - [F,L]
+
+{% if throttled is defined%}
+{% for ip in throttled | sort %}
+SetEnvIf    X-Forwarded-For      "^{{ ip | replace(".", "\\.") }}\b"    QS_ThrottleClient=1
+{% endfor %}
+QS_EventPerSecLimit          QS_ThrottleClient            3
+{% endif %}
