@@ -37,7 +37,7 @@
       CHANNEL: "{{ slack.channel }}"
       PYTHONPATH: "./libs"
       WEBHOOK: "{{ slack.webhook }}"
-      EXTERNAL_URL: "https://{{ alertmanager_container.cname }}-{{ instance }}.{{ domain }}"
+#     EXTERNAL_URL: "https://{{ alertmanager_container.cname }}-{{ instance }}.{{ domain }}"
   register: lambda_status
   when: lambda_execution.arn is defined
 

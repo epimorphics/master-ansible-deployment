@@ -96,6 +96,6 @@
   loop_control:
     label: "{{ item.name }}"
   loop:
-    - { name: "Daily Cache cleanup", minute: "1",  hour: "0", dow: "1", job: "rm -r {{ parse.directory }}/daily/cache" }
+    - { name: "Daily Cache cleanup", minute: "1",  hour: "0", dow: "2", job: "rm -r {{ parse.directory }}/daily/cache" }
     - { name: "Daily Proxy Parse",   minute: "30", hour: "3",           job: "{{ parse.wrapper.daily }}" }
     - { name: "Today Proxy Parse",   minute: "01", hour: "*",           job: "{{ parse.wrapper.today }}" }

@@ -46,7 +46,7 @@
     name:
     - 'boto3'
     - 'pytz'
-    - 'requests'
+    - 'requests==2.31.0'
     - 'simplejson'
     executable: pip3.8
     state: latest
