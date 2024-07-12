@@ -54,8 +54,8 @@ lambda:
   name: "sns2slack"
   description: "SNS to Slack Webhook"
   s3_bucket: "epi-repository"
-  runtime: "python3.8"
-  version: "v2.06"
+  runtime: "python3.10"
+  version: "v3.00"
 
 elb:
   timeout:  120 # seconds
