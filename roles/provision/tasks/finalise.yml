@@ -73,6 +73,7 @@
     - iter.tags.Env is defined
     - iter.tags.Band is defined
     - iter.tags.Env == env
+    - iter.tags.Band != env
     - iter.public_ip_address is defined
     - iter.tags['aws:ec2launchtemplate:id'] is not defined
 
