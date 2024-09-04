@@ -14,7 +14,8 @@ sensu_backend:
 
 
 sensu_am:
-  image: "{{ registry.common }}/sensu-alertmanager:v2.0.1"
+  image: "{{ registry.common }}/sensu-alertmanager"
+  tag: "v2.1.0"
 
 services:
   - "{{ sensu_gui }}"

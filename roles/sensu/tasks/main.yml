@@ -49,12 +49,12 @@
   register: sensu_instance
 
 
-- name: "Sensu-Alertmanager container"
+- name: "Sensu-Alertmanager container ({{ sensu_am.tag }})"
   tags:
     - container
     - sensu_am
   docker_container:
-    image: "{{ sensu_am.image }}"
+    image: "{{ sensu_am.image }}:{{ sensu_am.tag }}"
     name: "{{ sensu_am_container.name }}"
     log_driver: "{{ docker.logging.driver }}"
     log_options: "{{ docker.logging.options }}"
@@ -63,6 +63,8 @@
       - name: "{{ docker.network.name }}"
     networks_cli_compatible: yes
     restart_policy: "unless-stopped"
+    env:
+      DEBUG: "{{ sensu_am.debug | default(0) }}"
 
 
 - name: "Sensu stats log rotation"
