@@ -2,7 +2,7 @@
 - name: "{{ ansible_distribution }}"
   include_tasks: "{{ ansible_distribution }}.yml"
 
-- name: "Goaccess archive"
+- name: "Goaccess archive [{{ goaccess.url }}]"
   tags:
     - goaccess
   unarchive:
@@ -11,7 +11,7 @@
     remote_src: yes
 
 
-- name: "GeoLite2 archive"
+- name: "GeoLite2 archive [{{ GeoLite2.url }}]"
   tags:
     - geoip
   unarchive:
@@ -20,7 +20,7 @@
     remote_src: yes
 
 
-- name: "GeoLite2 DB"
+- name: "GeoLite2 DB [{{ GeoLite2.version }}]"
   tags:
     - geoip
     - goaccess

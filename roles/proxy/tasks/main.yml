@@ -110,9 +110,9 @@
 - name: "Proxy ping file"
   tags:
     - proxy
-  file:
-    state: "touch"
-    path : "{{ proxy.directory }}/www/ping"
+  copy:
+    content: ""
+    dest : "{{ proxy.directory }}/www/ping"
     owner: "root"
     group: "root"
     mode: "0644"

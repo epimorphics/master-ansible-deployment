@@ -58,6 +58,7 @@
     rules:
       - proto: all
         cidr_ip:  "{{ item.ip }}/32"
+        rule_desc: "{{ item.name | default(omit) }}"
     purge_tags: false
     tags:
       Ansible: "true"
