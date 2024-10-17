@@ -185,7 +185,7 @@ System load within half cpu core of limit
       labels:
         severity: critical
       annotations:
-        message: "API Connection Error: {{ $labels.job }} - {{ $labels.instance }}"
+        message: "API Connection Error: {{ $labels.job }} - {{ $labels.host }}"
 
 
 ### APIServiceException
@@ -197,7 +197,7 @@ System load within half cpu core of limit
       labels:
         severity: critical
       annotations:
-        message: "API Service Exception: {{ $labels.job }} - {{ $labels.instance }}"
+        message: "API Service Exception: {{ $labels.job }} - {{ $labels.host }}"
 
 
 ### APIStatus
@@ -209,7 +209,7 @@ System load within half cpu core of limit
       labels:
         severity: warning
       annotations:
-        message: "Unexpected API status return {{ $labels.status }}: {{ $labels.job }} - {{ $labels.instance }}"
+        message: "Unexpected API status return {{ $labels.status }}: {{ $labels.job }} - {{ $labels.host }}"
 
 
 ### APIRequestFailures
@@ -221,7 +221,7 @@ System load within half cpu core of limit
       labels:
         severity: critical
       annotations:
-        message: "API Request Failure: {{ $labels.result }}: {{ $labels.job }} - {{ $labels.instance }}"
+        message: "API Request Failure: {{ $labels.result }}: {{ $labels.job }} - {{ $labels.host }}"
 
 
 ### ApplicationInternalError
@@ -233,4 +233,4 @@ System load within half cpu core of limit
       labels:
         severity: critical
       annotations:
-        message: "Internal Application Error: {{ $labels.job }} - {{ $labels.instance }}"
+        message: "Internal Application Error: {{ $labels.job }} - {{ $labels.host }}\n{{ $labels.message }}"
