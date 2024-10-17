@@ -120,7 +120,7 @@
   </rule>
 </match>
 
-<filter dhclient.syslog.** postfix*.syslog.** sshd.syslog.** sudo.syslog.** systemd*.syslog.**>
+<filter amazon-ssm-agent.syslog.** dnf.syslog.** dhclient.syslog.** logger.syslog.** NetworkManager.syslog.** postfix*.syslog.** rsyslogd.syslog.** sshd.syslog.** sudo.syslog.** systemd*.syslog.**>
   @id syslog_level
   @type record_transformer
   <record>
@@ -139,6 +139,24 @@
     tag apache.${tag_parts[3]}.$1
   </rule>
 </match>
+
+
+# Syslog info parser
+<filter logger.syslog.**>
+  @id syslog_rfc5424
+  @type parser
+  @log_level warn
+  key_name message
+  remove_key_name_field true
+  inject_key_prefix log_
+  reserve_data true
+  emit_invalid_record_to_error false
+  <parse>
+    @type regexp
+    expression /^(?<rfc5424_version>[^ ]*) (?<msgtime>[^ ]*) (?<container_id>[^ ]*) (?<subsystem>[^ ]*) (?<procid>[^ ]*) (?<msgid>[^ ]*) \[(?<container>[^ ]*)@(?<step>[^ ]*) cmd=\"(?<command>[^ ]*)\"\] (?<message>[^$]+)/
+  </parse>
+</filter>
+
 
 # Apache info parser
 <filter apache.info.**>

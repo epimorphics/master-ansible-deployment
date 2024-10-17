@@ -21,8 +21,21 @@
     - cfg
     - alertmanager
   template:
-    src: "alertmanager.yml.j2"
-    dest:  "{{ alertmanager.directory }}/{{ alertmanager.config | basename }}"
+    src: "{{ alertmanager.config }}.j2"
+    dest:  "{{ alertmanager.directory }}/{{ alertmanager.config }}"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  notify: "Alertmanager container restart"
+
+
+- name: "Alertmanager notification template"
+  tags:
+    - cfg
+    - alertmanager
+  copy:
+    src: "{{ alertmanager.template }}"
+    dest:  "{{ alertmanager.directory }}/{{ alertmanager.template }}"
     owner: "root"
     group: "root"
     mode: "0644"
@@ -55,7 +68,8 @@
     ports:
       - "{{ alertmanager_container.port }}:{{ alertmanager_container.port }}"
     volumes:
-      - "{{ alertmanager.directory }}/alertmanager.yml:{{ alertmanager.config }}"
+      - "{{ alertmanager.directory }}/{{ alertmanager.config }}:/etc/alertmanager/{{ alertmanager.config }}"
+      - "{{ alertmanager.directory }}/{{ alertmanager.template }}:/etc/alertmanager/{{ alertmanager.template }}"
       - "{{ alertmanager.directory }}/data:/alertmanager:rw"
 
 

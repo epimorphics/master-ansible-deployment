@@ -2,24 +2,67 @@ global:
   resolve_timeout: 5m
 route:
   group_by: ['...']
-  group_wait: 30s
+  group_wait: 10s
   group_interval: 5m
-  repeat_interval: 3h
-  receiver: 'dual'
+  repeat_interval: 1h
+  receiver: '{{ alertmanager_routes.default }}'
   routes:
-  - match_re:
-      namespace: testing
-    receiver: 'sns-slack-forwarder'
+{% if alertmanager_routes.receivers is defined %}
+{% for rs in alertmanager_routes.receivers %}
+{% if rs.matchers is defined %}
+  - receiver: {{ rs.name }}
+    matchers:
+{% for m in rs.matchers %}
+    - {{ m }}
+{% endfor %}
+{% endif %}
+{% endfor %}
+{% endif %}
+  - receiver: 'sns-slack-forwarder'
+    matchers:
+    - namespace = testing
+  - receiver: 'email'
+    matchers:
+    - alertname = Watchdog
 receivers:
-  - name: 'dual'
+{% if alertmanager_routes.receivers is defined %}
+{% for rs in alertmanager_routes.receivers %}
+  - name: '{{ rs.name }}'
     email_configs:
-    - to: {{ email }}
+    - to: {{ rs.email }}
       from: noreply@{{ domain }}
       smarthost: {{ mailrelay_container.name }}:{{mailrelay.port }}
       require_tls: false
-    webhook_configs:
+    slack_configs:
     - send_resolved: True
-      url: 'http://{{ sns_forwarder_container.name}}:{{sns_forwarder_container.port}}/alert/{{ sns_slack }}'
+      api_url: '{{ rs.slack.webhook }}'
+      channel: '{{ rs.slack.channel }}'
+      username: '{{ rs.slack.username }}'
+{%- raw %}
+      color: '{{ template "epimorphics.color" . }}'
+      title: '{{ template "epimorphics.icon" . }} {{ template "epimorphics.title" . }}'
+      title_link: '{{ template "epimorphics.runbook" (index .Alerts 0).Annotations }}'
+      actions:
+      - type: button
+        text: "Alertmanager :no_bell:"
+        url: '{{ if eq .Status "firing" -}}{{ .ExternalURL }}/#/alerts?receiver={{ .Receiver }}{{else}}null{{end}}'
+      - type: button
+        text: '{{ template "epimorphics.generator" (index .Alerts 0).Annotations }}'
+        url: '{{ (index .Alerts 0).GeneratorURL }}'
+      - type: button
+        text: "Runbook :bookmark_tabs:"
+        url: '{{ template "epimorphics.runbook" (index .Alerts 0).Annotations }}'
+      text: |-
+        {{ range .Alerts }}{{ .Annotations.message }}{{ end }}
+        {{- range .Alerts }}
+        *Start:* {{ .StartsAt }}{{if .Annotations.occurrences}} ({{ .Annotations.occurrences }}}{{end}}
+        {{ range .Labels.SortedPairs }}{{if and (ne .Name "alertname") (ne .Name "severity") }}- *{{ .Name }}:* {{ .Value }}
+        {{ end -}}
+        {{- end -}}
+        {{- end }}
+{% endraw %}
+{% endfor %}
+{% endif %}
   - name: 'email'
     email_configs:
     - to: {{ email }}
@@ -29,6 +72,7 @@ receivers:
   - name: 'sns-slack-forwarder'
     webhook_configs:
     - send_resolved: True
-      url: 'http://{{ sns_forwarder_container.name}}:{{sns_forwarder_container.port}}/alert/{{ sns_slack }}'
+      url: 'http://{{ sns_forwarder_container.name }}:{{ sns_forwarder_container.port }}/alert/{{ sns_slack }}'
   - name: 'null'
-templates: []
+templates:
+- /etc/alertmanager/slack.tmpl

@@ -7,7 +7,16 @@ alertmanager:
   image: "prom/alertmanager"
   version: "v0.27.0"
   directory: "{{ docker.directory }}/{{ alertmanager_container.name }}"
-  config: /etc/alertmanager/alertmanager.yml
+  config: "alertmanager.yml"
+  template: "slack.tmpl"
+
+
+alertmanager_routes:
+  default: default
+  receivers:
+  - name: default
+    email: "{{ email }}"
+    slack: "{{ slack }}"
 
 
 sns_forwarder:

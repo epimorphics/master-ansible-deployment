@@ -8,7 +8,7 @@ groups:
       severity: critical
     annotations:
 {%- raw %}
-      message: "API Connection Error: {{ $labels.job }} - {{ $labels.instance }}"
+      message: "API Connection Error: {{ $labels.job }} - {{ $labels.host }}"
 {% endraw %}
       runbook_url: "https://github.com/epimorphics/master-ansible-deployment/blob/main/roles/metrics/templates/prometheus-rules/Readme.md#apiconnectionerror"
   - alert: APIServiceException
@@ -17,7 +17,7 @@ groups:
       severity: critical
     annotations:
 {%- raw %}
-      message: "API Service Exception: {{ $labels.job }} - {{ $labels.instance }}"
+      message: "API Service Exception: {{ $labels.job }} - {{ $labels.host }}"
 {% endraw %}
       runbook_url: "https://github.com/epimorphics/master-ansible-deployment/blob/main/roles/metrics/templates/prometheus-rules/Readme.md#apiserviceexception"
   - alert: APIStatus
@@ -26,7 +26,7 @@ groups:
       severity: warning
     annotations:
 {%- raw %}
-      message: "Unexpected API status return {{ $labels.status }}: {{ $labels.job }} - {{ $labels.instance }}"
+      message: "Unexpected API status return {{ $labels.status }}: {{ $labels.job }} - {{ $labels.host }}"
 {% endraw %}
       runbook_url: "https://github.com/epimorphics/master-ansible-deployment/blob/main/roles/metrics/templates/prometheus-rules/Readme.md#apistatus"
   - alert: APIRequestFailures
@@ -35,7 +35,7 @@ groups:
       severity: critical
     annotations:
 {%- raw %}
-      message: "API Request Failure: {{ $labels.result }}: {{ $labels.job }} - {{ $labels.instance }}"
+      message: "API Request Failure: {{ $labels.result }}: {{ $labels.job }} - {{ $labels.host }}"
 {% endraw %}
       runbook_url: "https://github.com/epimorphics/master-ansible-deployment/blob/main/roles/metrics/templates/prometheus-rules/Readme.md#apirequestfailures"
   - alert: ApplicationInternalError
@@ -44,6 +44,6 @@ groups:
       severity: critical
     annotations:
 {%- raw %}
-      message: "Internal Application Error: {{ $labels.job }} - {{ $labels.instance }}"
+      message: "Internal Application Error: {{ $labels.job }} - {{ $labels.host }}\n{{ $labels.message }}"
 {% endraw %}
       runbook_url: "https://github.com/epimorphics/master-ansible-deployment/blob/main/roles/metrics/templates/prometheus-rules/Readme.md#applicationinternalerror"

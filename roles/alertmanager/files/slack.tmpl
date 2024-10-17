@@ -1,0 +1,55 @@
+{{ define "epimorphics.title" -}}
+  {{- if eq .Status "firing" -}}
+  {{ .CommonLabels.severity | toUpper }}: {{ .CommonLabels.alertname }}
+  {{- else -}}
+  {{ .Status | toUpper }}: {{ .CommonLabels.alertname }}
+  {{- end }}
+{{- end }}
+
+{{ define "epimorphics.runbook" -}}
+  {{- if .runbook_url -}}
+    {{ .runbook_url }}
+  {{- else -}}
+    null
+  {{- end }}
+{{- end }}
+
+{{ define "epimorphics.generator" -}}
+  {{- if .sensu -}}
+    Sensu :arrow_upper_right:
+  {{- else -}}
+    Prometheus :prometheus:
+  {{- end }}
+{{- end }}
+
+{{ define "epimorphics.color" -}}
+  {{ if eq .Status "firing" -}}
+    {{ if eq .CommonLabels.severity "warning" -}}
+      warning
+    {{- else if eq .CommonLabels.severity "critical" -}}
+      danger
+    {{- else if eq .CommonLabels.severity "info" -}}
+      #439FE0
+    {{- else -}}
+      #434343
+    {{- end -}}
+  {{- else -}}
+  good
+  {{- end }}
+{{- end }}
+
+{{ define "epimorphics.icon" -}}
+  {{- if eq .Status "firing" -}}
+    {{- if eq .CommonLabels.severity "critical" -}}
+      :boom:
+    {{- else if eq .CommonLabels.severity "warning" -}}
+      :warning:
+    {{- else if eq .CommonLabels.severity "info" -}}
+      :information_source:
+    {{- else -}}
+      :exclamation:
+    {{- end }}
+  {{- else -}}
+  :heavy_check_mark:
+  {{- end }}
+{{- end }}
