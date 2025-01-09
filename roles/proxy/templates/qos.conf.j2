@@ -13,4 +13,17 @@ RequestHeader	edit	X-Forwarded-For	{{ address }} "{{ network.ip }}"	early
 SetEnvIf Request_URI	"{{ uri.path }}"	{{ setting }}
 {% endfor %}
 {% endfor %}
+
+# QS_LocRequest
+{% if qos.LocRequest is defined %}
+{% for lr in qos.LocRequest %}
+{% if lr.match is defined %}
+QS_LocRequestLimitMatch {{ lr.match }} {{ lr.limit }}
+{% endif %}
+{% if lr.path is defined %}
+QS_LocRequestLimit {{ lr.path }} {{ lr.limit }}
+{% endif %}
+{% endfor %}
+{% endif %}
+
 {% endif %}

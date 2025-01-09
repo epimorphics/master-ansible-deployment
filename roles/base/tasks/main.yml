@@ -60,6 +60,7 @@
     mode: 0644
   notify: "Restart rsyslog"
   when:
+    -  groups['monitor'] is defined
     -  hostvars[groups['monitor'][0]].ansible_default_ipv4 is defined
     -  logging is defined
 
