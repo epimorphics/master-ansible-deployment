@@ -18,6 +18,35 @@ No new records indexed for 10 minutes.
       annotations:
         message: "Logging Down"
 
+### Elasticsearh Critical
+
+Elasticsearch cluster is reporting critial error
+
+#### Details
+
+  - alert: Elasticsearh Critical
+    expr: elasticsearch_cluster_health_status{cluster="docker-cluster", color="red", job="elasticsearch"} > 0
+    for: 10m
+    labels:
+      severity: critical
+    annotations:
+      runbook_url: "https://github.com/epimorphics/master-ansible-deployment/blob/main/roles/metrics/templates/prometheus-rules/Readme.md#elasticsearch-critical"
+
+
+### Elasticsearh Warning
+
+Elasticsearch cluster is reporting a problem
+
+#### Details
+
+    - alert: Elasticsearh Warning
+      expr: elasticsearch_cluster_health_status{cluster="docker-cluster", color="yellow", job="elasticsearch"} > 0
+      for: 10m
+      labels:
+        severity: warning
+      annotations:
+        runbook_url: "https://github.com/epimorphics/master-ansible-deployment/blob/main/roles/metrics/templates/prometheus-rules/Readme.md#elasticsearch-warning"
+
 ### Target Down
 
 #### Details

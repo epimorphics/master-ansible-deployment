@@ -17,6 +17,18 @@
     mode:  "{{ item.mode  | default('0755') }}"
   with_items:
     - { path: "{{ sensu_backend.directory }}" }
+    - { path: "{{ sensu_backend.directory }}/logs" }
+
+
+- name: "Sensu SELinux"
+  tags:
+    - cfg
+  sefcontext:
+    target: "{{ item.path }}"
+    setype: "var_log_t"
+  with_items:
+    - { path: "{{ sensu_backend.directory }}/logs" }
+    - { path: "{{ sensu_backend.directory }}/logs/stats.log" }
 
 
 - name: "Sensu container ({{ tag }})"
@@ -36,6 +48,8 @@
       SENSU_BACKEND_STATE_DIR: "{{ sensu_backend.state }}/sensu-backend"
       SENSU_BACKEND_ETCD_HEARTBEAT_INTERVAL: "1000"
       SENSU_BACKEND_ETCD_ELECTION_TIMEOUT: "5000"
+      SENSU_BACKEND_DISABLE_PLATFORM_METRICS: "true"
+      SENSU_BACKEND_PLATFORM_METRICS_LOG_FILE: "{{ sensu_backend.state }}/logs/stats.log"
     log_driver: "{{ docker.logging.driver }}"
     log_options: "{{ docker.logging.options }}"
     network_mode: "{{ docker.network.mode }}"
@@ -74,6 +88,7 @@
   template:
     src: "logrotate.j2"
     dest: "/etc/logrotate.d/sensu"
+  notify: "Restart logrotate"
 
 
 - name: "Sensu api operational"
@@ -96,12 +111,4 @@
     auth: "{{ sensu.auth }}"
     namespace: "sensu-system"
     name: "{{ sensu_instance.container.Config.Hostname }}"
-    state: "absent"
-
-
-- name: "Remove sensu_system namespace"
-  delegate_to: "{{ sensu_server }}"
-  sensu.sensu_go.namespace:
-    auth: "{{ sensu.auth }}"
-    name: "sensu-system"
     state: "absent"

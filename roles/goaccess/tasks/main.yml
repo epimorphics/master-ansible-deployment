@@ -2,32 +2,11 @@
 - name: "{{ ansible_distribution }}"
   include_tasks: "{{ ansible_distribution }}.yml"
 
-- name: "Goaccess archive [{{ goaccess.url }}]"
-  tags:
-    - goaccess
-  unarchive:
-    src: "{{ goaccess.url }}"
-    dest: /usr/local
-    remote_src: yes
 
-
-- name: "GeoLite2 archive [{{ GeoLite2.url }}]"
-  tags:
-    - geoip
-  unarchive:
-    src: "{{ GeoLite2.url }}"
-    dest: /usr/local/share
-    remote_src: yes
-
-
-- name: "GeoLite2 DB [{{ GeoLite2.version }}]"
-  tags:
-    - geoip
-    - goaccess
-  file:
-    src:  "GeoLite2-{{ GeoLite2.version }}"
-    path: "/usr/local/share/GeoLite2"
-    state: link
+- name: "GeoLite2"
+  vars:
+  - location: "/usr/local/share"
+  include_tasks: "geolite2.yml"
 
 
 - name: "Access DNS"

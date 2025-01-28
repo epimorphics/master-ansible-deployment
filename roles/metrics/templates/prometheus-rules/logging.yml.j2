@@ -12,3 +12,23 @@ groups:
       message: "Logging Down"
 {% endraw %}
       runbook_url: "https://github.com/epimorphics/master-ansible-deployment/blob/main/roles/metrics/templates/prometheus-rules/Readme.md#logging-down"
+  - alert: Elasticsearh Critical
+    expr: elasticsearch_cluster_health_status{cluster="docker-cluster", color="red", job="elasticsearch"} > 0
+    for: 10m
+    labels:
+      severity: critical
+    annotations:
+{%- raw %}
+      message: "Elasticsearch Critical"
+{% endraw %}
+      runbook_url: "https://github.com/epimorphics/master-ansible-deployment/blob/main/roles/metrics/templates/prometheus-rules/Readme.md#elasticsearch-critical"
+  - alert: Elasticsearh Warning
+    expr: elasticsearch_cluster_health_status{cluster="docker-cluster", color="yellow", job="elasticsearch"} > 0
+    for: 10m
+    labels:
+      severity: warning
+    annotations:
+{%- raw %}
+      message: "Elasticsearch Warning"
+{% endraw %}
+      runbook_url: "https://github.com/epimorphics/master-ansible-deployment/blob/main/roles/metrics/templates/prometheus-rules/Readme.md#elasticsearch-warning"

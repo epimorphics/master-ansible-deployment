@@ -20,9 +20,15 @@
     state: restarted
 
 
+- name: "Restart logrotate"
+  service:
+    name:  "rsyslog"
+    state: restarted
+
+
 - name: "Restart rsyslog"
   service:
-    name:  "sshd"
+    name:  "rsyslog"
     state: restarted
 
 

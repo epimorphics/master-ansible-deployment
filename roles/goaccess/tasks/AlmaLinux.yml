@@ -1,4 +1,4 @@
-- name: "Goaccess requirements: MaxMinDDB"
+- name: "Goaccess requirements: MaxMindDB"
   tags:
     - goaccess
     - pkg

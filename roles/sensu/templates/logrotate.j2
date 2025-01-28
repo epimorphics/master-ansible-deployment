@@ -1,9 +1,8 @@
-{{ sensu_backend.directory }}/backend-stats.log
+{{ sensu_backend.directory }}/logs/stats.log
 {
-    rotate 7
-    daily
-    missingok
-    dateext
-    copytruncate
-    compress
-}    
+  copytruncate
+  rotate 3
+  hourly
+  missingok
+  compress
+}

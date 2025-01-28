@@ -6,3 +6,9 @@
   docker_container:
     name: sensu
     state: absent
+
+
+- name: "Restart logrotate"
+  systemd:
+    name:  "logrotate"
+    state: "restarted"

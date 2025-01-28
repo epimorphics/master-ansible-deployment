@@ -2,7 +2,6 @@
 tag: "6.11.0"
 
 sensu_backend:
-  config: "/etc/sensu/backend.yml"
   directory: "{{ docker.directory }}/{{ sensu_container.name }}"
   image: "{{ registry.common }}/sensu:{{ tag }}"
   ports:
@@ -16,7 +15,7 @@ sensu_backend:
 sensu_am:
   image: "{{ registry.common }}/sensu-alertmanager"
   tag: "v2.1.3"
-  debug: 1
+  debug: 0
 
 services:
   - "{{ sensu_gui }}"

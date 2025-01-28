@@ -1,0 +1,22 @@
+---
+- name: "GeoLite2 archive"
+  tags:
+    - geoip
+  unarchive:
+    src: "{{ item.url }}"
+    dest: "{{ location }}"
+    remote_src: yes
+  loop_control:
+    label: "{{ item.name }}"
+  loop:
+    - { name: "GeoLite2-City", url: "{{ GeoLite2.url }}" }
+
+
+- name: "GeoLite2 DB link"
+  tags:
+    - geoip
+    - goaccess
+  file:
+    src:  "GeoLite2-{{ GeoLite2.version }}"
+    path: "{{ location }}/GeoLite2"
+    state: link

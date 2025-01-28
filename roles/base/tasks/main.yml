@@ -65,7 +65,7 @@
     -  logging is defined
 
 
-- name: "Syslog rotate"
+- name: "Log rotation"
   tags:
     - cfg
     - logging
@@ -76,6 +76,7 @@
     owner: root
     group: root
   when: logrotate is defined
+  notify: "Restart logrotate"
 
 
 - name: "Journald volatile"
