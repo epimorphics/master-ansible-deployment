@@ -1,4 +1,8 @@
 ---
+- name: "{{ ansible_distribution }}"
+  include_tasks: "{{ ansible_distribution }}.yml"
+
+
 - name: "Docker CE repository"
   yum_repository:
     name: docker
@@ -44,10 +48,7 @@
     executable: pip3
     name: docker
     state: latest
-
-
-- name: "{{ ansible_distribution }}"
-  include_tasks: "{{ ansible_distribution }}.yml"
+  when: not ansible_check_mode
 
 
 - name: "AWS ECR docker config directory ( {{ ansible_user_dir }}/.docker )"

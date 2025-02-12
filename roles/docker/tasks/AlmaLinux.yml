@@ -1,4 +1,12 @@
 ---
+- name: "Iptable-nft"
+  tags:
+    - pkg
+  package:
+    name: iptables-nft
+    state: latest
+
+
 - name: "AWS ECR Helper Archive"
   tags:
     - pkg
