@@ -30,4 +30,17 @@ QS_LocRequestLimit {{ lr.path }} {{ lr.limit }}
 {% endfor %}
 {% endif %}
 
+# QS_CondLocRequestLimitMatch
+{% if qos.agents is defined %}
+{% for agent in qos.agents %}
+{% for regexp in agent.regexps %}
+BrowserMatch  "{{ regexp }}"  QS_Cond={{agent.name}}
+{% endfor %}
+
+{% for request in agent.requests %}
+QS_CondLocRequestLimitMatch  "{{ request.path }}"  {{ request.limit }} {{ agent.name }}
+{% endfor %}
+{% endfor %}
+{% endif %}
+
 {% endif %}
