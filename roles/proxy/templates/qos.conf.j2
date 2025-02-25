@@ -1,18 +1,22 @@
 # QoS
 {% if qos is defined %}
+{% if qos.networks is defined %}
 # Consolidate IP ranges
 {% for network in qos.networks %}
 {% for address in network.addresses %}
-RequestHeader	edit	X-Forwarded-For	{{ address }} "{{ network.ip }}"	early
+RequestHeader	edit	X-Forwarded-For	"^{{ address | replace('_', '[0-9]{1,3}') | replace('.', '\\.') }}" "{{ network.ip }}"	early
 {% endfor %}
 
 {% endfor %}
+{% endif %}
 # Path Settings
+{% if qos.uris is defined %}
 {% for uri in qos.uris %}
 {% for setting in uri.settings %}
 SetEnvIf Request_URI	"{{ uri.path }}"	{{ setting }}
 {% endfor %}
 {% endfor %}
+{% endif %}
 
 # QS_LocRequest
 {% if qos.LocRequest is defined %}

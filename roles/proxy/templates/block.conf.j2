@@ -1,3 +1,5 @@
+RequestHeader   setIfEmpty      X-Forwarded-For     "%{REMOTE_ADDR}s" early
+
 RewriteEngine On
 
 RewriteCond %{QUERY_STRING} "SERVICE(%20|\+)*%3C"
@@ -10,13 +12,13 @@ RewriteRule .* - [F,L]
 
 
 {% for origin in blocked.origins | sort %}
-RewriteCond %{HTTP:X-Forwarded-For} "^{{ origin | replace(".", "\\.") }}\b"{{ "" if loop.last else "\t[OR]" }}
+RewriteCond %{HTTP:X-Forwarded-For} "^{{ origin | replace('_','[0-9]{1,3}') | replace('.', '\\.') }}(,|\b)"{{ "" if loop.last else "\t[OR]" }}
 {% endfor %}
 RewriteRule .* - [F,L]
 
 {% if throttled is defined%}
 {% for ip in throttled | sort %}
-SetEnvIf    X-Forwarded-For      "^{{ ip | replace(".", "\\.") }}\b"    QS_ThrottleClient=1
+SetEnvIf    X-Forwarded-For      "^{{ ip | replace('_','[0-9]{1,3}') | replace('.', '\\.') }}(,|\b)"    QS_ThrottleClient=1
 {% endfor %}
 QS_EventPerSecLimit          QS_ThrottleClient            3
 {% endif %}

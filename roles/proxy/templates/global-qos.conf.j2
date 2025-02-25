@@ -1,5 +1,9 @@
 # QoS
 {% if qos is defined %}
+
+QS_ErrorResponseCode {{ qos.ErrorResponseCode | default(429) }}
+
+{% if qos.networks is defined %}
 # Use the X-Fordarder-For to identify the originating IP.
 # This also enables consolidation of networks to single IP.
 # Unlike the original implmentation, the intermediate steps are already 
@@ -41,8 +45,7 @@ QS_ClientEventBlockCount {{ qos.ClientEventBlockCount.number }} {{ qos.ClientEve
 {% endif %}
 
 QS_ClientEventPerSecLimit {{ qos.ClientEventPerSecLimit | default(450) }}
-
-QS_ErrorResponseCode {{ qos.ErrorResponseCode | default(429) }}
+{% endif %}
 
 {% if qos.ErrorPage is defined %}
 QS_ErrorPage {{ qos.ErrorPage }}
