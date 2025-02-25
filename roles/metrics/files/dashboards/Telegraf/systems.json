@@ -26,7 +26,7 @@
   "fiscalYearStartMonth": 0,
   "gnetId": 15650,
   "graphTooltip": 1,
-  "id": 23,
+  "id": 24,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -1259,7 +1259,7 @@
               }
             ]
           },
-          "unit": "percent"
+          "unit": "percentunit"
         },
         "overrides": []
       },
@@ -5564,9 +5564,9 @@
     "list": [
       {
         "current": {
-          "selected": true,
-          "text": "nrw-ctrl.epimorphics.net",
-          "value": "nrw-ctrl.epimorphics.net"
+          "selected": false,
+          "text": "hmlr-blue-data-156.epimorphics.net",
+          "value": "hmlr-blue-data-156.epimorphics.net"
         },
         "datasource": {
           "type": "influxdb",

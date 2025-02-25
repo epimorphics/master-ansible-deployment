@@ -25,6 +25,7 @@
   pip:
     name: passlib
     state: latest
+  when: not ansible_check_mode
 
 
 - name: "Proxy config"

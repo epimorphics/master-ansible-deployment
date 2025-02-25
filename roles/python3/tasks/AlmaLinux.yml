@@ -21,3 +21,4 @@
     - 'requests'
     - 'simplejson'
     state: latest
+  when: not ansible_check_mode
