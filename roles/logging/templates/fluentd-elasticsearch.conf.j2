@@ -189,6 +189,8 @@
     log_referrer ${record["log_referrer"] == '-' ? nil : record["log_referrer"]}
     log_size     ${record["log_size"]     == '-' ? nil : record["log_size"]}
     log_user     ${record["log_user"]     == '-' ? nil : record["log_user"]}
+    log_request_time ${(((record["log_duration"].to_f)/1000).ceil.to_f/1000)}
+    log_duration ${((record["log_duration"].to_f)/1000).ceil}
   </record>
 </filter>
 
@@ -378,6 +380,17 @@
   enable_ruby true
   <record>
     log_level ${if record.has_key?("log_level"); record ["log_level"].upcase; elsif record.has_key?("level"); record ["level"].upcase; else "INFO"; end}
+  </record>
+</filter>
+
+
+# Update timestamp
+<filter json.info.data-api>
+  @id data_api_duration
+  @type record_transformer
+  enable_ruby
+  <record>
+    log_request_time ${record.has_key?("log_duration") ? (record["log_duration"].to_f/1000) : nil}
   </record>
 </filter>
 
