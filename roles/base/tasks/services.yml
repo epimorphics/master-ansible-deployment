@@ -11,17 +11,6 @@
     enabled: yes
 
 
-- name: "kpatch service"
-  tags:
-    - kpatch
-    - services
-  service:
-    name:  "kpatch"
-    state: started
-    enabled: yes
-  when: ansible_distribution == "Amazon"
-
-
 - name: "NTP service ({{ ntp.service }})"
   tags:
     - services
@@ -35,6 +24,6 @@
   tags:
     - services
   service:
-    name:  "sshd"
+    name:  "{{ (ansible_distribution == 'Ubuntu') | ternary('ssh', 'sshd') }}"
     state: started
     enabled: yes

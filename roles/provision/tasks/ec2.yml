@@ -17,13 +17,13 @@
     termination_protection: "{{ item.termination_protection | default('no') }}"
     vpc_subnet_id:  "{{ subnet_ids[index % (subnet_ids | length)] }}"
     exact_count: "{{ item.count | default(1) }}"
-    network:
-      assign_public_ip: true
+    network_interfaces:
+    - assign_public_ip: true
     volumes:
       -  device_name: "{{ item.root.device | default('/dev/sda1') }}"
          ebs:
            delete_on_termination: true
-           volume_type: "{{ item.root.size | default('gp3') }}"
+           volume_type: "{{ item.root.type | default('gp3') }}"
            volume_size: "{{ item.root.size | default(8) }}"
     security_groups: "{{ item.security_groups | list }}"
     detailed_monitoring: true

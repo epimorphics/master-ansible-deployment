@@ -5,15 +5,6 @@
     state: restarted
 
 
-- name: "Restart kpatch"
-  tags:
-    - kpatch
-  service:
-    name:  "kpatch"
-    state: restarted
-  when: ansible_distribution == "Amazon"
-
-
 - name: "Restart NTP"
   service:
     name:  "{{ ntp.service }}"
@@ -34,7 +25,7 @@
 
 - name: "Restart sshd"
   service:
-    name:  "sshd"
+    name:  "{{ (ansible_distribution == 'Ubuntu') | ternary('ssh', 'sshd') }}"
     state: restarted
 
 

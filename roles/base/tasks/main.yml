@@ -11,7 +11,7 @@
     - cfg
     - hostname
   hostname:
-    name: "{{ hostname }}.{{ domainname }}"
+    name: "{{ hostname }}.{{ domain }}"
 
 
 - name: "NTP"

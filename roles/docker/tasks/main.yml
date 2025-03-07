@@ -3,26 +3,6 @@
   include_tasks: "{{ ansible_distribution }}.yml"
 
 
-- name: "Docker CE repository"
-  yum_repository:
-    name: docker
-    description: Docker CE
-    file: docker
-    baseurl: "https://download.docker.com/linux/centos/{{ ansible_distribution_major_version }}/$basearch/stable"
-    gpgkey: https://download.docker.com/linux/centos/gpg
-    gpgcheck: yes
-  when: docker.package.name == "docker-ce"
-
-
-- name: "Install {{ docker.package.name }}"
-  tags:
-    - pkg
-  package:
-    name: "{{ docker.package.name }}"
-    state: latest
-  notify: "Restart docker"
-
-
 - name: "Docker systemd override directory"
   file:
     dest: /etc/systemd/system/docker.service.d
@@ -38,17 +18,6 @@
     owner: root
     group: root
   notify: "Restart docker"
-
-
-- name: "Install python-docker"
-  tags:
-    - pkg
-    - pip
-  pip:
-    executable: pip3
-    name: docker
-    state: latest
-  when: not ansible_check_mode
 
 
 - name: "AWS ECR docker config directory ( {{ ansible_user_dir }}/.docker )"

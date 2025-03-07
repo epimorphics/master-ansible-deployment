@@ -1,0 +1,37 @@
+---
+- name: "Install docker"
+  tags:
+    - pkg
+  package:
+    name: "docker.io"
+    state: latest
+  notify: "Restart docker"
+
+
+- name: "Install python3-docker"
+  tags:
+    - pkg
+  package:
+    name: "python3-docker"
+    state: latest
+
+
+- name: "AWS ECR Helper Archive"
+  tags:
+    - pkg
+  unarchive:
+    src: "https://epi-repository.s3.eu-west-1.amazonaws.com/release/{{ ansible_distribution }}/{{ ansible_distribution_major_version }}/amazon-ecr-credential-helper/docker-credential-ecr-login-0.9.1.tgz"
+    dest: /bin
+    remote_src: yes 
+  loop_control: 
+    label: "AWS ECR Helper"
+
+
+- name: "AWS ECR Helper permissions"
+  tags:
+    - pkg
+  file:
+    path: /bin/docker-credential-ecr-login
+    owner: root 
+    group: root 
+    mode: 0755
