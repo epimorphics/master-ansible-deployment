@@ -49,7 +49,6 @@
   docker_container:
     name: "{{ es_exporter_container.name }}"
     image: "{{ es_exporter.image }}:{{ es_exporter.version }}"
-    purge_networks: yes
     command:
       - "--es.uri=http://{{ elasticsearch_container.name }}:{{ elasticsearch_container.port }}"
     env:

@@ -5,7 +5,7 @@
 
 - name: "GeoLite2"
   vars:
-  - location: "/usr/local/share"
+    location: "/usr/local/share"
   include_tasks: "geolite2.yml"
 
 
