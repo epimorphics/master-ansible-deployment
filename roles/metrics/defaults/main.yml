@@ -6,20 +6,20 @@ services:
 
 grafana:
   image: "grafana/grafana-enterprise"
-# version: "9.2.5"
-  version: "11.1.5"
+# version: "11.1.5"
+  version: "11.5.2"
   directory: "{{ docker.directory }}/{{ grafana_container.name }}"
 
 influxdb:
   image: "influxdb"
-  version: "2.7.5"
+  version: "2.7.11"
   directory: "{{ docker.directory }}/{{ influxdb_container.name }}"
   config: "/etc/influxdb2"
   data: "/var/lib/influxdb2"
 
 prometheus:
   image: "docker.io/prom/prometheus"
-  version: "v2.54.1"
+  version: "v2.55.1"
   directory: "{{ docker.directory }}/{{ prometheus_container.name }}"
 
 prometheus_rules:

@@ -5,7 +5,7 @@ services:
 
 alertmanager:
   image: "prom/alertmanager"
-  version: "v0.27.0"
+  version: "v0.28.1"
   directory: "{{ docker.directory }}/{{ alertmanager_container.name }}"
   config: "alertmanager.yml"
   template: "slack.tmpl"

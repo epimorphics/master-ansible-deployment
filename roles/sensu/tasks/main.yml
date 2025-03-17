@@ -91,17 +91,34 @@
   notify: "Restart logrotate"
 
 
-- name: "Sensu api operational"
+- name: "Sensu api status"
   tags:
     - container
   uri:
     url: "http://localhost:{{ sensu_container.port.api }}/health"
+    return_content: true
   register: health
   retries: 10
   delay: 5
   until: health.status == 200
   failed_when:
-    - health.json is undefined
+    - health.content is undefined
+  when: not ansible_check_mode
+
+
+- name: "Sensu health"
+  vars:
+    api: "{{ health.content | from_json }}"
+  debug:
+    msg: "Status: {{ (item.Healthy) | ternary('Healthy','Unhealthy') }}. Error: {{ (item.Err != '') | ternary(item.Err, 'None') }}"
+  loop: "{{ api.ClusterHealth }}"
+  loop_control:
+    label: "{{ item.Name }}"
+  failed_when:
+    - not ansible_check_mode
+    - api is undefined
+    - api.ClusterHealth is undefined
+    - not item.Healthy
   when: not ansible_check_mode
 
 
