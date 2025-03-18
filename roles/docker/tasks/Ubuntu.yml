@@ -20,7 +20,7 @@
   tags:
     - pkg
   unarchive:
-    src: "{{ s3_release }}/{{ ansible_distribution }}/{{ ansible_distribution_major_version }}/amazon-ecr-credential-helper/docker-credential-ecr-login-0.9.1.tgz"
+    src: "{{ s3_release }}/{{ ansible_distribution_major_version }}/amazon-ecr-credential-helper/docker-credential-ecr-login-0.9.1.tgz"
     dest: /bin
     remote_src: yes 
   loop_control: 
