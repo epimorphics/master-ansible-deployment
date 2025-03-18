@@ -26,17 +26,6 @@
   notify: "Restart docker"
 
 
-- name: "Install python-docker"
-  tags:
-    - pkg
-    - pip
-  pip:
-    executable: pip3
-    name: docker
-    state: latest
-  when: not ansible_check_mode
-
-
 - name: "AWS ECR Helper Archive"
   tags:
     - pkg
