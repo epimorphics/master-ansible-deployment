@@ -15,14 +15,13 @@
     baseurl: "https://download.docker.com/linux/centos/{{ ansible_distribution_major_version }}/$basearch/stable"
     gpgkey: https://download.docker.com/linux/centos/gpg
     gpgcheck: yes
-  when: docker.package.name == "docker-ce"
 
 
-- name: "Install docker"
+- name: "Install {{ docker_package[ansible_distribution] }}"
   tags:
     - pkg
   package:
-    name: "docker-ce"
+    name: "{{ docker_package[ansible_distribution] }}"
     state: latest
   notify: "Restart docker"
 
@@ -42,7 +41,7 @@
   tags:
     - pkg
   unarchive:
-    src: "https://epi-repository.s3.eu-west-1.amazonaws.com/release/RHEL/{{ ansible_distribution_major_version }}/amazon-ecr-credential-helper/docker-credential-ecr-login.zip"
+    src: "{{ s3_release }}/RHEL/{{ ansible_distribution_major_version }}/amazon-ecr-credential-helper/docker-credential-ecr-login.zip"
     dest: /bin
     remote_src: yes 
   loop_control: 
@@ -57,3 +56,14 @@
     owner: root 
     group: root 
     mode: 0755
+
+
+- name: "Install python-docker"
+  tags:
+    - pkg
+    - pip
+  pip:
+    executable: pip3
+    name: docker
+    state: latest
+  when: not ansible_check_mode

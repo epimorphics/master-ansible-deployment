@@ -25,3 +25,23 @@
   yum:
     name: amazon-ecr-credential-helper
     state: latest
+
+
+- name: "Install {{ docker_package[ansible_distribution] }}"
+  tags:
+    - pkg
+  package:
+    name: "{{ docker_package[ansible_distribution] }}"
+    state: latest
+  notify: "Restart docker"
+
+
+- name: "Install python-docker"
+  tags:
+    - pkg
+    - pip
+  pip:
+    executable: pip3
+    name: docker
+    state: latest
+  when: not ansible_check_mode
