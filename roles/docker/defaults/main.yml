@@ -1,0 +1,6 @@
+s3_release: "https://epi-repository.s3.eu-west-1.amazonaws.com/release"
+
+docker_package:
+  AlmaLinux: "docker-ce"
+  Amazon: "docker"
+  Ubuntu: "docker.io"
