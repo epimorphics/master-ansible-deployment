@@ -1,4 +1,4 @@
-s3_release: "https://epi-repository.s3.eu-west-1.amazonaws.com/release"
+s3_release: "https://epi-repository.s3.eu-west-1.amazonaws.com/release/{{ ansible_distribution }}"
 
 docker_package:
   AlmaLinux: "docker-ce"

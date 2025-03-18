@@ -1,20 +1,20 @@
 ---
+- name: "Docker CE repository"
+  yum_repository:
+    name: docker
+    description: Docker CE
+    file: docker
+    baseurl: "https://download.docker.com/linux/rhel/$releasever/$basearch/stable"
+    gpgkey: https://download.docker.com/linux/rhel/gpg
+    gpgcheck: yes
+
+
 - name: "Iptable-nft"
   tags:
     - pkg
   package:
     name: iptables-nft
     state: latest
-
-
-- name: "Docker CE repository"
-  yum_repository:
-    name: docker
-    description: Docker CE
-    file: docker
-    baseurl: "https://download.docker.com/linux/centos/{{ ansible_distribution_major_version }}/$basearch/stable"
-    gpgkey: https://download.docker.com/linux/centos/gpg
-    gpgcheck: yes
 
 
 - name: "Install {{ docker_package[ansible_distribution] }}"
@@ -30,7 +30,7 @@
   tags:
     - pkg
   unarchive:
-    src: "{{ s3_release }}/RHEL/{{ ansible_distribution_major_version }}/amazon-ecr-credential-helper/docker-credential-ecr-login.zip"
+    src: "{{ s3_release }}/{{ ansible_distribution_major_version }}/amazon-ecr-credential-helper/docker-credential-ecr-login.zip"
     dest: /bin
     remote_src: yes 
   loop_control: 
