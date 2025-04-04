@@ -1,12 +1,27 @@
 ---
-- name: "Telegraf Proxy config"
+- name: "Telegraf Apache config"
   tags:
     - cfg
     - telegraf
   template:
-    dest: /etc/telegraf/telegraf.d/apache.conf
-    src: telegraf.conf.j2
+    dest: /etc/telegraf/telegraf.d/proxy.conf
+    src: apache/telegraf.conf.j2
     owner: root
     group: root
     mode: 0644
   notify: "Restart telegraf"
+  when: not nginx_enabled
+
+
+- name: "Telegraf Nginx config"
+  tags:
+    - cfg
+    - telegraf
+  template:
+    dest: /etc/telegraf/telegraf.d/proxy.conf
+    src: nginx/telegraf.conf.j2
+    owner: root
+    group: root
+    mode: 0644
+  notify: "Restart telegraf"
+  when: nginx_enabled

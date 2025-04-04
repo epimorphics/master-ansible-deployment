@@ -1,0 +1,40 @@
+server {
+  listen       80;
+  server_name  {{ hostname }}.{{ domain }} {{ load_balancer.pres }} {{ target_domain }};
+
+{% if nginx_secure is defined %}
+{% if nginx_secure[env] is defined %}
+  auth_basic "Protected";
+  auth_basic_user_file secure/htpasswd;
+{% endif %}
+{% endif %}
+
+  proxy_read_timeout 120s;
+  proxy_set_header Host $http_host;
+  proxy_set_header X-request-uri $request_uri;
+  proxy_set_header X-Request-Id $request_id;
+  proxy_set_header X-sanitized-uri $sanitized_uri;
+  proxy_set_header X-query     $query_string;
+  proxy_set_header X-sanitized $sanitized_query;
+
+  if ($blocked_origin) {
+    return 403;
+  }
+
+  if ($blocked_agent) {
+    return 403;
+  }
+
+  if ($blocked_location) {
+    return 403;
+  }
+
+  location /echo {
+    if ($query_string ~ "^(.*)timeout=(.*)$") { rewrite ^(.*)$ $uri?; }
+    proxy_pass http://echo:8080;
+  }
+
+  access_log  /var/log/nginx/access.log info_json;
+
+  include /etc/nginx/conf.d/location.d/*.conf;
+}

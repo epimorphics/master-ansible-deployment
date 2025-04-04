@@ -1,9 +1,9 @@
-- name: "QoS config"
+- name: "Apache QoS config"
   tags:
     - cfg
   template:
     dest: "{{ proxy.directory }}/vhosts/{{ item.dest }}"
-    src: "{{ item.src }}"
+    src: "apache/{{ item.src }}"
     owner: root
     group: root
     mode: "0644"
@@ -13,4 +13,4 @@
   loop_control:
     label: '{{ item.dest }}'
   notify: "Reload proxy container"
-
+  when: not nginx_enabled

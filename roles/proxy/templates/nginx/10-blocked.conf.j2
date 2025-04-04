@@ -1,0 +1,33 @@
+{% if nginx_qos is defined %}
+{% if nginx_qos.blocked is defined %}
+{% if nginx_qos.blocked.agents is defined %}
+# Set $blocked_agent true if on the proscribed list
+#
+map $agent $blocked_agent {
+{% for agent in nginx_qos.blocked.agents | sort %}
+  "{{ agent }}" "Blocked Agent";
+{% endfor %}
+}
+{% endif %}
+
+{% if nginx_qos.blocked.locations is defined %}
+# Set $blocked_location true if on the proscribed list
+#
+map $location $blocked_location {
+{% for location in nginx_qos.blocked.locations | sort %}
+  "{{ location }}" "Blocked Location";
+{% endfor %}
+}
+{% endif %}
+
+{% if nginx_qos.blocked.origins is defined %}
+# Set $blocked_origin true if on the proscribed list
+#
+map $origin $blocked_origin {
+{% for origin in nginx_qos.blocked.origins | sort %}
+  {{ origin }} "Blocked Origin";
+{% endfor %}
+}
+{% endif %}
+{% endif %}
+{% endif %}

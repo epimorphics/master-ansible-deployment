@@ -1,0 +1,73 @@
+proxy_set_header X-user-agent $http_user_agent;
+proxy_set_header X-request-uri $request_uri;
+
+proxy_set_header X-qos-agent  $agent;
+proxy_set_header X-qos-origin $origin;
+proxy_set_header X-qos-path   $path;
+proxy_set_header X-qos-location $location;
+proxy_set_header X-qos-agent-path $agent_path;
+proxy_set_header X-qos-origin-path $origin_path;
+proxy_set_header X-qos-location-path $location_path;
+
+proxy_set_header X-server_name $http_host;
+
+proxy_set_header X-Real-IP $http_x_forwarded_for;
+
+proxy_set_header X-Country-Code $geoip2_country_code;
+proxy_set_header X-Remote-IP $remote_addr;
+proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+proxy_set_header X-Request-Id $request_id;
+proxy_set_header X-NginX-Proxy true;
+proxy_set_header Host $http_host;
+
+server {
+  listen 443 ssl;
+  server_name  epi-test;
+
+  root   /etc/nginx/html;
+
+  ssl_certificate     ssl/server.crt;
+  ssl_certificate_key ssl/server.key;
+
+  real_ip_header proxy_protocol;
+
+  proxy_ssl_session_reuse off;
+  proxy_cache_bypass $http_upgrade;
+  proxy_redirect off;
+
+  if ($blocked_origin) {
+    return 403;
+  }
+
+  if ($blocked_agent) {
+    return 403;
+  }
+
+  if ($blocked_location) {
+    return 403;
+  }
+
+  access_log  /var/log/nginx/access.log info_json;
+
+# location /data {
+#   proxy_pass https://echo:8443/;
+# }
+
+# location /app/ {
+#   proxy_pass https://echo:8443/;
+# }
+
+# location /landregistry {
+#   proxy_pass https://echo:8443;
+# }
+
+  location /hello-world {
+    proxy_pass https://echo:8443;
+  }
+
+  location /echo {
+    proxy_pass https://echo:8443/;
+  }
+
+}
+

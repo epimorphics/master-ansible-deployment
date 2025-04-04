@@ -1,0 +1,135 @@
+---
+- name: "Nginx volume"
+  tags:
+    - cfg
+    - nginx
+  file:
+    state: "directory"
+    path: "{{ item.path }}"
+    owner: "{{ item.owner | default('root') }}"
+    group: "{{ item.owner | default('root') }}"
+    mode: "0775"
+  loop_control:
+    label: "{{ item.path }}"
+  loop:
+    - { path: "{{ nginx.directory }}" }
+    - { path: "{{ nginx.directory }}/cache", owner: 101 }
+    - { path: "{{ nginx.directory }}/{{ nginx_container.base_cfg_dir }}" }
+    - { path: "{{ nginx.directory }}/{{ nginx_container.base_cfg_dir }}/location.d" }
+    - { path: "{{ nginx.directory }}/html" }
+    - { path: "{{ nginx.directory }}/geoip2" }
+    - { path: "{{ nginx.directory }}/secure" }
+    - { path: "{{ nginx.directory }}/ssl" }
+
+
+- name: "{{ domain }} ssl"
+  vars:
+    bundle: "{{ ssl.cert }}\n{{ ssl.ca }}"
+  tags:
+    - cfg
+    - ssl
+  copy:
+    dest: '{{ item.path }}'
+    content: '{{ item.content }}'
+    owner: root
+    group: root
+    mode: "0644"
+  loop:
+    - { path: "{{ nginx.directory }}/ssl/server.crt", content: '{{ bundle }}' }
+    - { path: "{{ nginx.directory }}/ssl/server.key", content: '{{ ssl.key }}' }
+  loop_control:
+    label: '{{ item.path }}'
+  notify: "Reload Nginx container"
+
+
+- name: GeoLite2
+  vars:
+    location: "{{ nginx.directory }}/geoip2"
+  include_role:
+    name: epimorphics.deployment.goaccess
+    tasks_from: "geolite2.yml"
+
+
+- name: "Secure access"
+  tags:
+    - cfg
+    - nginx
+  htpasswd:
+    path: "{{ nginx.directory }}/secure/htpasswd"
+    name: "{{ nginx_secure[env].username }}"
+    password: "{{ nginx_secure[env].password }}"
+    owner: root
+    group: root
+    mode: 0644
+  when:
+  - nginx_secure is defined
+  - nginx_secure[env] is defined
+
+
+# - name: "Nginx static content"
+#   tags:
+#     - cfg
+#     - nginx
+#   copy:
+#     src: "{{ item }}"
+#     dest: "{{ nginx.directory }}/html/{{ item }}"
+#     owner: "root"
+#     group: "root"
+#     mode: "0644"
+#   loop_control:
+#     label: "{{ item }}"
+#   loop:
+#     - index.html
+
+
+- name: "Nginx config"
+  tags:
+    - cfg
+    - nginx
+  template:
+    src: "nginx/{{ item }}.j2"
+    dest: "{{ nginx.directory }}/{{ nginx_container.base_cfg_dir }}/{{ item }}"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  loop_control:
+    label: "{{ item }}"
+  loop: "{{ (nginx_configs + nginx_custom_configs) | sort }}"
+  notify: "Reload Nginx container"
+
+
+- name: "Nginx container"
+  tags:
+    - container
+    - nginx
+  docker_container:
+    name: "{{ nginx_container.name }}"
+    image: "{{ nginx.image }}"
+    log_driver: "{{ docker.logging.driver }}"
+    log_options: "{{ docker.logging.options }}"
+    network_mode: "{{ docker.network.mode }}"
+    networks:
+      - name: "{{ docker.network.name }}"
+    restart_policy: "unless-stopped"
+    networks_cli_compatible: yes
+    env:
+      NGINX_ENTRYPOINT_QUIET_LOGS: "1"
+    ports:
+      - "{{ nginx_container.port.http }}:{{ nginx.port.http }}"
+      - "{{ nginx_container.port.https }}:{{ nginx.port.https }}"
+    volumes:
+      - "{{ nginx.directory }}/cache:{{ nginx_container.cache }}"
+      - "{{ nginx.directory }}/{{ nginx_container.base_cfg_dir }}:/etc/nginx/{{ nginx_container.base_cfg_dir }}:ro"
+      - "{{ nginx.directory }}/geoip2:/etc/nginx/geoip2:ro"
+      - "{{ nginx.directory }}/html:/etc/nginx/html:ro"
+      - "{{ nginx.directory }}/secure:/etc/nginx/secure:ro"
+      - "{{ nginx.directory }}/ssl:/etc/nginx/ssl:ro"
+  register: nginx_docker
+
+
+- name: "Telegraf"
+  include_tasks: "telegraf.yml"
+
+
+- name: "Services"
+  include_tasks: "services.yml"

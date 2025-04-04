@@ -1,0 +1,195 @@
+limit_req_status 429;
+limit_conn_status 429;
+
+{% if nginx_qos is defined %}
+# 01 ---------------------
+# IP Path
+map $path $ip_path{
+{% for request in nginx_qos.requests %}
+  "{{ request.path }}"  "$http_x_forwarded_for:{{ request.name }}";
+{% endfor %}
+}
+
+# 02 ---------------------
+# Group the Request URI into $path class
+{% if nginx_qos.requests is defined %}
+map $request_uri $path {
+{% for request in nginx_qos.requests %}
+  "{{ request.path }}"  "{{ request.name }}";
+{% endfor %}
+}
+{% endif %}
+
+{% if nginx_qos.agents is defined %}
+# 03 ---------------------
+# Group the user agent by regexp into $agent class
+map $http_user_agent $agent {
+{% for agent in nginx_qos.agents %}
+{% for regexp in agent.regexps %}
+  "{{ regexp }}"    "{{ agent.name }}";
+{% endfor %}
+{% endfor %}
+}
+{% endif %}
+
+{% if nginx_qos.origins is defined %}
+# 04 ---------------------
+# Group the Origin ip into $origin class
+geo $http_x_forwarded_for $origin {
+{% for origin in nginx_qos.origins %}
+{% for network in origin.networks %}
+  {{ network }}   "{{ origin.name }}";
+{% endfor %}
+{% endfor %}
+}
+{% endif %}
+
+# 05 ---------------------
+# Map actually country code to rate limited location
+{% if nginx_qos.locations is defined %}
+map "$geoip2_country_code" $location {
+{% for location in nginx_qos.locations %}
+{% for code in location.codes %}
+  {{ code }} {{ location.name }};
+{% endfor %}
+{% endfor %}
+}
+{% endif %}
+
+# 06 ---------------------
+# Assign Origin/Path
+map "$origin:$path" $origin_path {
+{% for request in nginx_qos.requests %}
+{% if request.origins is defined %}
+{% for origin in request.origins %}
+  {{ origin.name }}:{{ request.name }} "{{ origin.name }}:{{ request.name }}";
+{% endfor %}
+{% endif %}
+{% endfor %}
+}
+
+# 07 ---------------------
+# Connection/Rate limit by Origin/Path
+{% for request in nginx_qos.requests %}
+{% if request.origins is defined %}
+{% for origin in request.origins %}
+{% if origin.conn is defined %}
+limit_conn Conn-{{ origin.name }}-{{ request.name }} {{ origin.conn }};
+limit_conn_zone $origin_path zone=Conn-{{ origin.name }}-{{ request.name }}:10m;
+{% endif %}
+{% if origin.rate is defined %}
+limit_req_zone $origin_path zone=Rate-{{ origin.name }}_{{ request.name }}:10m rate={{ origin.rate }}r/s;
+{% endif %}
+{% endfor %}
+{% endif %}
+{% endfor %}
+
+# 08 ---------------------
+# Assign Agent/Path
+map "$agent:$path" $agent_path {
+{% for request in nginx_qos.requests %}
+{% if request.agents is defined %}
+{% for agent in request.agents %}
+  {{ agent.name }}:{{ request.name }} "{{ agent.name }}:{{ request.name }}";
+{% endfor %}
+{% endif %}
+{% endfor %}
+}
+
+# 09 ---------------------
+# Rate limit by Agent/Path
+{% for request in nginx_qos.requests %}
+{% if request.agents is defined %}
+{% for agent in request.agents %}
+limit_req_zone $agent_path zone={{ agent.name }}_{{ request.name }}:10m rate={{ agent.rate }}r/s;
+{% endfor %}
+{% endif %}
+{% endfor %}
+
+# 10 ---------------------
+# Assign Location/Path
+map "$location:$path" $location_path {
+{% for request in nginx_qos.requests %}
+{% if request.locations is defined %}
+{% for location in request.locations %}
+  {{ location.name }}:{{ request.name }} "{{ location.name }}:{{ request.name }}";
+{% endfor %}
+{% endif %}
+{% endfor %}
+}
+
+# 11 ---------------------
+# Rate limit by Location/Path
+{% for request in nginx_qos.requests %}
+{% if request.locations is defined %}
+{% for location in request.locations %}
+limit_req_zone $location_path zone={{ location.name }}_{{ request.name }}:10m rate={{ location.rate }}r/s;
+{% endfor %}
+{% endif %}
+{% endfor %}
+
+# 12 ---------------------
+# Connection/Rate limit each path per host
+{% for request in nginx_qos.requests %}
+{% if request.connections is defined %}
+{% if request.connections.ip is defined %}
+limit_conn_zone $ip_path  zone=IP-{{ request.name }}:10m;
+limit_conn IP-{{ request.name }} {{ request.connections.ip }};
+{% endif %}
+{% endif %}
+{% if request.rate is defined %}
+limit_req_zone $path zone=Rate-{{ request.name }}:10m rate={{ request.rate }}r/s;
+{% endif %}
+{% endfor %}
+
+# 13 ---------------------
+# Total Connection limit each path
+{% for request in nginx_qos.requests %}
+{% if request.connections.total is defined %}
+limit_conn_zone $path zone=Total-{{ request.name }}:10m;
+limit_conn Total-{{ request.name }} {{ request.connections.total }};
+{% endif %}
+{% endfor %}
+{% endif %}
+
+{% if nginx_qos.origins is defined %}
+# 14 ---------------------
+# Connection/Rate limit each $origin
+{% if nginx_qos.limit.connections.origin is defined %}
+limit_conn ConnPerOrigin {{ nginx_qos.limit.connections.origin }};
+limit_conn_zone $origin               zone=ConnPerOrigin:10m;
+{% endif %}
+{% if nginx_qos.limit.rate.origin is defined %}
+limit_req_zone $origin zone=RatePerOrigin:10m rate={{ nginx_qos.limit.rate.origin }}r/s;
+{% endif %}
+{% endif %}
+
+{% if nginx_qos.locations is defined %}
+# 15 ---------------------
+# Rate limit based on Location
+{% if nginx_qos.limit.rate.location is defined %}
+limit_req_zone $location zone=RatePerLocation:10m rate={{ nginx_qos.limit.rate.location }}r/s;
+{% endif %}
+{% endif %}
+
+{% if nginx_qos.limit.connections.ip is defined %}
+# 16 ---------------------
+# Connection limit per host
+limit_conn ConnPerAddr {{ nginx_qos.limit.connections.ip }};
+limit_conn_zone $http_x_forwarded_for zone=ConnPerAddr:10m;
+{% endif %}
+
+{% if nginx_qos.limit.rate.ip is defined %}
+# 17 ---------------------
+# Rate limit per host
+limit_req_zone $http_x_forwarded_for zone=RatePerIP:10m rate={{ nginx_qos.limit.rate.ip }}r/s;
+{% endif %}
+
+{% if nginx_qos.limit.connections.total is defined %}
+# 18 ---------------------
+# Total connections limit
+limit_conn ConnPerServers {{ nginx_qos.limit.connections.total }};
+limit_conn_zone $server_name          zone=ConnPerServers:10m;
+
+{% endif %}
+

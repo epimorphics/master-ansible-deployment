@@ -1,11 +1,22 @@
 - meta: flush_handlers
 
-- name: "Proxy container running"
+- name: "Apache container running"
   tags:
     - container
   docker_container:
     name: "{{ proxy_container.name }}"
     state: started
+  when: not nginx_enabled
+
+
+- name: "Nginx container running"
+  tags:
+    - container
+  docker_container:
+    name: "{{ nginx_container.name }}"
+    state: started
+  when: nginx_enabled
+
 
 - name: "Telegraf service"
   tags:
@@ -14,4 +25,4 @@
     name:  "telegraf"
     state: started
     enabled: yes
-  
+  when: telegraf is defined

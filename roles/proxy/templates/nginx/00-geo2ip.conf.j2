@@ -1,0 +1,5 @@
+# Take the IP addess in $http_x_forwarded_for and return the ISO Contry Code
+#
+geoip2 geoip2/GeoLite2/GeoLite2-City.mmdb {
+  $geoip2_country_code source=$http_x_forwarded_for country iso_code;
+}

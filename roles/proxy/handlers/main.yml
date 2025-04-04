@@ -5,7 +5,12 @@
   service:
     name:  "telegraf"
     state: restarted
+  when: telegraf is defined
 
 - name: "Reload proxy container"
   command:
     "docker exec {{ proxy_container.name }} bash -c 'cp -Lr /vhosts/. /opt/bitnami/apache/conf/vhosts && /opt/bitnami/scripts/apache/reload.sh'"
+
+- name: "Reload Nginx container"
+  command:
+    "docker exec {{ nginx_container.name }} nginx -s reload"

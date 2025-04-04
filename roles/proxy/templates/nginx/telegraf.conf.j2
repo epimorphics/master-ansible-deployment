@@ -1,0 +1,5 @@
+[[inputs.nginx]]
+   urls = ["http://localhost:{{ nginx_container.port.http }}/status"]
+   response_timeout = "5s"
+   [inputs.nginx.tags]
+     container = "{{ nginx_container.name }}"

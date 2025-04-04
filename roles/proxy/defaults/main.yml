@@ -1,4 +1,6 @@
-tag: "1.5.1"
+tag: "{{ (nginx_enabled) | ternary(nginx_tag, apache_tag) }}"
+
+apache_tag: "1.5.1"
 
 proxy:
   directory: "/var/lib/docker/proxy"
@@ -16,3 +18,24 @@ proxy_cache:
   directory: "/var/cache/apache2/mod_cache_disk"
 
 vhosts_cfg_dir: vhosts/conf.d
+
+
+nginx_tag: 1.27
+
+nginx:
+  directory: "{{ docker.directory }}/{{ nginx_container.name }}"
+  image: "{{ registry.common }}/nginx:{{ tag }}"
+  port:
+    http: 80
+    https: 443
+
+nginx_custom_configs: []
+nginx_configs:
+  - 00-geo2ip.conf
+  - 05-log-format.conf
+  - 10-blocked.conf
+  - 20-qos.conf
+  - 40-cache.conf
+  - 80-localhost.conf
+  - 81-http.conf
+  - 82-https.conf
