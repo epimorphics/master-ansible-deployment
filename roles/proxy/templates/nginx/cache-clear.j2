@@ -1,0 +1,9 @@
+#! /bin/bash
+
+if [ -n "{{ nginx.cache.dir }}" ]
+then
+ if [ -d "{{ nginx.cache.dir }}" ]
+ then
+   rm -rf {{ nginx.cache.dir }}/*
+ fi
+fi

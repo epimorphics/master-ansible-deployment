@@ -7,9 +7,17 @@ server {
     return 200;
   }
 
+  error_page 429 /error/429.txt;
+
+  location /error/ {
+    internal;
+    root {{ nginx.config }}/;
+  }
+
   access_log  /var/log/nginx/access.log info_json;
   # Forbid anything that gets this far.
   location / {
+    set $blocked_request "Host:$http_host";
     return 403;
   }
 }
@@ -27,9 +35,6 @@ server {
   proxy_set_header X-qos-origin $origin;
   proxy_set_header X-qos-path   $path;
   proxy_set_header X-qos-location $location;
-  proxy_set_header X-qos-agent-path $agent_path;
-  proxy_set_header X-qos-origin-path $origin_path;
-  proxy_set_header X-qos-location-path $location_path;
 
   proxy_set_header X-server-name $http_host;
 
@@ -52,9 +57,9 @@ server {
 
 # Useful debug.
 # See also 81-https for headers/variables
-  location /echo {
-    proxy_cache default;
-    add_header X-Cache-Status $upstream_cache_status;
-    proxy_pass http://echo:8080/$sanitized_query;
-  }
+# location /echo {
+#   proxy_cache default;
+#   add_header X-Cache-Status $upstream_cache_status;
+#   proxy_pass http://echo:8080;
+# }
 }

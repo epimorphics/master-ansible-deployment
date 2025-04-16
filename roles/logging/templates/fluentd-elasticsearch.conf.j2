@@ -96,6 +96,15 @@
 
 {{ fluentd.custom }}
 
+# Add level
+<filter amazon-ssm-agent.syslog.** dnf.syslog.** dhclient.syslog.** logger.syslog.** NetworkManager.syslog.** nginx.syslog.daemon.info postfix*.syslog.** rsyslogd.syslog.** sshd.syslog.** sudo.syslog.** systemd*.syslog.**>
+  @id syslog_level
+  @type record_transformer
+  <record>
+    log_level ${tag_parts[3]}
+  </record>
+</filter>
+
 # Transform JSON TS tag
 <match alertmanager.syslog.daemon.* dms.syslog.daemon.* fuseki.syslog.daemon.* prometheus.syslog.daemon.* sensu-am.syslog.daemon.*>
   @id rewrite_json_ts_tag
@@ -109,7 +118,7 @@
 </match>
 
 # Transform JSON tag
-<match elasticsearch.syslog.daemon.info grafana.syslog.daemon.* kibana.syslog.daemon.* sensu.syslog.daemon.* sensu-agent.syslog.daemon.*>
+<match elasticsearch.syslog.daemon.info grafana.syslog.daemon.* kibana.syslog.daemon.* nginx.syslog.daemon.info sensu.syslog.daemon.* sensu-agent.syslog.daemon.*>
   @id rewrite_json_tag
   @type rewrite_tag_filter
   @log_level warn
@@ -120,12 +129,21 @@
   </rule>
 </match>
 
-<filter amazon-ssm-agent.syslog.** dnf.syslog.** dhclient.syslog.** logger.syslog.** NetworkManager.syslog.** postfix*.syslog.** rsyslogd.syslog.** sshd.syslog.** sudo.syslog.** systemd*.syslog.**>
-  @id syslog_level
-  @type record_transformer
-  <record>
-    log_level ${tag_parts[3]}
-  </record>
+# Nginx err parser
+<filter nginx.syslog.daemon.err>
+  @id nginx_err
+  @type parser
+  @log_level warn
+  key_name message
+  remove_key_name_field true
+  inject_key_prefix log_
+  reserve_data true
+  emit_invalid_record_to_error false
+  <parse>
+    @type regexp
+    expression /(?<time>[0-9: /]*)\[(?<level>[^\]]*)\] (?<pid>[0-9]+)#(?<tid>[0-9]+): (?<message>.*)$/
+    time_format %Y/%m/%d %H:%M:%S
+  </parse>
 </filter>
 
 # Transform Proxy tag
@@ -321,15 +339,6 @@
   </parse>
 </filter>
 
-## # Keep raw
-## <filter json.**>
-##   @id raw_json
-##   @type record_transformer
-##   <record>
-##     raw ${record["message"]}
-##   </record>
-## </filter>
-
 # JSON parser
 <filter json.**>
   @id json_level
@@ -337,7 +346,7 @@
   @log_level warn
 # @log_level debug
   <record>
-    level ${tag_parts[3]}
+    level ${tag_parts[1]}
   </record>
   @type parser
   key_name message
@@ -384,7 +393,7 @@
 </filter>
 
 
-# Update timestamp
+# Data API request time
 <filter json.info.data-api>
   @id data_api_duration
   @type record_transformer
@@ -394,6 +403,17 @@
   </record>
 </filter>
 
+
+# Nginx timestamp
+<filter json.info.nginx>
+  @id nginx_epoch
+  @type record_transformer
+  <record>
+    s3 'true'
+  </record>
+  renew_time_key log_epoch
+  remove_keys log_epoch
+</filter>
 
 # Update timestamp
 <filter json.ts.**>
@@ -419,13 +439,17 @@
   </rule>
 </match>
 
-# Keep raw
 <filter json.**>
   @id raw_json
   @type record_transformer
+{% if keep_raw_logs is defined %}
+{% if keep_raw_logs %}
+# Keep raw
   <record>
     raw ${record["message"]}
   </record>
+{% endif %}
+{% endif %}
   remove_keys message
 </filter>
 

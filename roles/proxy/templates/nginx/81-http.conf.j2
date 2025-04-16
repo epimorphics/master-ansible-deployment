@@ -9,30 +9,27 @@ server {
 {% endif %}
 {% endif %}
 
-  proxy_read_timeout 120s;
+  proxy_intercept_errors on;
+  error_page 502 503 504 /error/50x.html;
+
+  gzip on;
+  gzip_types text/plain text/xml text/css text/javascript application/javascript text/csv application/json;
+
+  keepalive_timeout 150s;
+  proxy_read_timeout 150s;
   proxy_set_header Host $http_host;
   proxy_set_header X-request-uri $request_uri;
   proxy_set_header X-Request-Id $request_id;
-  proxy_set_header X-sanitized-uri $sanitized_uri;
-  proxy_set_header X-query     $query_string;
-  proxy_set_header X-sanitized $sanitized_query;
 
-  if ($blocked_origin) {
-    return 403;
-  }
+  set $blocked_request "";
+  if ($blocked_request_agent)    { set $blocked_request $blocked_request_agent; }
+  if ($blocked_request_location) { set $blocked_request $blocked_request_location; }
+  if ($blocked_request_origin)   { set $blocked_request $blocked_request_origin; }
 
-  if ($blocked_agent) {
-    return 403;
-  }
+# if whitelisting is required uncomment time line
+# if ($whitelisted) { set $blocked_request $whitelisted; }
 
-  if ($blocked_location) {
-    return 403;
-  }
-
-  location /echo {
-    if ($query_string ~ "^(.*)timeout=(.*)$") { rewrite ^(.*)$ $uri?; }
-    proxy_pass http://echo:8080;
-  }
+  if ($blocked)    { return 403; }
 
   access_log  /var/log/nginx/access.log info_json;
 

@@ -13,10 +13,12 @@
     label: "{{ item.path }}"
   loop:
     - { path: "{{ nginx.directory }}" }
+    - { path: "{{ nginx.directory }}/bin" }
     - { path: "{{ nginx.directory }}/cache", owner: 101 }
     - { path: "{{ nginx.directory }}/{{ nginx_container.base_cfg_dir }}" }
     - { path: "{{ nginx.directory }}/{{ nginx_container.base_cfg_dir }}/location.d" }
     - { path: "{{ nginx.directory }}/html" }
+    - { path: "{{ nginx.directory }}/error" }
     - { path: "{{ nginx.directory }}/geoip2" }
     - { path: "{{ nginx.directory }}/secure" }
     - { path: "{{ nginx.directory }}/ssl" }
@@ -66,20 +68,23 @@
   - nginx_secure[env] is defined
 
 
-# - name: "Nginx static content"
-#   tags:
-#     - cfg
-#     - nginx
-#   copy:
-#     src: "{{ item }}"
-#     dest: "{{ nginx.directory }}/html/{{ item }}"
-#     owner: "root"
-#     group: "root"
-#     mode: "0644"
-#   loop_control:
-#     label: "{{ item }}"
-#   loop:
-#     - index.html
+- name: "Nginx static content"
+  tags:
+    - cfg
+    - nginx
+  copy:
+    src: "{{ item.src | default(omit) }}"
+    content: "{{ item.content | default(omit) }}"
+    dest: "{{ nginx.directory }}/{{ item.dest }}"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  loop_control:
+    label: "{{ item.dest }}"
+  loop:
+    - { content: "{{ nginx_qos.robots_txt }}", dest: "html/robots.txt" }
+    - { src: "qos-restriction.txt", dest: "error/429.html" }
+    - { src: "50x.html", dest: "error/50x.html" }
 
 
 - name: "Nginx config"
@@ -96,6 +101,18 @@
     label: "{{ item }}"
   loop: "{{ (nginx_configs + nginx_custom_configs) | sort }}"
   notify: "Reload Nginx container"
+
+
+- name: "Nginx clear cache script"
+  tags:
+    - scripts
+    - nginx
+  template:
+    src: "nginx/cache-clear.j2"
+    dest: "{{ nginx.directory }}/bin/cache-clear"
+    owner: "root"
+    group: "root"
+    mode: "0775"
 
 
 - name: "Nginx container"
@@ -118,12 +135,14 @@
       - "{{ nginx_container.port.http }}:{{ nginx.port.http }}"
       - "{{ nginx_container.port.https }}:{{ nginx.port.https }}"
     volumes:
-      - "{{ nginx.directory }}/cache:{{ nginx_container.cache }}"
-      - "{{ nginx.directory }}/{{ nginx_container.base_cfg_dir }}:/etc/nginx/{{ nginx_container.base_cfg_dir }}:ro"
-      - "{{ nginx.directory }}/geoip2:/etc/nginx/geoip2:ro"
-      - "{{ nginx.directory }}/html:/etc/nginx/html:ro"
-      - "{{ nginx.directory }}/secure:/etc/nginx/secure:ro"
-      - "{{ nginx.directory }}/ssl:/etc/nginx/ssl:ro"
+      - "{{ nginx.directory }}/bin:/usr/local/bin:ro"
+      - "{{ nginx.directory }}/cache:{{ nginx.cache.dir }}"
+      - "{{ nginx.directory }}/{{ nginx_container.base_cfg_dir }}:{{ nginx.config }}/{{ nginx_container.base_cfg_dir }}:ro"
+      - "{{ nginx.directory }}/geoip2:{{ nginx.config }}/geoip2:ro"
+      - "{{ nginx.directory }}/html:{{ nginx.config }}/html:ro"
+      - "{{ nginx.directory }}/error:{{ nginx.config }}/error:ro"
+      - "{{ nginx.directory }}/secure:{{ nginx.config }}/secure:ro"
+      - "{{ nginx.directory }}/ssl:{{ nginx.config }}/ssl:ro"
   register: nginx_docker
 
 

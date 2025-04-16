@@ -42,7 +42,7 @@
     - { src: "apache/localhost.conf.j2",  dest: "extra/localhost.conf" }
     - { src: "apache/log-format.conf.j2", dest: "extra/log-format.conf" }
     - { src: "apache/cache.conf.j2",      dest: "extra/cache.conf" }
-    - { src: "{{ proxy.config }}", dest: "vhost.conf" }
+    - { src: "apache/{{ proxy.config }}", dest: "vhost.conf" }
   loop_control:
     label: '{{ item.dest }}'
   notify: "Reload proxy container"

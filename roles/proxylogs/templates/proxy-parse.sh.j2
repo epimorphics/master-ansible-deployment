@@ -112,11 +112,11 @@ ConsolidateLogs() {
   do
     [ -d ${DIRECTORY}/${DAY}/${HOST} ] && rm -rf ${DIRECTORY}/${DAY}/${HOST}
     D=$S3/${HOST}/${DAY}/
-    for LOG in $($AWS s3 ls $D | awk -v D=$D '$4~/apache.info.proxy-/ {printf "%s%s\n",D,$4}')
+    for LOG in $($AWS s3 ls $D | awk -v D=$D '$4~/(json.info.nginx|apache.info.proxy)-/ {printf "%s%s\n",D,$4}')
     do
       mkdir -p ${DIRECTORY}/${DAY}/${HOST}
       log "Retrieving $LOG ..."
-      $AWS s3 cp $LOG - | gzip -dc | grep -wv "408" | /usr/local/bin/json2combined.py | grep -wv "\[-\]" >> ${DIRECTORY}/${DAY}/${HOST}/apache.info.proxy
+      $AWS s3 cp $LOG - | gzip -dc | grep -wv "408" | /usr/local/bin/json2combined.py | grep -wv "\[-\]" >> ${DIRECTORY}/${DAY}/${HOST}/proxy.info.vcombined
       rc=0
     done 
   done
@@ -165,14 +165,14 @@ AWS="/usr/local/bin/aws $PROFILE_OPT"
 
 if ConsolidateLogs
 then
-  log "Merging apache.info.proxy logs for $DAY ..."
+  log "Merging proxy.info.vcombined logs for $DAY ..."
   if [ -n "$GOACCESS" ]
   then
     mkdir -p $DBPATH
-    nice /usr/local/bin/mergelog ${DIRECTORY}/${DAY}/*/apache.info.proxy > ${DIRECTORY}/${DAY}/apache.info.proxy
-    $CAT ${DIRECTORY}/${DAY}/apache.info.proxy | nice $GOACCESS_CMD - -o $OUTPUT
+    nice /usr/local/bin/mergelog ${DIRECTORY}/${DAY}/*/proxy.info.vcombined > ${DIRECTORY}/${DAY}/proxy.info.vcombined
+    $CAT ${DIRECTORY}/${DAY}/proxy.info.vcombined | nice $GOACCESS_CMD - -o $OUTPUT
   else
-    /usr/local/bin/mergelog ${DIRECTORY}/${DAY}/*/apache.info.proxy >> $OUTPUT
+    /usr/local/bin/mergelog ${DIRECTORY}/${DAY}/*/proxy.info.vcombined >> $OUTPUT
   fi
   rm -rf ${DIRECTORY}/${DAY}
 fi

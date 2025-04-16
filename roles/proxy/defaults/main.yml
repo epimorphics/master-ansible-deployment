@@ -5,12 +5,14 @@ apache_tag: "1.5.1"
 proxy:
   directory: "/var/lib/docker/proxy"
   config: "{{ proxy_template }}"
+  error_page_dir:    error
   image:   "{{ registry.common }}/httpd-proxy-oauth/stable:{{ tag }}"
   internal: " /opt/bitnami/apache2/conf"
   port:
     http: 8080
     https: 8443
   secure: "{{ proxy_secure | default(omit) }}"
+  www_user: 1001
 
 proxy_cache:
   size: "1G"
@@ -25,6 +27,11 @@ nginx_tag: 1.27
 nginx:
   directory: "{{ docker.directory }}/{{ nginx_container.name }}"
   image: "{{ registry.common }}/nginx:{{ tag }}"
+  cache:
+    dir: "/var/cache/nginx"
+    key: "$scheme$proxy_host$uri$is_args$args$http_origin$http_accept"
+    options: "levels=1:2 keys_zone=default:10m max_size=10g inactive=60m use_temp_path=off"
+  config: "/etc/nginx"
   port:
     http: 80
     https: 443

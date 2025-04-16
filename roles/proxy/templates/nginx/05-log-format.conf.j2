@@ -9,12 +9,18 @@ log_format upstream_time '$remote_addr $http_host $remote_user [$time_local] '
                          ;
 
 log_format info_json '{"epoch":"$msec", '
-    '"remote_ip": "$remote_addr","host": "$http_host", "user": "$remote_user", "localtime": "$time_iso8601", '
-    '"method": "$request_method", "request_uri": "$request_uri", "protocol":"$server_protocol", "code": "$status", "size": "$body_bytes_sent", '
-    '"request_id": "$request_id", "referer": "$http_referer", "agent": "$http_user_agent", "client_ip": "$http_x_forwarded_for", '
+    '"remote_ip": "$remote_addr","host": "$http_host", "user": "$remote_user", "localtime": "$time_local", '
+    '"method": "$request_method", "request_uri": "$log_request_uri", "protocol":"$server_protocol", "status": "$status", "size": "$body_bytes_sent", '
+    '"request_id": "$request_id", "referrer": "$http_referer", "agent": "$http_user_agent", "client_ip": "$http_x_forwarded_for", '
     '"country_code": "$geoip2_country_code", '
     '"qos_agent": "$agent", "qos_location": "$location", "qos_origin": "$origin", "qos_path": "$path", '
-    '"blocked_agent": "$blocked_agent", "blocked_location": "$blocked_location", "blocked_origin": "$blocked_origin", '
+    '"blocked_agent": "$blocked_agent", "blocked_location": "$blocked_location", "blocked_origin": "$blocked_origin", "blocked_request": "$blocked_request", '
     '"cache_status": "$upstream_cache_status", "request_time":"$request_time", '
     '"upstream_connect_time": "$upstream_connect_time", "upstream_header_time": "$upstream_header_time", "upstream_response_time": "$upstream_response_time"'
   '}' ;
+
+# Truncate the request_url to 2k for the log
+map $request_uri $log_request_uri {
+  "~(.{2048})"  "$1 [truncated]";
+  default       $request_uri;
+}

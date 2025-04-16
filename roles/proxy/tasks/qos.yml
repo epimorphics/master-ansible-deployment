@@ -13,4 +13,29 @@
   loop_control:
     label: '{{ item.dest }}'
   notify: "Reload proxy container"
-  when: not nginx_enabled
+
+- name: "Apache Error page directory"
+  tags:
+    - proxy
+  file:
+    state: "directory"
+    path : "{{ proxy.directory }}/www/{{ proxy.error_page_dir }}"
+    owner: "root"
+    group: "root"
+    mode: "0755"
+  notify: "Reload proxy container"
+  
+- name: "Apache Error pages"
+  tags:
+    - proxy
+  copy:
+    src: "{{ item }}"
+    dest: "{{ proxy.directory }}/www/{{ proxy.error_page_dir }}"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  loop_control:
+    label: "{{ item }}"
+  loop: "{{ error_pages }}"
+  when: error_pages  is defined
+  notify: "Reload proxy container"
