@@ -36,3 +36,5 @@ kibana:
   image: "docker.elastic.co/kibana/kibana"
   version: "8.6.2"
   xpack_reporting_encryptionKey: "{{ vault_kibana.xpack_reporting_encryptionKey }}"
+
+keep_raw_logs: true

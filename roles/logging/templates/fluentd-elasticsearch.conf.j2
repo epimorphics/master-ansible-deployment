@@ -442,13 +442,11 @@
 <filter json.**>
   @id raw_json
   @type record_transformer
-{% if keep_raw_logs is defined %}
 {% if keep_raw_logs %}
 # Keep raw
   <record>
     raw ${record["message"]}
   </record>
-{% endif %}
 {% endif %}
   remove_keys message
 </filter>
