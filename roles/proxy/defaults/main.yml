@@ -27,6 +27,7 @@ nginx_tag: 1.27
 nginx:
   directory: "{{ docker.directory }}/{{ nginx_container.name }}"
   image: "{{ registry.common }}/nginx:{{ tag }}"
+  buffer: "{{ nginx_buffer }}"
   cache:
     dir: "/var/cache/nginx"
     key: "$scheme$proxy_host$uri$is_args$args$http_origin$http_accept"
@@ -42,6 +43,7 @@ nginx_configs:
   - 05-log-format.conf
   - 10-blocked.conf
   - 20-qos.conf
+  - 30-buffers.conf
   - 40-cache.conf
   - 80-localhost.conf
   - 81-http.conf

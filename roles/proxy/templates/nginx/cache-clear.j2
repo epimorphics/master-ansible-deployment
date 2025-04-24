@@ -5,5 +5,7 @@ then
  if [ -d "{{ nginx.cache.dir }}" ]
  then
    rm -rf {{ nginx.cache.dir }}/*
+   nginx -s reload
+   sleep 5
  fi
 fi

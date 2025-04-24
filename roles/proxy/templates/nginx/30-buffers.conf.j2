@@ -1,0 +1,3 @@
+proxy_buffer_size   {{ nginx.buffer.request_size | default(8) }}k;
+proxy_buffers   {{ nginx.buffer.count | default(8) }}  {{ nginx.buffer.size | default(8) }}k;
+proxy_busy_buffers_size   {{ nginx.buffer.busy_size | default( (nginx.buffer.request_size | default(8)) + 2 * (nginx.buffer.size | default(8)) ) }}k;
