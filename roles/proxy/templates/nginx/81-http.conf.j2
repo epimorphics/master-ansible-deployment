@@ -21,13 +21,15 @@ server {
   proxy_set_header X-request-uri $request_uri;
   proxy_set_header X-Request-Id $request_id;
 
-  set $blocked_request "";
+  set $blocked_request "-";
+
+  if ($blocked_agent = "")    { set $blocked_agent    "-"; }
+  if ($blocked_location = "") { set $blocked_location "-"; }
+  if ($blocked_origin = "")   { set $blocked_origin   "-"; }
+
   if ($blocked_request_agent)    { set $blocked_request $blocked_request_agent; }
   if ($blocked_request_location) { set $blocked_request $blocked_request_location; }
   if ($blocked_request_origin)   { set $blocked_request $blocked_request_origin; }
-
-# if whitelisting is required uncomment time line
-# if ($whitelisted) { set $blocked_request $whitelisted; }
 
   if ($blocked)    { return 403; }
 

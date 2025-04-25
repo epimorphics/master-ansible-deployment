@@ -1,6 +1,7 @@
 {% if nginx_qos is defined %}
 {% if nginx_qos.blocked is defined %}
 
+# 1.1
 {% if nginx_qos.blocked.agents is defined %}
 # Set $blocked_agent true if on the proscribed list
 #
@@ -11,6 +12,7 @@ map $agent $blocked_agent {
 }
 {% endif %}
 
+# 1.2
 {% if nginx_qos.blocked.locations is defined %}
 # Set $blocked_location true if on the proscribed list
 #
@@ -21,6 +23,7 @@ map $location $blocked_location {
 }
 {% endif %}
 
+# 1.3
 {% if nginx_qos.blocked.origins is defined %}
 # Set $blocked_origin true if on the proscribed list
 #
@@ -29,35 +32,39 @@ map $origin $blocked_origin {
   "{{ origin }}" "{{ origin }}";
 {% endfor %}
 }
+{% endif %}
 
 
 {% if nginx_qos.blocked.requests is defined %}
 
+# 2.1
 map "$agent:$path" $blocked_request_agent {
 {% for request in nginx_qos.blocked.requests %}
 {% if request.agents is defined %}
 {% for agent in request.agents %}
-  "{{ agent }}:{{ request.name }}" "Agent:{{ agent }}";
+  "{{ agent }}:{{ request.name }}" "Agent:{{ agent }} Request:{{ request.name }}";
 {% endfor %}
 {% endif %}
 {% endfor %}
 }
 
+# 2.2
 map "$location:$path" $blocked_request_location {
 {% for request in nginx_qos.blocked.requests %}
 {% if request.locations is defined %}
 {% for location in request.locations %}
-  "{{ location }}:{{ request.name }}" "Location:{{ location }}";
+  "{{ location }}:{{ request.name }}" "Location:{{ location }} Request:{{ request.name }}";
 {% endfor %}
 {% endif %}
 {% endfor %}
 }
 
+# 2.3
 map "$origin:$path" $blocked_request_origin {
 {% for request in nginx_qos.blocked.requests %}
 {% if request.origins is defined %}
 {% for origin in request.origins %}
-  "{{ origin }}:{{ request.name }}" "Origin:{{ origin }}";
+  "{{ origin }}:{{ request.name }}" "Origin:{{ origin }} Request:{{ request.name }}";
 {% endfor %}
 {% endif %}
 {% endfor %}
@@ -66,6 +73,5 @@ map "$origin:$path" $blocked_request_origin {
 {% endif %}
 
 
-{% endif %}
 {% endif %}
 {% endif %}

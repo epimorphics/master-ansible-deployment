@@ -22,6 +22,7 @@ map $request_uri $path {
 ## WARNING: nginx_qos.requests[{{ loop.index }}] has no name element
 {% endif %}
 {% endfor %}
+  default "-";
 }
 {% endif %}
 
@@ -42,6 +43,7 @@ map $http_user_agent $agent {
 ## WARNING: nginx_qos.agents[{{ loop.index }}] has no name element
 {% endif %}
 {% endfor %}
+  default "-";
 }
 {% endif %}
 
@@ -82,6 +84,7 @@ map "$geoip2_country_code" $location {
 ## WARNING: nginx_qos.locations[{{ loop.index }}] has no name element
 {% endif %}
 {% endfor %}
+  default "-";
 }
 {% endif %}
 
@@ -111,7 +114,7 @@ limit_req_zone $agents_{{ regime }} zone=Rate-agents-{{ regime }}:10m rate={{ li
 {% if limit.connections is defined %}
 ## Connection limit for Agent is {{ limit.connections }} ({{ regime }})
 limit_conn Conn-agents-{{ regime }} {{ limit.connections }};
-limit_conn_zone $agents_{{ regime }} zone=Conn-agents-path-{{ regime }}:10m;
+limit_conn_zone $agents_{{ regime }} zone=Conn-agents-{{ regime }}:10m;
 
 {% endif %}
 {% endif %}
@@ -179,7 +182,7 @@ limit_req_zone $origins_{{ regime }} zone=Rate-origins-{{ regime }}:10m rate={{ 
 {% if limit.connections is defined %}
 ## Connection limit for Origin is {{ limit.connections }} ({{ regime }})
 limit_conn Conn-origins-{{ regime }} {{ limit.connections }};
-limit_conn_zone $origins_{{ regime }} zone=Conn-origins-path-{{ regime }}:10m;
+limit_conn_zone $origins_{{ regime }} zone=Conn-origins-{{ regime }}:10m;
 
 {% endif %}
 {% endif %}
@@ -397,22 +400,22 @@ limit_conn_zone $server_name          zone=ConnPerServers:10m;
 {% endif %}
 
 ## Uncomment to enable whitelisting
-## # 10.1 ---------------------
-## # Whitelisted requests.
-## map $path $whitelisted {
-## {% if nginx_qos.whitelist is defined %}
-## {% if nginx_qos.whitelist.requests is defined %}
-## {% for request in nginx_qos.whitelist.requests %}
-##   "{{ request }}" "Whitelisted";
-## {% endfor %}
-## {% endif %}
-## {% endif %}
-## }
+# 10.1 ---------------------
+# Whitelisted requests.
+map $path $whitelisted {
+{% if nginx_qos.whitelist is defined %}
+{% if nginx_qos.whitelist.requests is defined %}
+{% for request in nginx_qos.whitelist.requests %}
+  "{{ request }}" "Whitelisted";
+{% endfor %}
+{% endif %}
+{% endif %}
+}
 
-map "$blocked_request" $blocked {
-  "Whitelisted"  "";
-  default        "$blocked_agent$blocked_location$blocked_origin$blocked_request";
+map "$whitelisted$blocked_agent$blocked_location$blocked_origin$blocked_request" $blocked {
+  "~^Whitelisted" "";
+  "----"          "";
+  default         "BLOCKED";
 }
 
 {% endif %}
-
