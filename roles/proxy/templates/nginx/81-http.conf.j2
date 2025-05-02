@@ -1,6 +1,6 @@
 server {
   listen       80;
-  server_name  {{ hostname }}.{{ domain }} {{ load_balancer.pres }} {{ target_domain }};
+  server_name  {{ nginx_server_names }};
 
 {% if nginx_secure is defined %}
 {% if nginx_secure[env] is defined %}

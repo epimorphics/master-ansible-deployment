@@ -1,6 +1,11 @@
 server {
   listen 80 default_server;
 
+  set $blocked_agent    "-";
+  set $blocked_location "-";
+  set $blocked_origin   "-";
+  set $blocked_request  "-";
+
   # Load Balancer test.
   location = /ping {
     access_log off;
@@ -17,7 +22,7 @@ server {
   access_log  /var/log/nginx/access.log info_json;
   # Forbid anything that gets this far.
   location / {
-    set $blocked_request "Host:$http_host";
+    set $blocked_request  "Host:$http_host";
     return 403;
   }
 }

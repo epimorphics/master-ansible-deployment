@@ -30,3 +30,54 @@
     regexp: ^vm.swappiness
     path: /etc/sysctl.d/90-swappiness
     create: true
+
+
+# Remedial
+
+- name: "rsyslog-logrotate package"
+  tags:
+    - pkg
+    - remedial
+  package:
+    name:
+      - rsyslog-logrotate
+    state: latest
+
+
+- name: "Audit log directory"
+  tags:
+    - remedial
+  file:
+    path:  "/var/log/audit"
+    owner: "root"
+    group: "root"
+    mode:  "0700"
+    state: "directory"
+  register: audit
+
+
+- name: "Audit log"
+  tags:
+    - remedial
+  file:
+    path:  "/var/log/audit/audit.log"
+    owner: "root"
+    group: "root"
+    mode:  "0600"
+    state: "touch"
+  when: audit.changed
+
+
+- name: "Audit log SELinux"
+  tags:
+    - remedial
+  shell:
+    cmd: "{{ item.cmd }}"
+  loop_control:
+    label: "{{ item.label | default(item.cmd) }}"
+  loop:
+    - { cmd: "restorecon -R /var/log/audit" }
+    - { cmd: "chcon -Ru system_u /var/log/audit" }
+    - { cmd: "restorecon /var/log/hawkey.log" }
+    - { cmd: "chcon -u system_u /var/log/hawkey.log" }
+  when: audit.changed

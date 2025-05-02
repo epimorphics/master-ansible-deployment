@@ -20,6 +20,8 @@ ec2_images:
 ec2_default_image: "{{ ec2_images[region] }}"
 
 ec2_state: "running"
+replace_instances: True
+
 elastic_ip_groups: []
 email: "{{ instance }}-ops-alerts@epimorphics.com" # Note {{ domain }} is .net
 

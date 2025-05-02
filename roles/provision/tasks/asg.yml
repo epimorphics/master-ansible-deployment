@@ -21,7 +21,9 @@
   loop_control:
     label: "{{ instance }}-{{ band | default(env) }}-{{ item.type }}"
   register: launch_templates
-  when: ec2_inst_lc is defined
+  when:
+    - ec2_inst_lc is defined
+    - not ansible_check_mode
 
 
 # It would be prefereable to loop on launch_configurations here
@@ -36,7 +38,6 @@
     min_size: 1
     desired_capacity: "{{ item.count }}"
     max_size: "{{ item.count }}"
-    replace_all_instances: yes
     tags:
       - Ansible: "True"
       - Band: "{{ band | default(env) }}"
@@ -51,9 +52,27 @@
   when: ec2_inst_lc is defined
 
 
+- name: "EC2 Auto Scaling Groups refresh ({{ band | default(env) }})"
+  tags:
+    - asg
+  amazon.aws.autoscaling_instance_refresh:
+    name: "{{ instance }}-{{ band | default(env) }}-{{ item.type }}"
+    state: started
+    preferences:
+      skip_matching: true
+  loop: "{{ ec2_inst_lc }}"
+  loop_control:
+    label: "{{ instance }}-{{ band | default(env) }}-{{ item.type }}"
+  when:
+    - ec2_inst_lc is defined
+    - replace_instances
+    - not ansible_check_mode
+
+
 - name: "Waiting for new hosts to start..."
   pause:
     seconds: 60
   when:
+    - not ansible_check_mode
     - asg is defined
     - asg.changed
