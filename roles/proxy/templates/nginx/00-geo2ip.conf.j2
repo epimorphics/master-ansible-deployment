@@ -1,5 +1,12 @@
-# Take the IP addess in $http_x_forwarded_for and return the ISO Contry Code
-#
+{% if downstream_proxies is defined %}
+{% for proxy_cidr in downstream_proxies %}
+set_real_ip_from  {{ proxy_cidr }};
+{% endfor %}
+real_ip_header    X-Forwarded-For;
+real_ip_recursive on;
+{% endif %}
+
+# Take the IP addess in $remote_addr and return the ISO Contry Code
 geoip2 geoip2/GeoLite2/GeoLite2-City.mmdb {
-  $geoip2_country_code source=$http_x_forwarded_for country iso_code;
+  $geoip2_country_code country iso_code;
 }

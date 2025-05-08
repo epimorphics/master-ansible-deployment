@@ -43,7 +43,7 @@ server {
 
   proxy_set_header X-server-name $http_host;
 
-  proxy_set_header X-Real-IP $http_x_forwarded_for;
+  proxy_set_header X-Real-IP $remote_addr;
 
   proxy_set_header X-Country-Code $geoip2_country_code;
   proxy_set_header X-Remote-IP $remote_addr;

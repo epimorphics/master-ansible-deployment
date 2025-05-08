@@ -50,7 +50,7 @@ map $http_user_agent $agent {
 {% if nginx_qos.origins is defined %}
 # 1.3 ---------------------
 # Group the Origin ip into $origin class
-geo $http_x_forwarded_for $origin {
+geo $remote_addr $origin {
 {% for origin in nginx_qos.origins %}
 {% if origin.name is defined %}
 {% if origin.networks is defined %}
@@ -193,6 +193,7 @@ limit_conn_zone $origins_{{ regime }} zone=Conn-origins-{{ regime }}:10m;
 {% endfor %}
 {% endif %}
 
+{% if nginx_qos.requests is defined %}
 # 5.1 ---------------------
 # Agent/Request Maps
 {% for regime in (nginx_qos.requests | selectattr('agents', 'defined') | map(attribute='agents') | flatten | map(attribute='regime') | unique) %}
@@ -305,7 +306,7 @@ limit_conn_zone $origins_path_{{ regime.name }} zone=Conn-origins-path-{{ regime
 {% for request in nginx_qos.requests %}
 {% if request.rate is defined or request.connections is defined %}
 map $path $ip_path_{{ request.name }} {
-  "{{ request.name }}"  "$http_x_forwarded_for";
+  "{{ request.name }}"  "$remote_addr";
 }
 {% endif %}
 {% endfor %}
@@ -353,6 +354,7 @@ limit_conn Conn-{{ request.name }} {{ request.connections.total }};
 {% endfor %}
 
 {% endif %}
+{% endif %}
 
 {% if nginx_qos.origins is defined %}
 {% if nginx_qos.limits is defined %}
@@ -384,11 +386,11 @@ limit_req_zone $location zone=RatePerLocation:10m rate={{ nginx_qos.limits.globa
 # 9.3 ---------------------
 # Connection limit per host
 limit_conn ConnPerAddr {{ nginx_qos.limits.global.connections.ip }};
-limit_conn_zone $http_x_forwarded_for zone=ConnPerAddr:10m;
+limit_conn_zone $remote_addr zone=ConnPerAddr:10m;
 {% endif %}
 {% if nginx_qos.limits.global.rate.ip is defined %}
 # Rate limit per host
-limit_req_zone $http_x_forwarded_for zone=RatePerIP:10m rate={{ nginx_qos.limits.global.rate.ip }}r/s;
+limit_req_zone $remote_addr zone=RatePerIP:10m rate={{ nginx_qos.limits.global.rate.ip }}r/s;
 {% endif %}
 
 {% if nginx_qos.limits.global.connections.total is defined %}
