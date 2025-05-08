@@ -10,7 +10,7 @@ for line in fileinput.input():
 
     print('{}:- {} {} [{}] "{} {} {}" {} {} "{}" "{}"'.format(
         l.get('host', '-'),
-        l.get('log_client_ip', l.get('log_client', '-')),
+        l.get('log_client', l.get('log_remote_ip',l.get('log_client_ip', '-'))),
         l.get('log_user', '-'),
         l.get('log_localtime', '-'),
         l.get('log_method', '-'),
