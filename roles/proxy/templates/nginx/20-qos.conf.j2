@@ -22,7 +22,6 @@ map $request_uri $path {
 ## WARNING: nginx_qos.requests[{{ loop.index }}] has no name element
 {% endif %}
 {% endfor %}
-  default "-";
 }
 {% endif %}
 
@@ -43,7 +42,6 @@ map $http_user_agent $agent {
 ## WARNING: nginx_qos.agents[{{ loop.index }}] has no name element
 {% endif %}
 {% endfor %}
-  default "-";
 }
 {% endif %}
 
@@ -84,7 +82,6 @@ map "$geoip2_country_code" $location {
 ## WARNING: nginx_qos.locations[{{ loop.index }}] has no name element
 {% endif %}
 {% endfor %}
-  default "-";
 }
 {% endif %}
 

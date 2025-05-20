@@ -21,6 +21,11 @@ server {
   proxy_set_header X-request-uri $request_uri;
   proxy_set_header X-Request-Id $request_id;
 
+  if ($agent = "")    { set $agent    "-"; }
+  if ($location = "") { set $location "-"; }
+  if ($origin = "")   { set $origin   "-"; }
+  if ($path = "")     { set $path     "-"; }
+
   set $blocked_request "-";
 
   if ($blocked_agent = "")    { set $blocked_agent    "-"; }

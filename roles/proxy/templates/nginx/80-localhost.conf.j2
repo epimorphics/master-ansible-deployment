@@ -1,6 +1,11 @@
 server {
   listen 80 default_server;
 
+  if ($agent = "")    { set $agent    "-"; }
+  if ($location = "") { set $location "-"; }
+  if ($origin = "")   { set $origin   "-"; }
+  if ($path = "")     { set $path     "-"; }
+
   set $blocked_agent    "-";
   set $blocked_location "-";
   set $blocked_origin   "-";
