@@ -63,6 +63,17 @@ geo $remote_addr $origin {
 {% endif %}
 {% endfor %}
 }
+
+map $origin $limited_origin {
+{% if nginx_qos.whitelist is defined %}
+{% if nginx_qos.whitelist.origins is defined %}
+{% for origin in nginx_qos.whitelist.origins %}
+  {{ origin }} "";
+{% endfor %}
+{% endif %}
+{% endif %}
+  default $origin;
+}
 {% endif %}
 
 {% if nginx_qos.locations is defined %}
@@ -106,6 +117,9 @@ map "$agent" $agents_{{ regime }} {
 {% if limit.rate is defined %}
 ## Rate limit for Agent is {{ limit.rate }} requests/s ({{ regime }})
 limit_req_zone $agents_{{ regime }} zone=Rate-agents-{{ regime }}:10m rate={{ limit.rate }}r/s;
+{% if limit.burst is defined %}
+limit_req zone=Rate-agents-{{ regime.name }} burst={{ limit.burst }} {% if limit.delay is defined %}delay={{ limit.delay }}{% else %}nodelay{% endif %};
+{% endif %}
 
 {% endif %}
 {% if limit.connections is defined %}
@@ -140,6 +154,9 @@ map "$location" $locations_{{ regime }} {
 {% if limit.rate is defined %}
 ## Rate limit for Location is {{ limit.rate }} requests/s ({{ regime }})
 limit_req_zone $locations_{{ regime }} zone=Rate-locations-{{ regime }}:10m rate={{ limit.rate }}r/s;
+{% if limit.burst is defined %}
+limit_req zone=Rate-locations-{{ regime.name }} burst={{ limit.burst }} {% if limit.delay is defined %}delay={{ limit.delay }}{% else %}nodelay{% endif %};
+{% endif %}
 
 {% endif %}
 {% if limit.connections is defined %}
@@ -174,6 +191,9 @@ map "$origin" $origins_{{ regime }} {
 {% if limit.rate is defined %}
 ## Rate limit for Origin is {{ limit.rate }} requests/s ({{ regime }})
 limit_req_zone $origins_{{ regime }} zone=Rate-origins-{{ regime }}:10m rate={{ limit.rate }}r/s;
+{% if limit.burst is defined %}
+limit_req zone=Rate-origins-{{ regime.name }} burst={{ limit.burst }} {% if limit.delay is defined %}delay={{ limit.delay }}{% else %}nodelay{% endif %};
+{% endif %}
 
 {% endif %}
 {% if limit.connections is defined %}
@@ -249,6 +269,9 @@ map "$origin:$path" $origins_path_{{ regime }} {
 {% if regime.rate is defined %}
 ## Rate limit for Agent/Request is {{ regime.rate }} requests/s ({{ regime.name }})
 limit_req_zone $agents_path_{{ regime.name }} zone=Rate-agents-path-{{ regime.name }}:10m rate={{ regime.rate }}r/s;
+{% if regime.burst is defined %}
+limit_req zone=Rate-agent-path-{{ regime.name }} burst={{ regime.burst }} {% if regime.delay is defined %}delay={{ regime.delay }}{% else %}nodelay{% endif %};
+{% endif %}
 
 {% endif %}
 {% if regime.connections is defined %}
@@ -267,6 +290,9 @@ limit_conn_zone $agents_path_{{ regime.name }} zone=Conn-agents-path-{{ regime.n
 {% if regime.rate is defined %}
 ## Rate limit for Location/Request is {{ regime.rate }} requests/s ({{ regime.name }})
 limit_req_zone $locations_path_{{ regime.name }} zone=Rate-locations-path-{{ regime.name }}:10m rate={{ regime.rate }}r/s;
+{% if regime.burst is defined %}
+limit_req zone=Rate-locations-path-{{ regime.name }} burst={{ regime.burst }} {% if regime.delay is defined %}delay={{ regime.delay }}{% else %}nodelay{% endif %};
+{% endif %}
 
 {% endif %}
 {% if regime.connections is defined %}
@@ -285,6 +311,9 @@ limit_conn_zone $locations_path_{{ regime.name }} zone=Conn-locations-path-{{ re
 {% if regime.rate is defined %}
 ## Rate limit for Origin/Request is {{ regime.rate }} requests/s ({{ regime.name }})
 limit_req_zone $origins_path_{{ regime.name }} zone=Rate-origins-path-{{ regime.name }}:10m rate={{ regime.rate }}r/s;
+{% if regime.burst is defined %}
+limit_req zone=Rate-origins-path-{{ regime.name }} burst={{ regime.burst }} {% if regime.delay is defined %}delay={{ regime.delay }}{% else %}nodelay{% endif %};
+{% endif %}
 
 {% endif %}
 {% if regime.connections is defined %}
@@ -301,7 +330,7 @@ limit_conn_zone $origins_path_{{ regime.name }} zone=Conn-origins-path-{{ regime
 
 # 7.1 ---------------------
 {% for request in nginx_qos.requests %}
-{% if request.rate is defined or request.connections is defined %}
+{% if request.ip is defined %}
 map $path $ip_path_{{ request.name }} {
   "{{ request.name }}"  "$remote_addr";
 }
@@ -311,15 +340,16 @@ map $path $ip_path_{{ request.name }} {
 # 7.2 ---------------------
 # Connection/Rate limit each path per host
 {% for request in nginx_qos.requests %}
-{% if request.rate is defined %}
-{% if request.rate.ip is defined %}
-limit_req_zone $ip_path_{{ request.name }} zone=Rate-IP-{{ request.name }}:10m rate={{ request.rate.ip }}r/s;
+{% if request.ip is defined %}
+{% if request.ip.rate is defined %}
+limit_req_zone $ip_path_{{ request.name }} zone=Rate-IP-{{ request.name }}:10m rate={{ request.ip.rate }}r/s;
+{% if request.ip.burst is defined %}
+limit_req zone=Rate-IP-{{ request.name }} burst={{ request.ip.burst }} {% if request.ip.delay is defined %}delay={{ request.ip.delay }}{% else %}nodelay{% endif %};
 {% endif %}
 {% endif %}
-{% if request.connections is defined %}
-{% if request.connections.ip is defined %}
+{% if request.ip.connections is defined %}
 limit_conn_zone $ip_path_{{ request.name }}  zone=IP-{{ request.name }}:10m;
-limit_conn IP-{{ request.name }} {{ request.connections.ip }};
+limit_conn IP-{{ request.name }} {{ request.ip.connections }};
 {% endif %}
 {% endif %}
 {% endfor %}
@@ -327,7 +357,7 @@ limit_conn IP-{{ request.name }} {{ request.connections.ip }};
 # 8.1 ---------------------
 # Total Connection limit each path
 {% for request in nginx_qos.requests %}
-{% if request.rate is defined or request.connections is defined %}
+{% if request.total is defined %}
 map $path $total_{{ request.name }} {
   "{{ request.name }}"  "{{ request.name }}";
 }
@@ -335,17 +365,18 @@ map $path $total_{{ request.name }} {
 {% endfor %}
 #
 # 8.2 ---------------------
-# Request global Connection/Rate limit
+# Request total Connection/Rate limit
 {% for request in nginx_qos.requests %}
-{% if request.rate is defined %}
-{% if request.rate.total is defined %}
-limit_req_zone $total_{{ request.name }} zone=Rate-{{ request.name }}:10m rate={{ request.rate.total }}r/s;
+{% if request.total is defined %}
+{% if request.total.rate is defined %}
+limit_req_zone $total_{{ request.name }} zone=Rate-{{ request.name }}:10m rate={{ request.total.rate }}r/s;
+{% if request.total.burst is defined %}
+limit_req zone=Rate-{{ request.name }} burst={{ request.total.burst }} {% if request.total.delay is defined %}delay={{ request.total.delay }}{% else %}nodelay{% endif %};
 {% endif %}
 {% endif %}
-{% if request.connections is defined %}
-{% if request.connections.total is defined %}
+{% if request.total.connections is defined %}
 limit_conn_zone $total_{{ request.name }}  zone=Conn-{{ request.name }}:10m;
-limit_conn Conn-{{ request.name }} {{ request.connections.total }};
+limit_conn Conn-{{ request.name }} {{ request.total.connections }};
 {% endif %}
 {% endif %}
 {% endfor %}
@@ -360,10 +391,10 @@ limit_conn Conn-{{ request.name }} {{ request.connections.total }};
 # Connection/Rate limit each $origin
 {% if nginx_qos.limits.global.connections.origin is defined %}
 limit_conn ConnPerOrigin {{ nginx_qos.limits.global.connections.origin }};
-limit_conn_zone $origin               zone=ConnPerOrigin:10m;
+limit_conn_zone $limited_origin zone=ConnPerOrigin:10m;
 {% endif %}
 {% if nginx_qos.limits.global.rate.origin is defined %}
-limit_req_zone $origin zone=RatePerOrigin:10m rate={{ nginx_qos.limits.global.rate.origin }}r/s;
+limit_req_zone $limited_origin zone=RatePerOrigin:10m rate={{ nginx_qos.limits.global.rate.origin }}r/s;
 {% endif %}
 {% endif %}
 

@@ -47,6 +47,7 @@
   when:
     - iter.tags.Ansible is defined
     - iter.tags.Env is defined
+    - iter.tags.Name is defined
     - iter.tags.Env == env
     - iter.public_ip_address is defined
 
@@ -71,6 +72,7 @@
   when:
     - iter.tags.Ansible is defined
     - iter.tags.Env is defined
+    - iter.tags.Name is defined
     - iter.tags.Band is defined
     - iter.tags.Env == env
     - iter.tags.Band != env
