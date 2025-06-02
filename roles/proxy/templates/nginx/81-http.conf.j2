@@ -26,11 +26,10 @@ server {
   if ($origin = "")   { set $origin   "-"; }
   if ($path = "")     { set $path     "-"; }
 
-  set $blocked_request "-";
-
   if ($blocked_agent = "")    { set $blocked_agent    "-"; }
   if ($blocked_location = "") { set $blocked_location "-"; }
   if ($blocked_origin = "")   { set $blocked_origin   "-"; }
+  if ($blocked_request = "")  { set $blocked_request  "-"; }
 
   if ($blocked_request_agent)    { set $blocked_request $blocked_request_agent; }
   if ($blocked_request_location) { set $blocked_request $blocked_request_location; }

@@ -37,6 +37,15 @@ map $origin $blocked_origin {
 
 {% if nginx_qos.blocked.requests is defined %}
 
+# 2.0
+map "$path" $blocked_request {
+{% for request in nginx_qos.blocked.requests %}
+{% if request.agents is not defined and request.locations is not defined and request.origins is not defined %}
+  "{{ request.name }}" "Request:{{ request.name }}";
+{% endif %}
+{% endfor %}
+}
+
 # 2.1
 map "$agent:$path" $blocked_request_agent {
 {% for request in nginx_qos.blocked.requests %}
