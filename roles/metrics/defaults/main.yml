@@ -6,8 +6,7 @@ services:
 
 grafana:
   image: "grafana/grafana-enterprise"
-# version: "11.1.5"
-  version: "11.5.2"
+  version: "12.0.1"
   directory: "{{ docker.directory }}/{{ grafana_container.name }}"
 
 influxdb:

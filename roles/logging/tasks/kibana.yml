@@ -58,5 +58,4 @@
     - searches
   command: 
     cmd: "curl http://localhost:{{ kibana_container.port }}/kibana/api/saved_objects/_import?overwrite=true -H 'kbn-xsrf:true' -sF file=@/home/ec2-user/searches.ndjson"
-    warn: false
   when: searches.changed 

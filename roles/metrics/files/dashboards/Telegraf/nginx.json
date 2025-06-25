@@ -25,7 +25,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 30,
+  "id": 19,
   "links": [],
   "panels": [
     {
@@ -91,8 +91,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -136,7 +135,7 @@
         ]
       },
       "gridPos": {
-        "h": 14,
+        "h": 12,
         "w": 24,
         "x": 0,
         "y": 1
@@ -157,14 +156,14 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.5.2",
+      "pluginVersion": "12.0.1",
       "targets": [
         {
           "datasource": {
             "uid": "$datasource"
           },
           "editorMode": "code",
-          "expr": "rate(nginx_accepts{host=~\"$hostname*\"}[1m])",
+          "expr": "sum by (host) (rate(nginx_accepts{container=~\"$container\",host=~\"$hostname*\"}[$inter]))",
           "hide": false,
           "interval": "",
           "legendFormat": "Accepts",
@@ -176,7 +175,7 @@
             "uid": "$datasource"
           },
           "editorMode": "code",
-          "expr": "rate(nginx_active{host=~\"$hostname*\"}[1m])",
+          "expr": "sum by (host) (rate(nginx_active{container=~\"$container\",host=~\"$hostname*\"}[$inter]))",
           "hide": false,
           "interval": "",
           "legendFormat": "Active",
@@ -188,7 +187,7 @@
             "uid": "$datasource"
           },
           "editorMode": "code",
-          "expr": "rate(nginx_handled{host=~\"$hostname*\"}[1m])",
+          "expr": "sum by (host) (rate(nginx_handled{container=~\"$container\",host=~\"$hostname*\"}[$inter]))",
           "hide": false,
           "interval": "",
           "legendFormat": "Handled",
@@ -200,7 +199,7 @@
             "uid": "$datasource"
           },
           "editorMode": "code",
-          "expr": "rate(nginx_requests{host=~\"$hostname*\"}[1m])",
+          "expr": "sum by (host) (rate(nginx_requests{container=~\"$container\",host=~\"$hostname*\"}[$inter]))",
           "hide": false,
           "interval": "",
           "legendFormat": "Requests",
@@ -208,7 +207,7 @@
           "refId": "C"
         }
       ],
-      "title": "Nginx Connections / min",
+      "title": "Nginx Connections / $inter",
       "type": "timeseries"
     },
     {
@@ -260,8 +259,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -276,7 +274,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 15
+        "y": 13
       },
       "id": 6,
       "options": {
@@ -294,21 +292,45 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.5.2",
+      "pluginVersion": "12.0.1",
       "targets": [
         {
           "datasource": {
             "uid": "$datasource"
           },
           "editorMode": "code",
-          "expr": "nginx_waiting{host=~\"$hostname\"}\t",
+          "expr": "sum by (hostname) (nginx_waiting{container=~\"$container\",host=~\"$hostname\"})",
           "interval": "",
-          "legendFormat": "{{container}}",
+          "legendFormat": "Waiting",
           "range": true,
           "refId": "A"
+        },
+        {
+          "datasource": {
+            "uid": "$datasource"
+          },
+          "editorMode": "code",
+          "expr": "sum by (hostname) (nginx_writing{container=~\"$container\",host=~\"$hostname\"})",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "Writing",
+          "range": true,
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "uid": "$datasource"
+          },
+          "editorMode": "code",
+          "expr": "sum by (hostname) (nginx_reading{container=~\"$container\",host=~\"$hostname\"})",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "Reading",
+          "range": true,
+          "refId": "C"
         }
       ],
-      "title": "Nginx Waiting",
+      "title": "Nginx Connections",
       "type": "timeseries"
     },
     {
@@ -360,8 +382,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "red",
-                "value": null
+                "color": "red"
               },
               {
                 "color": "red",
@@ -376,7 +397,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 15
+        "y": 13
       },
       "id": 35,
       "options": {
@@ -394,429 +415,51 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.5.2",
+      "pluginVersion": "12.0.1",
       "targets": [
         {
           "datasource": {
             "uid": "$datasource"
           },
           "editorMode": "code",
-          "expr": "rate(nginx_waiting{host=~\"$hostname*\"}[$inter])",
+          "expr": "sum by (hostname) (rate(nginx_waiting{container=~\"$container\",host=~\"$hostname*\"}[$inter]))",
           "interval": "",
-          "legendFormat": "{{ container }}",
+          "legendFormat": "Waiting",
           "range": true,
           "refId": "A"
-        }
-      ],
-      "title": "Nginx Waiting [$inter]",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "$datasource"
-      },
-      "description": "The current number of active (accepted) connections from clients. Includes all connections with the statuses Idle / Waiting, Reading, and Writing.",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "barWidthFactor": 0.6,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
         },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 7,
-        "w": 12,
-        "x": 0,
-        "y": 22
-      },
-      "id": 41,
-      "options": {
-        "legend": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "displayMode": "table",
-          "placement": "right",
-          "showLegend": true
-        },
-        "tooltip": {
-          "hideZeros": false,
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "11.5.2",
-      "targets": [
         {
           "datasource": {
             "uid": "$datasource"
           },
           "editorMode": "code",
-          "expr": "nginx_reading{host=~\"$hostname\"}\t",
+          "expr": "sum by (hostname) (rate(nginx_writing{container=~\"$container\",host=~\"$hostname*\"}[$inter]))",
+          "hide": false,
           "interval": "",
-          "legendFormat": "{{ container }}",
+          "legendFormat": "Writing",
           "range": true,
-          "refId": "A"
-        }
-      ],
-      "title": "Nginx Reading",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "$datasource"
-      },
-      "description": "The current rate of connections from clients where nginx is writing a response back to the client.\n",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "barWidthFactor": 0.6,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "red",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
+          "refId": "B"
         },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 7,
-        "w": 12,
-        "x": 12,
-        "y": 22
-      },
-      "id": 42,
-      "options": {
-        "legend": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "displayMode": "table",
-          "placement": "right",
-          "showLegend": true
-        },
-        "tooltip": {
-          "hideZeros": false,
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "11.5.2",
-      "targets": [
         {
           "datasource": {
             "uid": "$datasource"
           },
           "editorMode": "code",
-          "expr": "rate(nginx_reading{host=~\"$hostname\"}[$inter])",
+          "expr": "sum by (hostname) (rate(nginx_reading{container=~\"$container\",host=~\"$hostname*\"}[$inter]))",
+          "hide": false,
           "interval": "",
-          "legendFormat": "{{ container }}",
+          "legendFormat": "Reading",
           "range": true,
-          "refId": "A"
+          "refId": "C"
         }
       ],
-      "title": "Nginx Reading [$inter]",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "$datasource"
-      },
-      "description": "The current number of active (accepted) connections from clients. Includes all connections with the statuses Idle / Waiting, Reading, and Writing.",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "axisSoftMin": 0,
-            "barAlignment": 0,
-            "barWidthFactor": 0.6,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "min": 0,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 7,
-        "w": 12,
-        "x": 0,
-        "y": 29
-      },
-      "id": 39,
-      "options": {
-        "legend": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "displayMode": "table",
-          "placement": "right",
-          "showLegend": true
-        },
-        "tooltip": {
-          "hideZeros": false,
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "11.5.2",
-      "targets": [
-        {
-          "datasource": {
-            "uid": "$datasource"
-          },
-          "editorMode": "code",
-          "expr": "nginx_writing{host=~\"$hostname\"}\t",
-          "interval": "",
-          "legendFormat": "{{ container }}",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "title": "Nginx Writing",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "$datasource"
-      },
-      "description": "The current rate of connections from clients where nginx is writing a response back to the client.\n",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "barWidthFactor": 0.6,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "red",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 7,
-        "w": 12,
-        "x": 12,
-        "y": 29
-      },
-      "id": 40,
-      "options": {
-        "legend": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "displayMode": "table",
-          "placement": "right",
-          "showLegend": true
-        },
-        "tooltip": {
-          "hideZeros": false,
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "11.5.2",
-      "targets": [
-        {
-          "datasource": {
-            "uid": "$datasource"
-          },
-          "editorMode": "code",
-          "expr": "rate(nginx_writing{host=~\"$hostname\"}[$inter])",
-          "interval": "",
-          "legendFormat": "{{ container }}",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "title": "Nginx Writing [$inter]",
+      "title": "Nginx Connection Rate / [$inter]",
       "type": "timeseries"
     }
   ],
   "preload": false,
   "refresh": "",
-  "schemaVersion": 40,
+  "schemaVersion": 41,
   "tags": [],
   "templating": {
     "list": [
@@ -840,14 +483,14 @@
         "auto_count": 30,
         "auto_min": "10s",
         "current": {
-          "text": "30s",
-          "value": "30s"
+          "text": "1h",
+          "value": "1h"
         },
         "label": "Interval",
         "name": "inter",
         "options": [
           {
-            "selected": true,
+            "selected": false,
             "text": "30s",
             "value": "30s"
           },
@@ -877,7 +520,7 @@
             "value": "30m"
           },
           {
-            "selected": false,
+            "selected": true,
             "text": "1h",
             "value": "1h"
           }
@@ -888,8 +531,8 @@
       },
       {
         "current": {
-          "text": "hmlr-dev-pres-078.epimorphics.net",
-          "value": "hmlr-dev-pres-078.epimorphics.net"
+          "text": "hmlr-dev-pres-056.epimorphics.net",
+          "value": "hmlr-dev-pres-056.epimorphics.net"
         },
         "datasource": {
           "type": "prometheus",
@@ -903,6 +546,29 @@
         "query": {
           "query": "label_values(nginx_requests, host)",
           "refId": "StandardVariableQuery"
+        },
+        "refresh": 2,
+        "regex": "",
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "nginx",
+          "value": "nginx"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+        },
+        "definition": "label_values(nginx_requests{host=\"$hostname\"},container)",
+        "includeAll": false,
+        "label": "Container",
+        "name": "container",
+        "options": [],
+        "query": {
+          "qryType": 1,
+          "query": "label_values(nginx_requests{host=\"$hostname\"},container)",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
         },
         "refresh": 2,
         "regex": "",
@@ -930,6 +596,6 @@
   "timezone": "",
   "title": "Nginx",
   "uid": "Nginx",
-  "version": 1,
-  "weekStart": ""
+  "version": 1
 }
+
