@@ -76,7 +76,7 @@
   uri:
     url: "http://localhost:{{ elasticsearch_container.port }}/"
   register: health
-  retries: 10
+  retries: 12
   delay: 5
   until: health.status == 200
   failed_when:

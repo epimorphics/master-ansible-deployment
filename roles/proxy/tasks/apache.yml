@@ -25,7 +25,11 @@
   pip:
     name: passlib
     state: latest
-  when: not ansible_check_mode
+  when:
+  - proxy.secure is defined
+  - secure_proxy is defined
+  - secure_proxy[type] is defined
+  - not ansible_check_mode
 
 
 - name: "Proxy config"

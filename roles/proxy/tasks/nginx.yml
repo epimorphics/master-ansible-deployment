@@ -52,6 +52,20 @@
     tasks_from: "geolite2.yml"
 
 
+- name: "Install python-passlib"
+  tags:
+    - pkg
+    - pip
+  pip:
+    name: passlib
+    state: latest
+  when:
+  - proxy.secure is defined
+  - secure_proxy is defined
+  - secure_proxy[type] is defined
+  - not ansible_check_mode
+
+
 - name: "Secure access"
   tags:
     - cfg

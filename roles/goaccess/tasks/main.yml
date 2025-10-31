@@ -3,6 +3,15 @@
   include_tasks: "{{ ansible_distribution }}.yml"
 
 
+- name: "Goaccess archive [{{ goaccess.url }}]"
+  tags:
+    - goaccess
+  unarchive:
+    src: "{{ goaccess.url }}"
+    dest: /usr/local
+    remote_src: yes
+
+
 - name: "GeoLite2"
   vars:
     location: "/usr/local/share"
