@@ -22,6 +22,7 @@ iam_role: "{{ instance }}-ec2"
 iam_policies:
  - "arn:aws:iam::{{ aws.account }}:policy/{{ sns.policy.name }}"
  - "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+ - "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
 
 key:
   name: "{{ keyname | default(instance) }}"
