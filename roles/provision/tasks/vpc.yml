@@ -39,7 +39,6 @@
   # Internet Gateway
   - name: "Internet Gateway"
     tags:
-      - ec2
       - net
     ec2_vpc_igw:
       vpc_id: "{{ vpc_id }}"
@@ -55,7 +54,6 @@
   - name: "VPC Subnets"
     tags:
       - dns
-      - ec2
       - elb
       - net
     ec2_vpc_subnet:
@@ -105,7 +103,6 @@
 
 - name: "Routing Table"
   tags:
-    - ec2
     - net
   ec2_vpc_route_table:
     vpc_id: "{{ vpc_id }}"

@@ -1,11 +1,13 @@
 ---
 - name: "VPC"
+  tags:
+    - ec2
+    - net
   include_tasks: "vpc.yml"
 
 
 - name: "Check IP address"
   tags:
-    - ec2
     - net
     - security
   check_mode: no
@@ -17,7 +19,6 @@
 
 - name: "Base Security Group"
   tags:
-    - ec2
     - net
     - security
   ec2_group:
@@ -46,7 +47,6 @@
 
 - name: "Staff Security Group"
   tags:
-    - ec2
     - net
     - security
   ec2_group:
@@ -73,7 +73,6 @@
 
 - name: "Additional Security Groups"
   tags:
-    - ec2
     - net
     - security
   ec2_group:

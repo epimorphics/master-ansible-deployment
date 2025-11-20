@@ -17,7 +17,6 @@
 # Key File
 - name: "Key File ({{ key.name }})"
   tags:
-    - ec2
     - key
   ec2_key:
     region: "{{ region }}"
@@ -27,10 +26,23 @@
 
 
 - name: "IAM"
+  tags:
+    - ec2
+    - security
   include_tasks: "iam.yml"
+
+
 - name: "Network"
+  tags:
+    - ec2
+    - net
+    - vpc
   include_tasks: "network.yml"
+
+
 - name: "EC2"
+  tags:
+    - ec2
   include_tasks: "ec2.yml"
 
 

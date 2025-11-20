@@ -1,5 +1,5 @@
 ---
-tag: "6.12.0"
+tag: "6.13.1"
 
 sensu_backend:
   directory: "{{ docker.directory }}/{{ sensu_container.name }}"

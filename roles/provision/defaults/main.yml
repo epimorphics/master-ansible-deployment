@@ -2,20 +2,9 @@
 env: "infra"
 
 az:
-  - eu-west-1a
-  - eu-west-1b
-  - eu-west-1c
-
-ec2_images: 
-# eu-west-1:    "ami-02d1083d1af7ad6e7" # Private CentOS
-# eu-west-1:    "ami-004c2c678f905016f" # CentOS
-# eu-west-1:    "ami-0ec23856b3bad62d3" # RHEL
-  eu-west-1:    "ami-063d4ab14480ac177" # Amazon Linux 2
-# eu-west-1:    "ami-035966e8adab4aaad" # ubuntu
-  eu-central-1: "ami-07cda0db070313c52"
-  us-east-1:    "ami-0d50d8864c5cdd573"
-  us-west-1:    "ami-03caa3f860895f82e"
-  us-west-2:    "ami-003d8924a33dc0fd7"
+  - "{{ region }}a"
+  - "{{ region }}b"
+  - "{{ region }}c"
 
 ec2_default_image: "{{ ec2_images[region] }}"
 
