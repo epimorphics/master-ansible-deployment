@@ -3,12 +3,34 @@
     "phases": {
       "hot": {
         "min_age": "0ms",
-        "actions": {}
+        "actions": {
+          "set_priority": {
+            "priority": 100
+          }
+        }
+      },
+      "warm": {
+        "min_age": "1d",
+        "actions": {
+          "set_priority": {
+            "priority": 50
+          }
+        }
+      },
+      "cold": {
+        "min_age": "2d",
+        "actions": {
+          "set_priority": {
+            "priority": 0
+          }
+        }
       },
       "delete": {
         "min_age": "14d",
         "actions": {
-          "delete": {}
+          "delete": {
+            "delete_searchable_snapshot": true
+          }
         }
       }
     }

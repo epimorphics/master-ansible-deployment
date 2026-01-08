@@ -5,10 +5,12 @@
     - elasticsearch
   file:
     state: "directory"
-    path: "{{ elasticsearch.directory }}"
+    path: "{{ item }}"
     owner: "root"
     group: "root"
     mode: "0775"
+  loop: 
+     - "{{ elasticsearch.directory }}"
 
 
 - name: "Elasticsearch container"
@@ -25,21 +27,81 @@
       - name: "{{ docker.network.name }}"
     restart_policy: "unless-stopped"
     env:
-      cluster.routing.allocation.disk.watermark.enable_for_single_data_node: "true"
+      ES_JAVA_OPTS: "-Xms{{ elasticsearch.heap_size | default('256m') }} -Xmx{{ elasticsearch.heap_size | default('512m') }}"
+      cluster.name: elasticsearch
+      node.name: elasticsearch
       discovery.type: single-node
-      ES_JAVA_OPTS: -Xms512m -Xmx512m
-      ingest.geoip.downloader.enabled: "false"
-#     logger.level: DEBUG
+      xpack.security.enrollment.enabled: "true"
+      xpack.security.http.ssl.enabled: "{{ elasticsearch.ssl_enabled | default(false) | ternary('true', 'false') }}"
+      xpack.security.http.ssl.verification_mode: "certificate"
+      xpack.security.http.ssl.key: "/usr/share/elasticsearch/config/certs/server.key"
+      xpack.security.http.ssl.certificate: "/usr/share/elasticsearch/config/certs/server.crt"
+      xpack.security.http.ssl.certificate_authorities: "/usr/share/elasticsearch/config/certs/server-ca.crt"
       logger.level: ERROR
-      xpack.security.enabled: "false"
     networks_cli_compatible: yes
+    memory: "{{ elasticsearch.memory | default('2g') }}"
+    memory_swap: "{{ elasticsearch.memory | default('2g') }}"
     ports:
       - "{{ elasticsearch_container.port }}:{{ elasticsearch_container.port }}"
       - "9300:9300"
     ulimits:
-      - 'nofile:65536:65536'
+      - 'nofile:262144:262144'
+      - 'memlock:-1:-1'
     volumes:
-      - "{{ elasticsearch.directory }}:/usr/share/elasticsearch/data"
+      - "{{ elasticsearch.directory }}:/usr/share/elasticsearch/data:rw"
+      - "{{ proxy.directory }}/ssl:/usr/share/elasticsearch/config/certs:ro"
+  register: es_container
+
+
+- name: "Wait for Elasticsearch to start"
+  tags:
+    - container
+    - elasticsearch
+  wait_for:
+    host: "localhost"
+    port: "{{ elasticsearch_container.port }}"
+    delay: 60
+    timeout: 300
+  when:
+    - not ansible_check_mode
+    - es_container is changed
+
+
+- name: "Set Elasticsearch elastic user password"
+  tags:
+    - container
+    - elasticsearch
+  command: >
+    docker exec -it "{{ elasticsearch_container.name }}" sh -c "/usr/share/elasticsearch/bin/elasticsearch-reset-password -u elastic -bsf > /usr/share/elasticsearch/data/elastic_password.txt"
+  args:
+    creates: "{{ elasticsearch.directory }}/elastic_password.txt"
+  when:
+    - not ansible_check_mode
+
+
+- name: "Read Elasticsearch elastic user password"
+  tags:
+    - container
+    - elasticsearch
+  check_mode: false
+  changed_when: false
+  command: >
+    cat "{{ elasticsearch.directory }}/elastic_password.txt"
+  register: elastic_password
+
+
+- name: "Set Elasticsearch elastic user password fact"
+  tags:
+    - container
+    - elasticsearch
+  set_fact:
+    elasticsearch_password: "{{ elastic_password.stdout }}"
+
+
+### https://www.elastic.co/docs/deploy-manage/deploy/self-managed/install-elasticsearch-docker-basic
+### ELASTIC_PASSWORD=$(docker exec -it elasticsearch /usr/share/elasticsearch/bin/elasticsearch-reset-password -bsu elastic)
+### docker cp elasticsearch:/usr/share/elasticsearch/config/certs/http_ca.crt /etc/ssl/certs/elasticsearch.crt
+### curl --cacert /etc/ssl/certs/elasticsearch.crt -u elastic:$ELASTIC_PASSWORD https://localhost:9200/_cluster/health?pretty
 
 
 - name: "Elasticsearch metrics exporter container"
@@ -50,7 +112,8 @@
     name: "{{ es_exporter_container.name }}"
     image: "{{ es_exporter.image }}:{{ es_exporter.version }}"
     command:
-      - "--es.uri=http://{{ elasticsearch_container.name }}:{{ elasticsearch_container.port }}"
+      - "--es.ssl-skip-verify"
+      - "--es.uri={{ elasticsearch.ssl_enabled | default(false) | ternary('https', 'http') }}://elastic:{{ elasticsearch.password }}@{{ elasticsearch_container.name }}:{{ elasticsearch_container.port }}"
     env:
       logger.level: "WARN"
     log_driver: "{{ docker.logging.driver }}"
@@ -66,6 +129,7 @@
 
 - name: "Telegraf"
   include_tasks: "telegraf.yml"
+  when: telegraf is defined
 
 
 # Datasource provisioning is flaky, api calls work but the api needs to be up
@@ -74,7 +138,10 @@
     - cfg
     - elasticsearch
   uri:
-    url: "http://localhost:{{ elasticsearch_container.port }}/"
+    url: "{{ elasticsearch.ssl_enabled | default(false) | ternary('https', 'http') }}://localhost:{{ elasticsearch_container.port }}/"
+    url_username: "elastic"
+    url_password: "{{ elasticsearch.password }}"
+    validate_certs: "no"
   register: health
   retries: 12
   delay: 5
@@ -89,7 +156,10 @@
     - cfg
     - elasticsearch
   uri:
-    url: "http://localhost:{{ elasticsearch_container.port }}/{{ item.endpoint }}"
+    url: "{{ elasticsearch.ssl_enabled | default(false) | ternary('https', 'http') }}://localhost:{{ elasticsearch_container.port }}/{{ item.endpoint }}"
+    url_username: "elastic"
+    url_password: "{{ elasticsearch.password }}"
+    validate_certs: "no"
     method: PUT
     body: "{{ lookup('template', item.body) }}"
     status_code: [ 200 ]
@@ -99,4 +169,5 @@
   loop:
     - { name: "Fluentd Lifecycle", body: "fluentd-lifecycle.json.j2", endpoint: "_ilm/policy/fluentd" }
     - { name: "Fluentd Template",  body: "fluentd-template.json.j2",  endpoint: "_index_template/fluentd" }
+    - { name: "Anonymous User",  body: "es-user.json.j2",  endpoint: "_security/user/anonymous" }
   register: uri

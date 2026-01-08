@@ -1,0 +1,39 @@
+elasticsearch:
+    hosts:
+    - {{ elasticsearch.ssl_enabled | default(false) | ternary('https', 'http') }}://elasticsearch:9200
+    username: "kibana_system"
+    password: "{{ kibana_password }}"
+    ssl:
+        verificationMode: none
+monitoring:
+    ui:
+        container:
+            elasticsearch:
+                enabled: true
+server:
+    host: "0.0.0.0"
+    name: "kibana-{{ instance }}.{{ domain }}"
+    basePath: "{{ kibana_container.entrypoint }}"
+    publicBaseUrl: "https://kibana-{{ instance }}.{{ domain }}{{ kibana_container.entrypoint }}"
+    rewriteBasePath: "true"
+xpack:
+    encryptedSavedObjects:
+        encryptionKey: "{{ kibana.xpack_reporting_encryptionKey }}"
+    license_management:
+        ui:
+            enabled: false
+    reporting:
+        encryptionKey: "{{ kibana.xpack_reporting_encryptionKey }}"
+    security:
+        authc:
+            providers:
+                anonymous:
+                    anonymous1:
+                        credentials:
+                          username: "{{ kibana.credentials.username }}"
+                          password: "{{ kibana.credentials.password }}"
+                        order: 1
+                basic:
+                    basic1:
+                        order: 0
+        encryptionKey: "{{ kibana.xpack_reporting_encryptionKey }}"

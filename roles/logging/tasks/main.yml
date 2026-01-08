@@ -15,6 +15,5 @@
 - name: "Kibana"
   include_tasks: "kibana.yml"
 
-
 - name: "Services"
   include_tasks: "services.yml"

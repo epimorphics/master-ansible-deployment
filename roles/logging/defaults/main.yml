@@ -1,5 +1,7 @@
 ---
-apache_info_regexp: '^(?<client>[^, ]*)(, (?<chain1>[^, ]+))?(, (?<chain2>[^ ]+))? (?<host>[^ ]*) (?<user>[^ ]*) \[(?<localtime>[^\]]*)\] "(?<method>\S+)(?: +(?<path>[^ ]*) +(?<protocol>\S*))?" (?<status>[^ ]*) (?<size>[^ ]*)(?:\s+"(?<referrer>[^\"]*)" "(?<agent>[^\"]*)" (?<error_id>[^ ]+) (?<duration>[^ ]+) (?<request_id>[^ ]+))?( (?<connection_id>[^ ]+))?( (?<qos_ev>[^ ]+))?( (?<qos_cr>[^ ]+))?( (?<qos_com>[^ ]+))?'
+apache_regexp:
+  info: '^(?<client>[^, ]*)(, (?<chain1>[^, ]+))?(, (?<chain2>[^ ]+))? (?<host>[^ ]*) (?<user>[^ ]*) \[(?<localtime>[^\]]*)\] "(?<method>\S+)(?: +(?<path>[^ ]*) +(?<protocol>\S*))?" (?<status>[^ ]*) (?<size>[^ ]*)(?:\s+"(?<referrer>[^\"]*)" "(?<agent>[^\"]*)" (?<error_id>[^ ]+) (?<duration>[^ ]+) (?<request_id>[^ ]+))?( (?<connection_id>[^ ]+))?( (?<qos_ev>[^ ]+))?( (?<qos_cr>[^ ]+))?( (?<qos_com>[^ ]+))?'
+  err: '/^(\[(?<time>[^\]]+)\] )?(\[(?<module>[^:]+):(?<level>[^ ]+)\] )?(\[pid (?<pid>\d+):tid (?<tid>\d+)\] )?(\[client (?<client>[^:]+):\d+\] )?(mod_qos\((?<qos>\d{3})\): )?(?<message>.+)?/'
 
 services:
   - "{{ elasticsearch_container }}"
@@ -7,7 +9,7 @@ services:
 
 fluentd:
   image: "{{ registry.common }}/fluentd"
-  version: "v1.17.1-1.0"
+  version: "v1.19.1-0.2"
   directory: "{{ docker.directory }}/{{ fluentd_container.name }}"
   ports:
     - "{{ fluentd_container.port.metrics }}:{{ fluentd_container.port.metrics }}"
@@ -25,8 +27,10 @@ fluentd:
 
 elasticsearch:
   image: "docker.elastic.co/elasticsearch/elasticsearch"
-  version: "8.7.1"
+  version: "9.2.1"
   directory: "{{ docker.directory }}/{{ elasticsearch_container.name }}"
+  password: "{{ elasticsearch_password | default('') }}"
+  ssl_enabled: true
 
 es_exporter:
   image: "quay.io/prometheuscommunity/elasticsearch-exporter"
@@ -34,7 +38,9 @@ es_exporter:
 
 kibana:
   image: "docker.elastic.co/kibana/kibana"
-  version: "8.6.2"
+  version: "9.2.2"
+  directory: "{{ docker.directory }}/{{ kibana_container.name }}"
   xpack_reporting_encryptionKey: "{{ vault_kibana.xpack_reporting_encryptionKey }}"
+  credentials: "{{ vault_kibana.credentials }}"
 
 keep_raw_logs: true

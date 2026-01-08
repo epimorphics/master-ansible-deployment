@@ -2,7 +2,12 @@
   ## specify a list of one or more Elasticsearch servers
   ## you can add username and password to your url to use basic authentication:
   ## servers = ["http://user:pass@localhost:9200"]
-  servers = ["http://localhost:9200"]
+  servers = ["{{ elasticsearch.ssl_enabled | default(false) | ternary('https', 'http') }}://localhost:9200"]
+
+  insecure_skip_verify = true
+
+  username = "elastic"
+  password = "{{ elasticsearch.password }}"
 
   ## Timeout for HTTP requests to the elastic search server(s)
   timeout = "5s"

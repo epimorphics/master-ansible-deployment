@@ -8,6 +8,15 @@
     state: absent
 
 
+- name: "Kibana container restart"
+  tags:
+    - container
+    - kibana
+  docker_container:
+    name: kibana
+    state: absent
+
+
 - name: "Restart telegraf"
   tags:
     - telegraf

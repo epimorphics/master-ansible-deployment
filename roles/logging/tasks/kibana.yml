@@ -1,4 +1,64 @@
 ---
+- name: "Set Elasticsearch kibana user password"
+  tags:
+    - container
+    - kibana
+  command: >
+    docker exec -it "{{ elasticsearch_container.name }}" sh -c "/usr/share/elasticsearch/bin/elasticsearch-reset-password -u kibana_system -bsf > /usr/share/elasticsearch/data/kibana_password.txt"
+  args:
+    creates: "{{ elasticsearch.directory }}/kibana_password.txt"
+  when:
+    - not ansible_check_mode
+
+
+- name: "Read Elasticsearch kibana user password"
+  tags:
+    - container
+    - kibana
+  check_mode: false
+  changed_when: false
+  command: >
+    cat "{{ elasticsearch.directory }}/kibana_password.txt"
+  register: kibana_file_password
+
+
+- name: "Set Elasticsearch kibana user password fact"
+  tags:
+    - container
+    - kibana
+  set_fact:
+    kibana_password: "{{ kibana_file_password.stdout }}"
+
+
+- name: "Kibana volume"
+  tags:
+    - cfg
+    - kibana
+  file:
+    state: "directory"
+    path: "{{ kibana.directory }}"
+    owner: "root"
+    group: "root"
+    mode: "0775"
+
+
+- name: "Kibana configuration file"
+  tags:
+    - cfg
+    - kibana
+  template:
+    src: "kibana.yml.j2"
+    dest: "{{ kibana.directory }}/kibana.yml"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  notify: 
+    - "Kibana container restart"
+
+
+- meta: flush_handlers
+
+
 - name: "Kibana container"
   tags:
     - container
@@ -7,15 +67,8 @@
     name: "{{ kibana_container.name }}"
     image: "{{ kibana.image }}:{{ kibana.version }}"
     env:
-      SERVER_NAME: "kibana-{{ instance }}.{{ domain }}"
-      SERVER_HOST: "0.0.0.0"
-      SERVER_PUBLICBASEURL: "https://kibana-{{ instance }}.{{ domain }}{{ kibana_container.entrypoint }}"
-      SERVER_BASEPATH: "{{ kibana_container.entrypoint }}"
-      SERVER_REWRITEBASEPATH: "true"
-      ELASTICSEARCH_HOSTS: "http://{{ elasticsearch_container.name }}:{{ elasticsearch_container.port }}"
-      XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY: "{{ kibana.xpack_reporting_encryptionKey }}"
-      XPACK_REPORTING_ROLES_ENABLED: "false"
-      XPACK_SECURITY_ENCRYPTIONKEY: "{{ kibana.xpack_reporting_encryptionKey }}"
+      ELASTICSEARCH_USERNAME: "kibana_system"
+      ELASTICSEARCH_PASSWORD: "{{ kibana_password }}"
     log_driver: "{{ docker.logging.driver }}"
     log_options: "{{ docker.logging.options }}"
     network_mode: "{{ docker.network.mode }}"
@@ -25,6 +78,8 @@
     networks_cli_compatible: yes
     ports:
       - "{{ kibana_container.port }}:{{ kibana_container.port }}"
+    volumes:
+      - "{{ kibana.directory }}/kibana.yml:/usr/share/kibana/config/kibana.yml:ro"
 
 
 - name: "Saved Searches"
@@ -44,13 +99,12 @@
   uri:
     url: "http://localhost:{{ kibana_container.port }}/kibana/api/status"
   register: health
-  retries: 10
+  retries: 15
   delay: 5
   until: health.status == 200
+  check_mode: false
   failed_when:
-    - health.json is undefined or health.json.status.core.savedObjects.level != "available"
-  when: not ansible_check_mode
-
+    - health.json is undefined or health.json.status is undefined or health.json.status.overall is undefined or health.json.status.overall.level is undefined or health.json.status.overall.level != "available"
 
 - name: "Load Saved Searches"
   tags:

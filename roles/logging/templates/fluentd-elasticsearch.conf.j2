@@ -1,7 +1,7 @@
 # fluentd/conf/fluent.conf
 #
-# source 
 <source>
+  @id logging
   @type forward
   bind 0.0.0.0
   port {{ fluentd_container.port.logging }}
@@ -12,13 +12,13 @@
   bind 0.0.0.0
   port {{ fluentd_container.port.syslog }}
   message_length_limit 4096
-# message_length_limit 16000
   tag syslog
   source_hostname_key server
 </source>
 
 # expose metrics in prometheus format
 <source>
+  @id metrics
   @type prometheus
   bind 0.0.0.0
   port {{ fluentd_container.port.metrics }}
@@ -26,6 +26,7 @@
 </source>
 
 <source>
+  @id label_hostname
   @type prometheus_output_monitor
   interval 10
   <labels>
@@ -34,10 +35,14 @@
 </source>
 
 <system>
-# log_level debug
-# log_level warn
-  log_level error
+  log_level {{ fluentd_log_level | default('info') }}
 </system>
+
+<label @FLUENT_LOG>
+  <match fluent.*>
+    @type stdout
+  </match>
+</label>
 
 # filter out blanks in docker logs
 <filter **>
@@ -188,7 +193,7 @@
   emit_invalid_record_to_error false
   <parse>
     @type regexp
-    expression /{{ apache_info_regexp}}/
+    expression /{{ apache_regexp.info }}/
   </parse>
 </filter>
 
@@ -224,41 +229,11 @@
   emit_invalid_record_to_error false
   <parse>
     @type regexp
-    expression /^(\[(?<time>[^]]+)\] )?(\[(?<module>[^:]+):(?<level>[^ ]+)\] )?(\[pid (?<pid>\d+):tid (?<tid>\d+)\] )?(\[client (?<client>[^:]+):\d+\] )?(mod_qos\((?<qos>\d{3})\): )?(?<message>.+)?/
+    expression /{{ apache_regexp.err }}/
     time_format %a %b %d %H:%M:%S.%N %Y
   </parse>
 </filter>
 
-
-<filter apache.err.**>
-  @id qos_scoreboard
-  @type parser
-  key_name log_scoreboard
-  reserve_data true
-  remove_key_name_field true
-  inject_key_prefix log_
-  <parse>
-    @type json
-  </parse>
-</filter>
-
-
-## Apache error parser
-# This built in parser doesn't work
-# very well especially with QoS enabled.
-# <filter apache.err.**>
-#   @id parser_apache_error
-#   @type parser
-#   @log_level warn
-#   key_name message
-#   reserve_data true
-#   remove_key_name_field false
-#   inject_key_prefix log_
-#   emit_invalid_record_to_error false
-#   <parse>
-#     @type apache_error
-#   </parse>
-# </filter>
 
 # Ignore apache server-status
 <filter apache.info.proxy>
@@ -345,9 +320,6 @@
   @type record_transformer
   @log_level warn
 # @log_level debug
-  <record>
-    level ${tag_parts[1]}
-  </record>
   @type parser
   key_name message
   reserve_data true
@@ -453,10 +425,10 @@
 
 # copy to elastic search
 <match json.** **>
-  @id out_es
   @type copy
-  @log_level warn
+  @log_level info
   <store>
+    @id out_es
     @type elasticsearch
     host elasticsearch
     port {{ elasticsearch_container.port }}
@@ -481,10 +453,12 @@
     </buffer>
   </store>
   <store>
+    @id relabel
     @type relabel
     @label @S3
   </store>
   <store>
+    @id stdout
     @type stdout
   </store>
 </match>
@@ -541,31 +515,3 @@
     </labels>
   </metric>
 </filter>
-
-# count number of outgoing records per tag
-<match *.**>
-  @id prometheus_out
-  @type copy
-  <store>
-    @type forward
-    <server>
-      name {{ ansible_nodename }}
-      host localhost
-      port {{ fluentd_container.port.logging }}
-      weight 60
-    </server>
-  </store>
-  <store>
-    @type prometheus
-    <metric>
-      name fluentd_output_status_num_records_total
-      type counter
-      desc The total number of outgoing records
-      <labels>
-        tag ${tag}
-        hostname fluentd.${hostname}
-      </labels>
-    </metric>
-  </store>
-</match>
-
