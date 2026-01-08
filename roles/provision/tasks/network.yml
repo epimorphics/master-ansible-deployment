@@ -1,5 +1,5 @@
 ---
-- name: "VPC"
+- name: "VPC [ {{ region }} ]"
   tags:
     - ec2
     - net

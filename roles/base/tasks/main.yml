@@ -77,6 +77,12 @@
   notify: "Restart logrotate"
 
 
+- name: "Create Journald config file"
+  shell:  "cp /usr/lib/systemd/journald.conf /etc/systemd/journald.conf"
+  args:
+    creates: "/etc/systemd/journald.conf"
+
+
 - name: "Journald volatile"
   tags:
     - cfg

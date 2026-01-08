@@ -1,5 +1,5 @@
 ---
-- name: "Proxy config directory"
+- name: "Apache config directory"
   tags:
     - cfg
   file:
@@ -32,7 +32,7 @@
   - not ansible_check_mode
 
 
-- name: "Proxy config"
+- name: "Apache config"
   tags:
     - cfg
   template:
@@ -89,7 +89,7 @@
   notify: "Reload proxy container"
 
 
-- name: "Proxy container"
+- name: "Apache container"
   tags:
     - container
   docker_container:
@@ -112,7 +112,7 @@
       - "{{ proxy.directory }}/cache:{{ proxy_cache.directory }}:rw"
 
 
-- name: "Proxy ping file"
+- name: "Apache ping file"
   tags:
     - proxy
   copy:
@@ -123,7 +123,7 @@
     mode: "0644"
 
 
-- name: Proxy cache clean
+- name: "Apache cache clean"
   cron:
     name: "Proxy cache clean {{ item.title }}"
     minute: "{{ item.time }}"

@@ -21,8 +21,8 @@
     - ntp
     - cfg
   template:
-    src: "{{ ntp_config.src }}"
-    dest: "{{ ntp_config.dest }}"
+    src: "{{ ntp.config.src }}"
+    dest: "{{ ntp.config.dest }}"
     owner: root
     group: root
     mode: "0644"
