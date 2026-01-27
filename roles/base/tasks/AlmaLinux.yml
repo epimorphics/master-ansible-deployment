@@ -32,6 +32,18 @@
     create: true
 
 
+- name: "Timezone file"
+  tags:
+    - locale
+  copy:
+    dest: /etc/timezone
+    content: "{{ system_timezone | default('UTC') }}\n"
+    owner: root
+    group: root
+    mode: '0644'
+  when: system_timezone is defined
+
+
 # Remedial
 
 - name: "rsyslog-logrotate package"

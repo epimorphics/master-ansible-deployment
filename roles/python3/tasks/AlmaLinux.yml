@@ -17,6 +17,7 @@
   pip:
     name:
     - 'boto3'
+    - 'dateparser'
     - 'pytz'
     - 'requests'
     - 'simplejson'
