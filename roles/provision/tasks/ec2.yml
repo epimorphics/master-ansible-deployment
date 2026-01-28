@@ -42,10 +42,11 @@
       Type: "{{ item.type }}"
       Env: "{{ env }}"
       Inst: "{{ instance }}"
+      ElasticIP: "{{ item.elastic_ip | default(omit) }}"
     wait: true
   loop: "{{ ec2_inst }}"
   loop_control:
-    label: "{{ item.type }}"
+    label: "{{ instance }}-{{ band | default(env) }}-{{ item.type }}"
     index_var: index
   register: ec2
   when:

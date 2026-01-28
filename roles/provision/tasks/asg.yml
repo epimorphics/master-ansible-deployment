@@ -1,5 +1,5 @@
 ---
-- name: "EC2 Launch Template ({{ band | default(env) }})"
+- name: "EC2 Launch Template ({{ instance }}-{{ band | default(env) }}-TYPE)"
   tags:
     - asg
     - ec2
@@ -28,7 +28,7 @@
 
 # It would be prefereable to loop on launch_configurations here
 # but the user data is not accessible.
-- name: "EC2 Auto Scaling Groups ({{ band | default(env) }})"
+- name: "EC2 Auto Scaling Groups ({{ instance }}-{{ band | default(env) }}-TYPE)"
   tags:
     - asg
   ec2_asg:
@@ -52,7 +52,7 @@
   when: ec2_inst_lc is defined
 
 
-- name: "EC2 Auto Scaling Groups refresh ({{ band | default(env) }})"
+- name: "EC2 Auto Scaling Groups refresh ({{ instance }}-{{ band | default(env) }}-TYPE)"
   tags:
     - asg
   amazon.aws.autoscaling_instance_refresh:

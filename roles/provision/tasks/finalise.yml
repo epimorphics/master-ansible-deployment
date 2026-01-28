@@ -8,12 +8,13 @@
   ec2_eip:
     region: "{{ region }}"
     device_id: "{{ iter.instance_id }}"
+    public_ip: "{{ iter.tags.ElasticIP | default(omit) }}"
     in_vpc: yes
     reuse_existing_ip_allowed: yes
   loop: "{{ ec2_instances.instances }}"
   loop_control:
-    label: "{{ iter.tags.Name | default(iter.instance_id) }}: {{ iter.public_ip_address | default('No public IP') }}"
     loop_var: iter
+    label: "{{ iter.tags.Name | default(iter.instance_id) }}: {{ iter.tags.ElasticIP | default(iter.public_ip_address) | default('No public IP') }}"
   when: 
     - iter.tags.Ansible is defined
     - iter.tags.Name is defined
@@ -92,6 +93,8 @@
     state: present
     region: "{{ region }}"
   register: acm_cert
+  when:
+    - ssl is defined
 
 
 ## There is a bug that means ELB cannot be created while specifying SG by name.

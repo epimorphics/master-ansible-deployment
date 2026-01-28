@@ -10,37 +10,43 @@
     region: "{{ region }}"
     state: present
 
+- block:
 
-- name: "IAM Role"
-  tags:
-    - iam
-  vars:
-    service: "ec2.amazonaws.com"
-  iam_role:
-    name: "{{ iam_role }}"
-    state: "present"
-    assume_role_policy_document: "{{ lookup('template', 'iam/role-trust.json.j2') }}"
-    managed_policies: "{{ iam_policies }}"
-    purge_policies: true
-    description: "{{ sns.policy.description }}"
-  register: role
+# Create IAM Role and attach Policies, unless an existing role is specified
+
+  - name: "IAM Role"
+    tags:
+      - iam
+    vars:
+      service: "ec2.amazonaws.com"
+    iam_role:
+      name: "{{ ec2_role }}"
+      state: "present"
+      assume_role_policy_document: "{{ lookup('template', 'iam/role-trust.json.j2') }}"
+      managed_policies: "{{ iam_policies }}"
+      purge_policies: true
+      description: "{{ sns.policy.description }}"
+    register: role
 
 
-- name: "IAM Policies"
-  tags:
-    - iam
-  iam_policy:
-    iam_type: "role"
-    iam_name: "{{ item.name }}"
-    policy_name: "{{ item.policy }}"
-    policy_json: "{{ lookup('template', item.file) }}"
-    state: "present"
-    skip_duplicates: true
-  loop_control:
-    label: "{{ item.policy }}"
-  loop:
-    - { name: "{{ iam_role }}", policy: "{{ instance }}-s3-readwrite", file: "iam/s3-readwrite.json.j2" }
-    - { name: "{{ iam_role }}", policy: "{{ instance }}-ec2-tag-access", file: "iam/ec2-tag-access.json" }
-    - { name: "{{ iam_role }}", policy: "{{ instance }}-elb-fullaccess", file: "iam/elb-fullaccess.json" }
-    - { name: "{{ iam_role }}", policy: "{{ instance }}-cloudwatch", file: "iam/cloudwatch.json" }
-  register: policy
+  - name: "Record Role"
+    set_fact:
+      iam_role: "{{ ec2_role }}"
+
+
+  - name: "IAM Policies"
+    tags:
+      - iam
+    iam_policy:
+      iam_type: "role"
+      iam_name: "{{ item.name | default(ec2_role) }}"
+      policy_name: "{{ item.policy | default(ec2_role) }}"
+      policy_json: "{{ lookup('template', item.file) }}"
+      state: "present"
+      skip_duplicates: true
+    loop_control:
+      label: "{{ item.policy }}"
+    loop: "{{ inline_policies }}"
+    register: policy
+
+  when: iam_role is not defined

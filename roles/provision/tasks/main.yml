@@ -51,5 +51,6 @@
     include_tasks: "sns.yml" 
   when: env == "infra"
 
-- name: "Finalise [{{ finalise }}]"
+
+- name: "Finalise [{{ finalise | default('not set') }}]"
   include_tasks: "finalise.yml"

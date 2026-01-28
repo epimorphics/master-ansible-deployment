@@ -1,9 +1,18 @@
 ---
-- name: "VPC [ {{ region }} ]"
+- name: "VPC [ {{ region }}: {{ vpc.name }} ]"
   tags:
     - ec2
     - net
   include_tasks: "vpc.yml"
+  when: vpc_id is not defined
+
+
+- name: "VPC Subnets"
+  tags:
+    - ec2
+    - net
+  include_tasks: "subnets.yml"
+  when: subnet_ids is not defined
 
 
 - name: "Check IP address"
@@ -77,7 +86,7 @@
     - security
   ec2_group:
     name: "{{ item.name | lower }}"
-    description: "{{ item.name }} Security Group - managed by Ansible"
+    description: "{{ item.description | default(item.name + ' - Security Group - managed by Ansible') }}"
     region: "{{ region }}"
     vpc_id: "{{ vpc_id }}"
     rules: "{{ item.rules }}"
