@@ -11,7 +11,6 @@
     state: present
 
 - block:
-
 # Create IAM Role and attach Policies, unless an existing role is specified
 
   - name: "IAM Role"
@@ -29,11 +28,6 @@
     register: role
 
 
-  - name: "Record Role"
-    set_fact:
-      iam_role: "{{ ec2_role }}"
-
-
   - name: "IAM Policies"
     tags:
       - iam
@@ -48,5 +42,9 @@
       label: "{{ item.policy }}"
     loop: "{{ inline_policies }}"
     register: policy
+
+  - name: "Record Role"
+    set_fact:
+      iam_role: "{{ ec2_role }}"
 
   when: iam_role is not defined

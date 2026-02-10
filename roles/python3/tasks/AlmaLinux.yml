@@ -19,6 +19,7 @@
     - 'boto3'
     - 'dateparser'
     - 'pytz'
+    - 'packaging'
     - 'requests'
     - 'simplejson'
     state: latest

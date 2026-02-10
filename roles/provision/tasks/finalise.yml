@@ -11,6 +11,11 @@
     public_ip: "{{ iter.tags.ElasticIP | default(omit) }}"
     in_vpc: yes
     reuse_existing_ip_allowed: yes
+    tags:
+      Ansible: "True"
+      Type: "{{ iter.tags.Type }}"
+      Env: "{{ iter.tags.Env }}"
+      Name: "{{ iter.tags.Name }}"
   loop: "{{ ec2_instances.instances }}"
   loop_control:
     loop_var: iter
