@@ -1,5 +1,6 @@
 version: "4.3.2"
 
 jena:
-  archive: "http://archive.apache.org/dist/jena/binaries/binaries/apache-jena-{{ version }}.tar.gz"
+  # form "http://archive.apache.org/dist/jena/binaries/binaries/apache-jena-{{ version }}.tar.gz"
+  archive: "https://epi-repository.s3.eu-west-1.amazonaws.com/release/jena/apache-jena-{{ version }}.tar.gz"
   directory: "/usr/local/jena"
