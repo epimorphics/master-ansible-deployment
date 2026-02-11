@@ -3,7 +3,7 @@
     - jena
     - tar
   unarchive:
-    src: "https://archive.apache.org/dist/jena/binaries/apache-jena-{{ version }}.tar.gz"
+    src: "{{ jena.archive }}"
     dest: "/usr/local"
     remote_src: yes
     exclude:
