@@ -28,11 +28,14 @@ receivers:
 {% if alertmanager_routes.receivers is defined %}
 {% for rs in alertmanager_routes.receivers %}
   - name: '{{ rs.name }}'
+{% if rs.email is defined %}
     email_configs:
     - to: {{ rs.email }}
       from: noreply@{{ domain }}
       smarthost: {{ mailrelay_container.name }}:{{mailrelay.port }}
       require_tls: false
+{% endif %}
+{% if rs.slack is defined %}
     slack_configs:
     - send_resolved: True
       api_url: '{{ rs.slack.webhook }}'
@@ -55,12 +58,13 @@ receivers:
       text: |-
         {{ range .Alerts }}{{ .Annotations.message }}{{ end }}
         {{- range .Alerts }}
-        *Start:* {{ .StartsAt }}{{if .Annotations.occurrences}} ({{ .Annotations.occurrences }}}{{end}}
+        *Start:* {{ .StartsAt }}{{if .Annotations.occurrences}} ({{ .Annotations.occurrences }}){{end}}
         {{ range .Labels.SortedPairs }}{{if and (ne .Name "alertname") (ne .Name "severity") }}- *{{ .Name }}:* {{ .Value }}
         {{ end -}}
         {{- end -}}
         {{- end }}
 {% endraw %}
+{% endif %}
 {% endfor %}
 {% endif %}
   - name: 'email'

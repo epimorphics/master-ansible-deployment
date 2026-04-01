@@ -16,7 +16,12 @@ alertmanager_routes:
   receivers:
   - name: default
     email: "{{ email }}"
-    slack: "{{ slack }}"
+    slack: "{{ slack.default }}"
+  - name: ops
+    matchers:
+    - ops = true
+    email: "{{ email }}"
+    slack: "{{ slack.ops }}"
 
 
 sns_forwarder:
