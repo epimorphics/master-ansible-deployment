@@ -52,37 +52,5 @@ vpc:
   name: "{{ instance }}-vpc"
   cidr: "{{ internal_subnet }}"
 
-lambda:
-  name: "sns2slack"
-  description: "SNS to Slack Webhook"
-  s3_bucket: "epi-repository"
-  runtime: "python3.13"
-  version: "v3.03"
-
 elb:
   timeout:  120 # seconds
-
-sns:
-  policy:
-    name: "{{ instance }}-alert-publisher"
-    description: "SNS Alert Publication"
-  topic:
-    name:
-      email: "{{ sns_email }}"
-      slack: "{{ sns_slack }}"
-    display_name:
-      email: "{{ notification }} - Email"
-      slack: "{{ notification }} - Slack"
-    delivery_policy:
-      http:
-        defaultHealthyRetryPolicy:
-          minDelayTarget: 2
-          maxDelayTarget: 4
-          numRetries: 3
-          numMinDelayRetries: 0
-          numMaxDelayRetries: 3
-          numNoDelayRetries: 0
-          backoffFunction: "linear"
-        disableSubscriptionOverrides: True
-        defaultThrottlePolicy:
-          maxReceivesPerSecond: 10

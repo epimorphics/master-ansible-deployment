@@ -1,50 +1,37 @@
 ---
-- name: "Publish SNS Policy ({{ sns.policy.name }})"
-  tags:
-    - iam
-    - sns
-  iam_managed_policy:
-    policy_name: "{{ sns.policy.name }}"
-    policy: "{{ lookup('template', 'iam/publish.json.j2') }}"
-    policy_description: "{{ sns.policy.description }}"
-    region: "{{ region }}"
-    state: present
-
-- block:
 # Create IAM Role and attach Policies, unless an existing role is specified
 
-  - name: "IAM Role"
-    tags:
-      - iam
-    vars:
-      service: "ec2.amazonaws.com"
-    iam_role:
-      name: "{{ ec2_role }}"
-      state: "present"
-      assume_role_policy_document: "{{ lookup('template', 'iam/role-trust.json.j2') }}"
-      managed_policies: "{{ iam_policies }}"
-      purge_policies: true
-      description: "{{ sns.policy.description }}"
-    register: role
+- name: "IAM Role"
+  tags:
+    - iam
+  vars:
+    service: "ec2.amazonaws.com"
+  iam_role:
+    name: "{{ ec2_role }}"
+    state: "present"
+    assume_role_policy_document: "{{ lookup('template', 'iam/role-trust.json.j2') }}"
+    managed_policies: "{{ iam_policies }}"
+    purge_policies: true
+    description: "{{ sns.policy.description }}"
+  register: role
 
 
-  - name: "IAM Policies"
-    tags:
-      - iam
-    iam_policy:
-      iam_type: "role"
-      iam_name: "{{ item.name | default(ec2_role) }}"
-      policy_name: "{{ item.policy | default(ec2_role) }}"
-      policy_json: "{{ lookup('template', item.file) }}"
-      state: "present"
-      skip_duplicates: true
-    loop_control:
-      label: "{{ item.policy }}"
-    loop: "{{ inline_policies }}"
-    register: policy
+- name: "IAM Policies"
+  tags:
+    - iam
+  iam_policy:
+    iam_type: "role"
+    iam_name: "{{ item.name | default(ec2_role) }}"
+    policy_name: "{{ item.policy | default(ec2_role) }}"
+    policy_json: "{{ lookup('template', item.file) }}"
+    state: "present"
+    skip_duplicates: true
+  loop_control:
+    label: "{{ item.policy }}"
+  loop: "{{ inline_policies }}"
+  register: policy
 
-  - name: "Record Role"
-    set_fact:
-      iam_role: "{{ ec2_role }}"
 
-  when: iam_role is not defined
+- name: "Record Role"
+  set_fact:
+    iam_role: "{{ ec2_role }}"

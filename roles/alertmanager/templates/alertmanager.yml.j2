@@ -76,7 +76,7 @@ receivers:
   - name: 'sns-slack-forwarder'
     webhook_configs:
     - send_resolved: True
-      url: 'http://{{ sns_forwarder_container.name }}:{{ sns_forwarder_container.port }}/alert/{{ sns_slack }}'
+      url: 'http://{{ sns_forwarder_container.name }}:{{ sns_forwarder_container.port }}/alert/{{ sns_slack_topic }}'
   - name: 'null'
 templates:
 - /etc/alertmanager/slack.tmpl

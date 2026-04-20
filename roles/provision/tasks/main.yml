@@ -30,6 +30,7 @@
     - ec2
     - security
   include_tasks: "iam.yml"
+  when: iam_role is not defined
 
 
 - name: "Network"

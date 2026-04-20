@@ -36,7 +36,7 @@
 #     "tag:Type": "{{ item.type }}"
     tags:
 #     Name: "(index_names is defined and index_names) | ternary({{ hostname_root }}-{{ item.tags }}{{ fcnt }}, {{ hostname_root }}-{{ item.tags }})"
-#     Name: "{{ hostname_root }}-{{ item.type }}"
+      Name: "{{ hostname_root | default(instace) }}-{{ item.type }}"
       Ansible: "True"
       Band: "{{ band | default(env) }}"
       Type: "{{ item.type }}"
