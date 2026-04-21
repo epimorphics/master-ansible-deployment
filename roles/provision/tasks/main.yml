@@ -25,6 +25,13 @@
     purge_tags: false
 
 
+- name: "SNS"
+  tags:
+    - sns
+  include_tasks: "sns.yml" 
+  when: env == "infra"
+
+
 - name: "IAM"
   tags:
     - ec2
@@ -45,12 +52,6 @@
   tags:
     - ec2
   include_tasks: "ec2.yml"
-
-
-- block:
-  - name: "SNS"
-    include_tasks: "sns.yml" 
-  when: env == "infra"
 
 
 - name: "Finalise [{{ finalise | default('not set') }}]"
