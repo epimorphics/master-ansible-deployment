@@ -54,3 +54,40 @@ vpc:
 
 elb:
   timeout:  120 # seconds
+lambda:
+  name: "sns2slack"
+  description: "SNS to Slack Webhook"
+  s3_bucket: "epi-repository"
+  runtime: "python3.13"
+  version: "v3.04"
+
+slack:
+  default:
+    webhook: "{{ vault_slack.webhook }}"
+    username: "{{ instance | upper }} Alerts"
+    channel: "#{{ instance }}-alerts"
+
+sns:
+  policy:
+    name: "alert-publisher"
+    description: "SNS Alert Publication"
+  topic:
+    name:
+      email: "{{ sns_email_topic }}"
+      slack: "{{ sns_slack_topic }}"
+    display_name:
+      email: "{{ notification }} - Email"
+      slack: "{{ notification }} - Slack"
+    delivery_policy:
+      http:
+        defaultHealthyRetryPolicy:
+          minDelayTarget: 2
+          maxDelayTarget: 4
+          numRetries: 3
+          numMinDelayRetries: 0
+          numMaxDelayRetries: 3
+          numNoDelayRetries: 0
+          backoffFunction: "linear"
+        disableSubscriptionOverrides: True
+        defaultThrottlePolicy:
+          maxReceivesPerSecond: 10

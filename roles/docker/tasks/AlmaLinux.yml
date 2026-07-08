@@ -15,6 +15,7 @@
   package:
     name: iptables-nft
     state: latest
+  when: ansible_distribution_major_version == "9"
 
 
 - name: "Install {{ docker_package[ansible_distribution] }}"

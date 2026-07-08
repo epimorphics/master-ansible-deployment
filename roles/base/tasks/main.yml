@@ -47,20 +47,42 @@
   notify: "Restart sshd"
 
 
-- name: "Forward syslog"
+- name: "Syslog Config"
   tags:
     - cfg
     - logging
     - syslog
   template:
-    src: "fluentd.conf.j2"
-    dest: "/etc/rsyslog.d/99-fluentd.conf"
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
     owner: root
     group: root
     mode: 0644
   notify: "Restart rsyslog"
+  with_items:
+    - { src: "ratelimit.conf.j2", dest: "/etc/rsyslog.d/01-ratelimit.conf" }
+    - { src: "fluentd.conf.j2", dest: "/etc/rsyslog.d/99-fluentd.conf" }
   when:
     -  logging is defined and logging.server is defined
+
+
+- name: "SELinux syslog port"
+  tags:
+    - cfg
+    - logging
+    - syslog
+  seport:
+    ports: "{{ fluentd_container.port.syslog }}"
+    proto: tcp
+    setype: syslogd_port_t
+    state: present
+  when:
+    - logging is defined
+    - logging.server is defined
+    - fluentd_container.port.syslog is defined
+    - syslog.protocol is defined
+    - syslog.protocol == "tcp"
+
 
 
 - name: "Log rotation"

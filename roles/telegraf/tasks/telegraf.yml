@@ -28,7 +28,7 @@
     description: InfluxData Repository - Stable
     file: influxdb
     baseurl: "https://repos.influxdata.com/stable/$basearch/main"
-    gpgkey: "https://repos.influxdata.com/influxdata-archive_compat.key"
+    gpgkey: "https://repos.influxdata.com/influxdata-archive.key"
     gpgcheck: yes
 
 

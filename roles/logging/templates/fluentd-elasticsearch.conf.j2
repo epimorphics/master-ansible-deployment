@@ -8,6 +8,27 @@
 </source>
 
 <source>
+  @id syslog_tcp
+  @type syslog
+  bind 0.0.0.0
+  port {{ fluentd_container.port.syslog }}
+  protocol_type tcp
+  message_length_limit 4096
+  tag syslog
+  source_hostname_key server
+</source>
+
+<source>
+  @id syslog_udp
+  @type syslog
+  bind 0.0.0.0
+  port {{ fluentd_container.port.syslog }}
+  message_length_limit 4096
+  tag syslog
+  source_hostname_key server
+</source>
+
+<source>
   @type syslog
   bind 0.0.0.0
   port {{ fluentd_container.port.syslog }}
@@ -111,7 +132,7 @@
 </filter>
 
 # Transform JSON TS tag
-<match alertmanager.syslog.daemon.* dms.syslog.daemon.* fuseki.syslog.daemon.* prometheus.syslog.daemon.* sensu-am.syslog.daemon.*>
+<match alertmanager.syslog.daemon.* dms.syslog.daemon.* prometheus.syslog.daemon.* sensu-am.syslog.daemon.*>
   @id rewrite_json_ts_tag
   @type rewrite_tag_filter
   @log_level warn
@@ -123,7 +144,7 @@
 </match>
 
 # Transform JSON tag
-<match elasticsearch.syslog.daemon.info grafana.syslog.daemon.* kibana.syslog.daemon.* nginx.syslog.daemon.info sensu.syslog.daemon.* sensu-agent.syslog.daemon.*>
+<match elasticsearch.syslog.daemon.info fuseki.syslog.daemon.* grafana.syslog.daemon.* kibana.syslog.daemon.* nginx.syslog.daemon.info sensu.syslog.daemon.* sensu-agent.syslog.daemon.*>
   @id rewrite_json_tag
   @type rewrite_tag_filter
   @log_level warn

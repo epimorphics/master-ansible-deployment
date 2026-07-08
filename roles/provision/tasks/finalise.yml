@@ -221,13 +221,32 @@
 
 
 - block:
+# - name: debug ec2_lb
+#   debug:
+#     var: ec2_lb.results
+
+# - name: debug ec2_instances.instances
+#   debug:
+#     var: ec2_instances.instances
+
+
+# - name: debug iter
+#   debug:
+#     var: iter.0
+#   with_nested:
+#     -  "{{ ec2_lb.results }}"
+#     -  "{{ ec2_instances.instances }}"
+#   loop_control:
+#     label: "{{ instance }}-{{ env }}-{{ iter.0.iter.type }}: {{ iter.1.tags.Name | default(iter.1.instance_id) }}"
+#     loop_var: iter
+
   - name: "EC2 registed with LB"
     tags:
       - asg
       - elb
     elb_instance:
       region: "{{ region }}"
-      ec2_elbs: "{{ iter.0.elb.name }}"
+      ec2_elbs: "{{ instance }}-{{ env }}-{{ iter.0.iter.type }}"
       instance_id: "{{ iter.1.instance_id }}"
       state: present
     with_nested:
@@ -239,10 +258,10 @@
     when: 
       - ec2_lb is defined
       - ec2_lb.results is defined
-      - iter.0.elb is defined
+      - iter.0.iter.type is defined
       - iter.1.tags.Ansible is defined
       - iter.1.tags.Env is defined and iter.1.tags.Env == env
-      - iter.1.tags.Type is defined and  iter.0.elb.tags.Type == iter.1.tags.Type 
+      - iter.1.tags.Type is defined and iter.0.iter.type == iter.1.tags.Type 
       - iter.1.public_ip_address is defined # needed for stale terminated
 
   when:

@@ -87,11 +87,14 @@
 
   - name: "Check if reboot is required for filesystem mounts"
     vars: 
-      reboot_fs: "{{ mounts.results | selectattr('changed') | selectattr('item.reboot','defined') | selectattr('item.reboot') | list }}" 
+      reboot_fs: "{{ mounts.results | selectattr('changed') | selectattr('item.reboot','defined') | selectattr('item.reboot') }}" 
     debug:
-      msg: "Reboot is required. Filesystems: {{ reboot_fs[0].item.device }}:{{ reboot_fs[0].item.path }}"
-    changed_when: reboot_fs | length > 0
-    when: mounts.changed
+      msg: "Reboot is required. Filesystem: {{ reboot_fs[0].item.device }}:{{ reboot_fs[0].item.path }}"
+#     var: reboot_fs
+    changed_when: true
+    when:
+      - mounts.changed
+      - reboot_fs | list | length > 0
     notify: REBOOT
 
 

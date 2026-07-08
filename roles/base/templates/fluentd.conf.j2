@@ -1,1 +1,1 @@
-*.* @{{ logging.server }}:{{ fluentd_container.port.syslog }}
+*.* {{ (syslog.protocol == "tcp") | ternary("@", "", "") }}@{{ logging.server }}:{{ fluentd_container.port.syslog }}
