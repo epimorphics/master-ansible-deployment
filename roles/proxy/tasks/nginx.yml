@@ -45,6 +45,9 @@
 
 
 - name: GeoLite2
+  tags:
+    - cfg
+    - qos
   vars:
     location: "{{ nginx.directory }}/geoip2"
   include_role:
@@ -86,6 +89,7 @@
   tags:
     - cfg
     - nginx
+    - qos
   copy:
     src: "{{ item.src | default(omit) }}"
     content: "{{ item.content | default(omit) }}"
@@ -105,6 +109,7 @@
   tags:
     - cfg
     - nginx
+    - qos
   template:
     src: "nginx/{{ item }}.j2"
     dest: "{{ nginx.directory }}/{{ nginx_container.base_cfg_dir }}/{{ item }}"

@@ -132,7 +132,7 @@
 </filter>
 
 # Transform JSON TS tag
-<match alertmanager.syslog.daemon.* dms.syslog.daemon.* prometheus.syslog.daemon.* sensu-am.syslog.daemon.*>
+<match alertmanager.syslog.daemon.* dms.syslog.daemon.* elda.syslog.daemon.* prometheus.syslog.daemon.* sensu-am.syslog.daemon.*>
   @id rewrite_json_ts_tag
   @type rewrite_tag_filter
   @log_level warn
@@ -264,24 +264,6 @@
     key log_path
     pattern /server-status/
   </exclude>
-</filter>
-
-
-# Elda
-<filter elda.syslog.daemon.*>
-  @id parser_elda
-  @log_level warn
-  @type parser
-  key_name message
-  remove_key_name_field true
-  inject_key_prefix log_
-  reserve_data true
-  emit_invalid_record_to_error false
-  <parse>
-    @type regexp
-    expression /^(?<time>[0-9 ,-:]*) (?<level>[^ ]*) \[(?<trace>[^ ]*)\] \((?<logger>[^ ]*)\) - (?<request>Request [^ ]*)?((?<request>Response [^ ]*) (?<status>[^ ]*) (?<time_taken>.*))?(?<text>.+)?/
-    time_format %Y-%m-%d %H:%M:%S,%N
-  </parse>
 </filter>
 
 

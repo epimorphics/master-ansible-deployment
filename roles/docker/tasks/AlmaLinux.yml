@@ -26,6 +26,20 @@
     state: latest
 
 
+- name: "Docker NF Tables configuration"
+  tags:
+    - pkg
+    - cfg
+  template:
+    src: "{{ item.src }}.j2"
+    dest: "{{ item.dest }}/{{ item.src }}"
+  loop:
+    - { src: "90-docker.conf", dest: "/etc/sysctl.d" }
+    - { src: "daemon.json", dest: "/etc/docker" }
+  when: ansible_distribution_major_version != "9"
+  notify: REBOOT
+
+
 - name: "Install python-docker"
   tags:
     - pkg
