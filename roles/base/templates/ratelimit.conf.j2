@@ -1,2 +1,8 @@
+{% if syslog is defined %}
+{% if syslog.protocol is defined %}
+{% if syslog.protocol == "tcp" %}
 $imjournalRatelimitInterval 0
 $imjournalRatelimitBurst 0
+{% endif %}
+{% endif %}
+{% endif %}

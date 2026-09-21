@@ -46,43 +46,57 @@
     mode:  0600
   notify: "Restart sshd"
 
+- block:
 
-- name: "Syslog Config"
-  tags:
-    - cfg
-    - logging
-    - syslog
-  template:
-    src: "{{ item.src }}"
-    dest: "{{ item.dest }}"
-    owner: root
-    group: root
-    mode: 0644
-  notify: "Restart rsyslog"
-  with_items:
-    - { src: "ratelimit.conf.j2", dest: "/etc/rsyslog.d/01-ratelimit.conf" }
-    - { src: "fluentd.conf.j2", dest: "/etc/rsyslog.d/99-fluentd.conf" }
+  - name: "Syslog Protocol Config ({{ logging.server }})"
+    tags:
+      - cfg
+      - logging
+      - syslog
+    template:
+      src: "{{ item.src }}"
+      dest: "{{ item.dest }}"
+      owner: root
+      group: root
+      mode: 0644
+    notify: "Restart rsyslog"
+    with_items:
+      - { src: "fluentd.conf.j2", dest: "/etc/rsyslog.d/99-fluentd.conf" }
+
+  - block:
+
+    - name: "Syslog Ratelimit Config ({{ syslog.protocol }})"
+      tags:
+        - cfg
+        - logging
+        - syslog
+      template:
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+        owner: root
+        group: root
+        mode: 0644
+      notify: "Restart rsyslog"
+      with_items:
+        - { src: "ratelimit.conf.j2", dest: "/etc/rsyslog.d/01-ratelimit.conf" }
+
+    - name: "SELinux syslog port ({{ fluentd_container.port.syslog }})"
+      tags:
+        - cfg
+        - logging
+        - syslog
+      seport:
+        ports: "{{ fluentd_container.port.syslog }}"
+        proto: tcp
+        setype: syslogd_port_t
+        state: present
+      when:
+        - fluentd_container.port.syslog is defined
+
+    when: syslog.protocol is defined and syslog.protocol == "tcp"
+
   when:
     -  logging is defined and logging.server is defined
-
-
-- name: "SELinux syslog port"
-  tags:
-    - cfg
-    - logging
-    - syslog
-  seport:
-    ports: "{{ fluentd_container.port.syslog }}"
-    proto: tcp
-    setype: syslogd_port_t
-    state: present
-  when:
-    - logging is defined
-    - logging.server is defined
-    - fluentd_container.port.syslog is defined
-    - syslog.protocol is defined
-    - syslog.protocol == "tcp"
-
 
 
 - name: "Log rotation"

@@ -69,6 +69,7 @@
     group: "root"
     mode: "0644"
   loop: "{{ dashboards }}"
+  notify: "Grafana container restart"
 
 
 - meta: flush_handlers

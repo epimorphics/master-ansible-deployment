@@ -1,1 +1,5 @@
+{% if syslog is defined %}
+{% if syslog.protocol is defined %}
 *.* {{ (syslog.protocol == "tcp") | ternary("@", "", "") }}@{{ logging.server }}:{{ fluentd_container.port.syslog }}
+{% endif %}
+{% endif %}
