@@ -22,7 +22,7 @@ proxy_cache:
 vhosts_cfg_dir: vhosts/conf.d
 
 
-nginx_tag: 1.27.05-01
+nginx_tag: 1.31.05-01
 
 nginx:
   directory: "{{ docker.directory }}/{{ nginx_container.name }}"
