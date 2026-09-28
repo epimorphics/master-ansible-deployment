@@ -26,14 +26,21 @@ server {
   if ($origin = "")   { set $origin   "-"; }
   if ($path = "")     { set $path     "-"; }
 
+  set $blocked_request  $blocked_path;
+
+  if ($blocked_agent_location)   { set $blocked_request $blocked_agent_location; }
+
   if ($blocked_agent = "")    { set $blocked_agent    "-"; }
   if ($blocked_location = "") { set $blocked_location "-"; }
   if ($blocked_origin = "")   { set $blocked_origin   "-"; }
-  if ($blocked_request = "")  { set $blocked_request  "-"; }
 
   if ($blocked_request_agent)    { set $blocked_request $blocked_request_agent; }
   if ($blocked_request_location) { set $blocked_request $blocked_request_location; }
   if ($blocked_request_origin)   { set $blocked_request $blocked_request_origin; }
+
+{% if nginx_qos.whitelists is defined %}
+  if ($whitelisted = "Whitelisted")   { set $blocked_request "Whitelisted $blocked_request"; }
+{% endif %}
 
   if ($blocked)    { return 403; }
 

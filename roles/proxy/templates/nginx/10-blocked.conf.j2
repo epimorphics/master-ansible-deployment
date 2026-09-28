@@ -1,7 +1,7 @@
 {% if nginx_qos is defined %}
 {% if nginx_qos.blocked is defined %}
 
-# 1.1
+# 2.1
 {% if nginx_qos.blocked.agents is defined %}
 # Set $blocked_agent true if on the proscribed list
 #
@@ -12,7 +12,7 @@ map $agent $blocked_agent {
 }
 {% endif %}
 
-# 1.2
+# 2.1
 {% if nginx_qos.blocked.locations is defined %}
 # Set $blocked_location true if on the proscribed list
 #
@@ -23,7 +23,7 @@ map $location $blocked_location {
 }
 {% endif %}
 
-# 1.3
+# 2.3
 {% if nginx_qos.blocked.origins is defined %}
 # Set $blocked_origin true if on the proscribed list
 #
@@ -37,16 +37,17 @@ map $origin $blocked_origin {
 
 {% if nginx_qos.blocked.requests is defined %}
 
-# 2.0
-map "$path" $blocked_request {
+# 2.4
+map "$path" $blocked_path {
 {% for request in nginx_qos.blocked.requests %}
 {% if request.agents is not defined and request.locations is not defined and request.origins is not defined %}
   "{{ request.name }}" "Request:{{ request.name }}";
 {% endif %}
 {% endfor %}
+  default "-";
 }
 
-# 2.1
+# 3.1
 map "$agent:$path" $blocked_request_agent {
 {% for request in nginx_qos.blocked.requests %}
 {% if request.agents is defined %}
@@ -57,7 +58,7 @@ map "$agent:$path" $blocked_request_agent {
 {% endfor %}
 }
 
-# 2.2
+# 3.2
 map "$location:$path" $blocked_request_location {
 {% for request in nginx_qos.blocked.requests %}
 {% if request.locations is defined %}
@@ -68,7 +69,7 @@ map "$location:$path" $blocked_request_location {
 {% endfor %}
 }
 
-# 2.3
+# 3.3
 map "$origin:$path" $blocked_request_origin {
 {% for request in nginx_qos.blocked.requests %}
 {% if request.origins is defined %}
@@ -79,6 +80,94 @@ map "$origin:$path" $blocked_request_origin {
 {% endfor %}
 }
 
+{% endif %}
+
+# 4.1
+{% if nginx_qos.blocked.agents is defined %}
+map "$agent:$location" $blocked_agent_location {
+{% for agent in nginx_qos.blocked.agents %}
+{% if agent.name is defined and agent.locations is defined%}
+{% for location in agent.locations %}
+  "{{ agent.name }}:{{ location }}" "Agent:{{ agent.name }} Location:{{ location }}";
+{% endfor %}
+{% endif %}
+{% endfor %}
+}
+{% endif %}
+
+# 5.0
+{% if nginx_qos.whitelists is defined %}
+{% for wl in nginx_qos.whitelists %}
+
+# 5.1
+{% if wl.agents is defined %}
+map $agent ${{ wl.name }}_wl_agent {
+{% for agent in wl.agents %}
+  "{{ agent }}" Agent;
+{% endfor %}
+  default "";
+}
+{% endif %}
+
+# 5.2
+{% if wl.locations is defined %}
+map $location ${{wl.name}}_wl_location {
+{% for location in wl.locations %}
+  "{{ location }}" Location;
+{% endfor %}
+  default "";
+}
+{% endif %}
+
+# 5.3
+{% if wl.origins is defined %}
+map $origin ${{wl.name}}_wl_origin {
+{% for origin in wl.origins %}
+  "{{ origin }}" Origin;
+{% endfor %}
+  default "";
+}
+{% endif %}
+
+# 5.4
+{% if wl.requests is defined %}
+map $path ${{wl.name}}_wl_request {
+{% for request in wl.requests %}
+  "{{ request }}" Request;
+{% endfor %}
+  default "";
+}
+{% endif %}
+
+# 5.5
+map {% if wl.agents is defined %}${{ wl.name }}_wl_agent{% endif %}{% if wl.locations is defined %}${{ wl.name }}_wl_location{% endif %}{% if wl.origins is defined %}${{ wl.name }}_wl_origin{% endif %}{%- if wl.requests is defined %}${{ wl.name }}_wl_request{% endif %} ${{ wl.name }}_wl {
+  "{% if wl.agents is defined %}Agent{% endif %}{% if wl.locations is defined %}Location{% endif %}{% if wl.origins is defined %}Origin{% endif %}{%- if wl.requests is defined %}Request{% endif %}" "CLEARED";
+  default "";
+}
+
+{% endfor %}
+{% endif %}
+
+{% if nginx_qos.whitelists is defined %}
+# 5.6
+map {% for wl in nginx_qos.whitelists -%}${{ wl.name }}_wl{%- endfor %} $whitelisted {
+  "CLEARED" "Whitelisted";
+  default "";
+}
+{% endif %}
+
+{% if nginx_qos.whitelists is defined %}
+# 5.7
+map "$whitelisted$blocked_agent$blocked_location$blocked_origin$blocked_request" $blocked {
+  "~^Whitelisted" "";
+  "----"          "";
+  default         "BLOCKED";
+}
+{%- else %}
+map "$blocked_agent$blocked_location$blocked_origin$blocked_request" $blocked {
+  "----"          "";
+  default         "BLOCKED";
+}
 {% endif %}
 
 

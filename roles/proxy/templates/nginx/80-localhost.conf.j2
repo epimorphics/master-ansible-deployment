@@ -9,7 +9,7 @@ server {
   set $blocked_agent    "-";
   set $blocked_location "-";
   set $blocked_origin   "-";
-  set $blocked_request  "-";
+  set $blocked_request  $blocked_path;
 
   # Load Balancer test.
   location = /ping {
