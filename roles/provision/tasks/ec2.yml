@@ -3,6 +3,15 @@
   include_tasks: "asg.yml"
 
 
+#- name: debug
+#  debug:
+#    msg: "{{ item }}"
+#  loop: "{{ ec2_inst }}"
+#  loop_control:
+#    label: "{{ instance }}-{{ band | default(env) }}-{{ item.type }}"
+#    index_var: index
+
+
 - name: "Provision EC2 Instance Groups"
   tags:
     - dns

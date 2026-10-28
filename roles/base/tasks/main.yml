@@ -138,6 +138,7 @@
   package:
     name: 
       - jq
+      - lsof
       - pv
       - rsync
       - unzip

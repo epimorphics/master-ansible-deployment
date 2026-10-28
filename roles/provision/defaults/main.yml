@@ -8,7 +8,7 @@ az:
 
 
 ec2_images:
-  eu-west-1: ami-0428ac7f9776f14c3 # Almalinux 9.7 in eu-west-1
+  eu-west-1: ami-0feee011083f27927
   eu-west-2: ami-0f32f991a40e3cbca # Almalinux 9.7 in eu-west-2
 
 ec2_default_image: "{{ ec2_images[region] }}"

@@ -26,18 +26,18 @@
     state: latest
 
 
-- name: "Docker NF Tables configuration"
-  tags:
-    - pkg
-    - cfg
-  template:
-    src: "{{ item.src }}.j2"
-    dest: "{{ item.dest }}/{{ item.src }}"
-  loop:
-    - { src: "90-docker.conf", dest: "/etc/sysctl.d" }
-    - { src: "daemon.json", dest: "/etc/docker" }
-  when: ansible_distribution_major_version != "9"
-  notify: REBOOT
+#- name: "Docker NF Tables configuration"
+#  tags:
+#    - pkg
+#    - cfg
+#  template:
+#    src: "{{ item.src }}.j2"
+#    dest: "{{ item.dest }}/{{ item.src }}"
+#  loop:
+#    - { src: "90-docker.conf", dest: "/etc/sysctl.d" }
+#    - { src: "daemon.json", dest: "/etc/docker" }
+#  when: ansible_distribution_major_version != "9"
+#  notify: REBOOT
 
 
 - name: "Install python-docker"
@@ -58,8 +58,7 @@
     src: "{{ s3_release }}/{{ ansible_distribution_major_version }}/amazon-ecr-credential-helper/docker-credential-ecr-login.zip"
     dest: /bin
     remote_src: yes 
-  loop_control: 
-    label: "AWS ECR Helper"
+    creates: /bin/docker-credential-ecr-login
 
 
 - name: "AWS ECR Helper permissions"
