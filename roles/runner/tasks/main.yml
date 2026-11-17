@@ -1,0 +1,85 @@
+- name: Github Action Runner directory
+  become: yes
+  file:
+    path: /opt/action-runner
+    state: directory
+    owner: ec2-user
+    mode : '0755'
+
+
+- name: Github Action Runner archive
+  become: yes
+  unarchive:
+    src: https://github.com/actions/runner/releases/download/v2.338.0/actions-runner-linux-x64-2.338.0.tar.gz
+    dest: /opt/action-runner
+    owner: ec2-user
+    group: ec2-user
+    remote_src: yes
+
+
+- name: Install dependencies
+  become: yes
+  command:
+    chdir: /opt/action-runner
+    argv:
+      -  ./bin/installdependencies.sh
+
+
+- name: "Configure Github Action Runner: {{ github_runner_token | default('github_runner_token is undefined') }}"
+  command:
+    chdir: /opt/action-runner
+    argv:
+      - "./config.sh"
+      - "--name"
+      - "{{ instance }}-github-runner"
+      - "--runnergroup aws"
+      - "--url"
+      - "https://github.com/epimorphics"
+      - "--unattended"
+      - "--token"
+      - "{{ github_runner_token | default('undefined') }}"
+    creates: /opt/action-runner/.runner
+  when: github_runner_token is defined
+
+
+- name: Install service
+  become: yes
+  command:
+    chdir: /opt/action-runner
+    argv:
+      - ./svc.sh
+      - install
+    creates: "/etc/systemd/system/actions.runner.epimorphics.{{ instance }}-github-runner.service"
+  when: github_runner_token is defined
+
+
+- name: SSH directories
+  tags:
+    - cfg
+    - ssl
+  file:
+    path: "{{ item.path }}"
+    mode: "{{ item.mode }}"
+    state: directory
+    owner: ec2-user
+    group: ec2-user
+  loop_control:
+    label: "{{ item.path }}"
+  loop:
+    - { path: "/home/ec2-user/.ssh", mode: "0700" }
+
+
+- name: SSH config
+  tags:
+    - cfg
+    - ssl
+  copy:
+    dest: "/home/ec2-user/.ssh/config"
+    mode: "0600"
+    owner: ec2-user
+    group: ec2-user
+    content: |
+      ForwardX11 no
+      ForwardAgent no
+      ServerAliveInterval 300
+      StrictHostKeyChecking no

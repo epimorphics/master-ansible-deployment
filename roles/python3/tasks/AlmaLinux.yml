@@ -15,12 +15,6 @@
     - pkg
     - pip
   pip:
-    name:
-    - 'boto3'
-    - 'dateparser'
-    - 'pytz'
-    - 'packaging'
-    - 'requests'
-    - 'simplejson'
+    name: "{{ almalinux_pip }}"
     state: latest
   when: not ansible_check_mode

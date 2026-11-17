@@ -1,0 +1,7 @@
+almalinux_pip:
+  - 'boto3'
+  - 'dateparser'
+  - 'pytz'
+  - 'packaging'
+  - 'requests'
+  - 'simplejson'

@@ -4,7 +4,8 @@
         {
             "Sid": "Stmt1599820462441",
             "Action": [
-              "ec2:DescribeInstances"
+              "ec2:DescribeInstances",
+              "ec2:DescribeAvailabilityZones"
             ],
             "Effect": "Allow",
             "Resource": "*"

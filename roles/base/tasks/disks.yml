@@ -1,4 +1,8 @@
 ---
+#- name: Debug
+#  debug:
+#    var: partitions
+
 - block:
   - name: "LVM installed"
     tags:
