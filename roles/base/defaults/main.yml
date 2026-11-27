@@ -1,4 +1,4 @@
-bashrc: "{{ (ansible_os_family == 'Debian')  | ternary('/etc/bash.bashrc', '/etc/bashrc') }}"
+bashrc: "{{ (ansible_facts['os_family'] == 'Debian')  | ternary('/etc/bash.bashrc', '/etc/bashrc') }}"
 
 system_locale: "en_GB.utf8"
 
@@ -6,7 +6,7 @@ ntp:
   absent: "ntp"
   config:
     src: "chrony.conf.j2"
-    dest: "{{ (ansible_os_family == 'Debian')  | ternary('/etc/chrony/chrony.conf', '/etc/chrony.conf') }}"
+    dest: "{{ (ansible_facts['os_family'] == 'Debian')  | ternary('/etc/chrony/chrony.conf', '/etc/chrony.conf') }}"
   pkg: "chrony"
   service: "chronyd"
   servers:

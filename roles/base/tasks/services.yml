@@ -24,6 +24,6 @@
   tags:
     - services
   service:
-    name:  "{{ (ansible_distribution == 'Ubuntu') | ternary('ssh', 'sshd') }}"
+    name:  "{{ (ansible_facts['distribution'] == 'Ubuntu') | ternary('ssh', 'sshd') }}"
     state: started
     enabled: yes

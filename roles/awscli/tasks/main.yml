@@ -26,7 +26,7 @@
   stat:
     path: "/usr/local/aws-cli/v2/current"
   register: aws_cli_current
-  when: aws_cli
+  when: aws_cli is defined and aws_cli.changed
 
 
 - name: "Record old versions"
@@ -39,7 +39,7 @@
     recurse: no
     use_regex: yes
   register: aws_cli_dir
-  when: aws_cli_current
+  when: aws_cli_current is defined
 
 
 - name: "Remove non-current versions"
@@ -52,8 +52,8 @@
   loop_control:
     label: "{{ item.path }}"
   when: 
-    - aws_cli_dir.files
-    - aws_cli_current
-    - aws_cli_current.stat
-    - aws_cli_current.stat.lnk_target
+    - aws_cli_dir.files is defined
+    - aws_cli_current is defined
+    - aws_cli_current.stat is defined
+    - aws_cli_current.stat.lnk_target is defined
     - item.path != aws_cli_current.stat.lnk_target

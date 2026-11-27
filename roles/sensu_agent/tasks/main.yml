@@ -13,4 +13,4 @@
     owner: root
     group: root
     mode: 0440
-  when: ansible_distribution == "AlmaLinux"
+  when: ansible_facts['distribution'] == "AlmaLinux"

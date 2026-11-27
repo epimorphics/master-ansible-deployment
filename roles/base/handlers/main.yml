@@ -25,7 +25,7 @@
 
 - name: "Restart sshd"
   service:
-    name:  "{{ (ansible_distribution == 'Ubuntu') | ternary('ssh', 'sshd') }}"
+    name:  "{{ (ansible_facts['distribution'] == 'Ubuntu') | ternary('ssh', 'sshd') }}"
     state: restarted
 
 

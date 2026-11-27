@@ -1,6 +1,6 @@
 ---
-- name: "{{ ansible_distribution }}"
-  include_tasks: "{{ ansible_distribution }}.yml"
+- name: "{{ ansible_facts['distribution'] }}"
+  include_tasks: "{{ ansible_facts['distribution'] }}.yml"
 
 
 - name: "Docker systemd override directory"
@@ -20,12 +20,12 @@
   notify: "Restart docker"
 
 
-- name: "AWS ECR docker config directory ( {{ ansible_user_dir }}/.docker )"
+- name: "AWS ECR docker config directory ( /root/.docker )"
   become: yes
   tags:
     - cfg
   file:
-    dest: "{{ ansible_user_dir }}/.docker"
+    dest: "/root/.docker"
     state: directory
 
 
@@ -34,7 +34,7 @@
     - cfg
   copy:
     content: '{ "credsStore": "ecr-login" }'
-    dest: "{{ ansible_user_dir }}/.docker/config.json"
+    dest: "/root/.docker/config.json"
 
 
 - name: "Add users to group docker"

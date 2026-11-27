@@ -1,9 +1,9 @@
 ---
-- name: "Install {{ docker_package[ansible_distribution] }}"
+- name: "Install {{ docker_package[ansible_facts['distribution']] }}"
   tags:
     - pkg
   package:
-    name: "{{ docker_package[ansible_distribution] }}"
+    name: "{{ docker_package[ansible_facts['distribution']] }}"
     state: latest
 
 

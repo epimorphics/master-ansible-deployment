@@ -2,11 +2,11 @@
   apt:
     deb: "{{ archive }}"
   when:
-    - ansible_distribution == "Ubuntu"
+    - ansible_facts['distribution'] == "Ubuntu"
 
 - name: "Ansible"
   package:
     name: ansible-core
     state: latest
   when:
-    - ansible_distribution == "AlmaLinux"
+    - ansible_facts['distribution'] == "AlmaLinux"
